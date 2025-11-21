@@ -82,6 +82,8 @@ def load_data(path, n_splits=5):
     labels = full_dataset.img_labels
     
     kf = StratifiedKFold(n_splits=n_splits)
+    
+    map_result = {}
 
     for fold, (train_idx, val_idx) in enumerate(kf.split(full_dataset.df, y=labels)):
         train_dataset = Subset(full_dataset, train_idx)
@@ -89,12 +91,14 @@ def load_data(path, n_splits=5):
         train_labels = labels[train_idx]
         val_labels = labels[val_idx]
 
-        return train_dataset, train_labels, val_dataset, val_labels
+        map_result[fold] = {"X_train": train_dataset, "y_train": train_labels, "X_val": val_dataset, "y_val": val_labels}
+
+    return map_result
 
 if __name__ == "__main__":
     path = "../../../datasets/CXR8/"
-    load_data(path, n_splits=5)
-
+    data = load_data(path, n_splits=5)
+    print(data)
 
 
 

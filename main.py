@@ -32,10 +32,16 @@ parser.add_argument(
         default='32',
         help='Batch Size')
 
+parser.add_argument(
+        '--dataset',
+        choices=('chest_xray', 'CXR8'),
+        help='Training Dataset',
+        default='CXR8')
+
 args = parser.parse_args()
 
 def main():
-    print(args)
+    pass
 
 if __name__ == "__main__":
     main()
