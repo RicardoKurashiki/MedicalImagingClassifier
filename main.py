@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
+import os
 import argparse
 
-from utils import BatchSampler, load_data
+from pipelines import train_pipeline
 
 parser = argparse.ArgumentParser(prog="Medical Imaging Analysis Classifier")
 
@@ -41,7 +42,8 @@ parser.add_argument(
 args = parser.parse_args()
 
 def main():
-    pass
+    dataset_path = os.path.join("../../datasets", args.dataset)
+    train_pipeline(dataset_path, args.model, args.layers, args.folds, args.batch_size)
 
 if __name__ == "__main__":
     main()
