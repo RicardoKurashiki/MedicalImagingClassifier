@@ -1,0 +1,41 @@
+#!/usr/bin/env python3
+
+import argparse
+
+from utils import BatchSampler, load_data
+
+parser = argparse.ArgumentParser(prog="Medical Imaging Analysis Classifier")
+
+parser.add_argument(
+        '--model',
+        choices=('resnet', 'mobilenet', 'densenet', 'efficientnet', 'vit'),
+        help='Pretrained Model',
+        default='densenet')
+
+parser.add_argument(
+        '--layers',
+        type=int,
+        choices=('5', '10', '15', '20', '25'),
+        help='Trainable Layers',
+        default='10')
+
+parser.add_argument(
+        '--folds',
+        type=int,
+        choices=('3', '5', '7', '10'),
+        help="KFolds Qtd",
+        default='5')
+
+parser.add_argument(
+        '--batch-size',
+        type=int,
+        default='32',
+        help='Batch Size')
+
+args = parser.parse_args()
+
+def main():
+    print(args)
+
+if __name__ == "__main__":
+    main()
