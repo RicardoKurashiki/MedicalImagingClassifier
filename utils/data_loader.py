@@ -56,55 +56,49 @@ class CustomSampler(Sampler):
         self.C = {c: len(self.S[c]) for c in self.classes}
         self.c_max = max(self.C.values())
         self.K = self.c_max // self.m_per_class
-
+        
     def __len__(self):
         return self.K
 
     def __iter__(self):
         S_work = {c: list(self.S[c]) for c in self.classes}
-        print(S_work.keys())
+
         for c in self.classes:
             np.random.shuffle(S_work[c])
 
         for _ in range(self.K):
             batch = []
             for c in self.classes:
-                if self.C[c] == self.c_max:
-                    if len(S_work[c]) < self.m_per_class:
-                        np.random.shuffle(S_work[c])
-                    chosen = S_work[c][:self.m_per_class]
-                    S_work[c] = S_work[c][self.m_per_class]
-                else:
-                    if len(S_work[c]) < self.m_per_class:
-                        S_work[c] = list(self.S[c])
-                        np.random.shuffle(S_work[c])
-                    chosen = np.random.choice(S_work[c], self.m_per_class, replace=True)
+                if len(S_work[c]) < self.m_per_class:
+                    S_work[c] = list(self.S[c])
+                    np.random.shuffle(S_work[c])
+                chosen = S_work[c][:self.m_per_class]
+                S_work[c] = S_work[c][self.m_per_class:]
                 batch.extend(chosen)
             yield batch
 
-def main():
-    path = "../../../datasets/CXR8/"
-    
+def load_data(path, n_splits=5):
     full_dataset = CustomDataset(path)
     labels = full_dataset.img_labels
     
-    kf = StratifiedKFold(n_splits=5)
-    print(labels.value_counts())
+    kf = StratifiedKFold(n_splits=n_splits)
 
     for fold, (train_idx, val_idx) in enumerate(kf.split(full_dataset.df, y=labels)):
         train_dataset = Subset(full_dataset, train_idx)
         val_dataset = Subset(full_dataset, val_idx)
-
         train_labels = labels[train_idx]
+        val_labels = labels[val_idx]
 
-        print(train_labels.value_counts())
-
-        sampler = CustomSampler(train_labels, batch_size=6)
-
-        for i, batch in enumerate(sampler):
-            #print(f"Batch {i}: {batch}")
-            if i == 5:
-                break
+        return train_dataset, train_labels, val_dataset, val_labels
 
 if __name__ == "__main__":
-    main()
+    path = "../../../datasets/CXR8/"
+    load_data(path, n_splits=5)
+
+
+
+
+
+
+
+    
