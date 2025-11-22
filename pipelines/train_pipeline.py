@@ -28,6 +28,7 @@ def train_model(
 
     with TemporaryDirectory() as tempdir:
         best_model_params_path = os.path.join(tempdir, "best_model_params.pt")
+        print(f"Saving best model to {best_model_params_path}")
         torch.save(model.state_dict(), best_model_params_path)
         best_acc = 0.0
 
@@ -118,7 +119,11 @@ def train_densenet(dataset_path, layers, kfolds, batch_size, epochs):
     )
     transform = weights.transforms
 
-    data = load_data(dataset_path, n_splits=kfolds, transform=transform)
+    data = load_data(
+        os.path.join(dataset_path, "train/"),
+        n_splits=kfolds,
+        transform=transform,
+    )
 
     for fold in data.keys():
         print(f"Training fold {fold + 1} of {kfolds}")
