@@ -24,7 +24,7 @@ class CustomDataset(Dataset):
         return len(self.img_labels)
 
     def __getitem__(self, idx):
-        img_path = self.img_dir.iloc[idx]
+        img_path = str(self.img_dir.iloc[idx])
         image = decode_image(img_path)
         label = self.img_labels.iloc[idx]
         if self.transform:
@@ -82,7 +82,7 @@ class CustomSampler(Sampler):
 
 def load_data(path, n_splits=5, transform=None):
     full_dataset = CustomDataset(path, transform=transform)
-    labels = full_dataset.img_labels
+    labels = full_dataset.img_labels.values
 
     kf = StratifiedKFold(n_splits=n_splits)
 
