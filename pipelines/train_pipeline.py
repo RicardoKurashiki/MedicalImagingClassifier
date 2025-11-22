@@ -93,13 +93,9 @@ def unfreeze_layers(model, n_layers):
             param.requires_grad = True
 
 
-def train_resnet(dataset_path):
-    print("Train ResNet")
-
-
-def train_densenet(dataset_path, layers, kfolds, batch_size, epochs):
-    print("Train DenseNet")
-
+def train_densenet(
+    dataset_path, layers, kfolds, batch_size, epochs, output_path="./results/"
+):
     weights = DenseNet121_Weights.IMAGENET1K_V1
     model = densenet121(weights=weights)
 
@@ -117,6 +113,7 @@ def train_densenet(dataset_path, layers, kfolds, batch_size, epochs):
     optimizer = optim.Adam(
         filter(lambda p: p.requires_grad, model.parameters()), lr=1e-4
     )
+
     transform = weights.transforms
 
     data = load_data(
@@ -130,20 +127,20 @@ def train_densenet(dataset_path, layers, kfolds, batch_size, epochs):
 
         fold_data = data[fold]
 
-        X_train = fold_data["X_train"]
-        y_train = fold_data["y_train"]
-        X_val = fold_data["X_val"]
-        y_val = fold_data["y_val"]
+        train_dataset = fold_data["X_train"]
+        train_labels = fold_data["y_train"]
+        val_dataset = fold_data["X_val"]
+        val_labels = fold_data["y_val"]
 
-        train_sampler = BatchSampler(y_train, batch_size)
+        train_sampler = BatchSampler(train_labels, batch_size)
         train_loader = DataLoader(
-            X_train,
+            train_dataset,
             sampler=train_sampler,
             pin_memory=True,
             num_workers=4,
         )
         val_loader = DataLoader(
-            X_val,
+            val_dataset,
             batch_size=batch_size,
             pin_memory=True,
             num_workers=4,
@@ -155,8 +152,8 @@ def train_densenet(dataset_path, layers, kfolds, batch_size, epochs):
         }
 
         dataset_sizes = {
-            "train": len(y_train),
-            "val": len(y_val),
+            "train": len(train_labels),
+            "val": len(val_labels),
         }
 
         model = train_model(
@@ -168,12 +165,34 @@ def train_densenet(dataset_path, layers, kfolds, batch_size, epochs):
             epochs,
         )
 
+        print("Salvando modelo...")
+        os.makedirs(output_path, exist_ok=True)
+        torch.save(model.state_dict(), os.path.join(output_path, f"fold_{fold}.pt"))
 
-def run(dataset_path, pretrained_model, trainable_layers, kfolds, batch_size, epochs):
+
+def run(
+    dataset_path,
+    pretrained_model,
+    trainable_layers,
+    kfolds,
+    batch_size,
+    epochs,
+):
+    output_path = os.path.join(
+        "results",
+        pretrained_model,
+        f"layers_{trainable_layers}",
+        f"kfolds_{kfolds}",
+        f"batch_size_{batch_size}",
+        f"epochs_{epochs}/",
+    )
     if pretrained_model == "densenet":
-        train_densenet(dataset_path, trainable_layers, kfolds, batch_size, epochs)
-        return
-
-    if pretrained_model == "resnet":
-        train_resnet(dataset_path)
+        train_densenet(
+            dataset_path,
+            trainable_layers,
+            kfolds,
+            batch_size,
+            epochs,
+            output_path=output_path,
+        )
         return
