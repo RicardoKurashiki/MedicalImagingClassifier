@@ -77,8 +77,8 @@ class CustomSampler(Sampler):
                 batch.extend(chosen)
             yield batch
 
-def load_data(path, n_splits=5):
-    full_dataset = CustomDataset(path)
+def load_data(path, n_splits=5, transform=None):
+    full_dataset = CustomDataset(path, transform=transform)
     labels = full_dataset.img_labels
     
     kf = StratifiedKFold(n_splits=n_splits)

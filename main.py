@@ -39,11 +39,17 @@ parser.add_argument(
         help='Training Dataset',
         default='CXR8')
 
+parser.add_argument(
+        '--epochs',
+        type=int,
+        default='100',
+        help='Training Epochs')
+
 args = parser.parse_args()
 
 def main():
     dataset_path = os.path.join("../../datasets", args.dataset)
-    train_pipeline(dataset_path, args.model, args.layers, args.folds, args.batch_size)
+    train_pipeline(dataset_path, args.model, args.layers, args.folds, args.batch_size, args.epochs)
 
 if __name__ == "__main__":
     main()
