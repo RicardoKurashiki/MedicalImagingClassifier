@@ -1,107 +1,70 @@
 #!/usr/bin/env python3
 
 import os
-import torch
 import pandas as pd
 import numpy as np
-import torchvision.transforms as transforms
-import matplotlib.pyplot as plt
 
-from PIL import Image
-from sklearn.model_selection import StratifiedKFold
-from torchvision.io import decode_image
-from torch.utils.data import DataLoader, Dataset, Subset, Sampler
+from utils.custom_dataset import CustomDataset
+from sklearn.model_selection import StratifiedKFold, train_test_split
 
 
-class CustomDataset(Dataset):
-    def __init__(self, img_dir, transform=None):
-        self.df = self.gen_dataframe(img_dir)
-        self.img_labels = self.df["idx"]
-        self.img_dir = self.df["path"]
-        self.transform = transform
-
-    def __len__(self):
-        return len(self.img_labels)
-
-    def __getitem__(self, idx):
-        img_path = str(self.img_dir.iloc[idx])
-        image = decode_image(img_path)
-        label = self.img_labels.iloc[idx]
-        if self.transform:
-            image = self.transform(image)
-        return image, label
-
-    def gen_dataframe(self, path):
-        map_result = {"path": [], "name": [], "class": [], "idx": []}
-        class_names = os.listdir(path)
-        for name in class_names:
-            class_path = os.path.join(path, f"{name}/")
-            for img in os.listdir(class_path):
-                if not img.endswith(".png"):
-                    continue
-                map_result["path"].append(os.path.join(class_path, img))
-                map_result["name"].append(img)
-                map_result["class"].append(name)
-                map_result["idx"].append(0 if name == "NORMAL" else 1)
-        dataframe = pd.DataFrame(data=map_result)
-        return dataframe
+def gen_dataframe(root_dir):
+    if not os.path.isdir(root_dir):
+        print(f"Error: {root_dir} is not a directory")
+        return
+    map_result = {"path": [], "label": []}
+    class_names = os.listdir(root_dir)
+    for class_name in class_names:
+        class_path = os.path.join(root_dir, class_name)
+        if not os.path.isdir(class_path) or class_name.startswith("."):
+            continue
+        for img in os.listdir(class_path):
+            map_result["path"].append(os.path.join(class_path, img))
+            map_result["label"].append(class_name)
+    return pd.DataFrame(map_result)
 
 
-class CustomSampler(Sampler):
-    def __init__(self, labels, batch_size=32):
-        self.labels = labels
-        self.classes = np.unique(self.labels)
-        self.N = len(self.classes)
-        self.m_per_class = batch_size // self.N
+def load_data(path, n_splits=None, transform=None, val_transform=None, training=True):
+    df = gen_dataframe(path)
+    labels = df["label"].values
 
-        self.S = {c: np.where(self.labels == c)[0].tolist() for c in self.classes}
-        self.C = {c: len(self.S[c]) for c in self.classes}
-        self.c_max = max(self.C.values())
-        self.K = self.c_max // self.m_per_class
+    if not training:
+        test_dataset = CustomDataset(df, transform=transform)
+        test_labels = df["label"].values
+        return {0: {"X_test": test_dataset, "y_test": test_labels}}
+    else:
+        if n_splits is not None:
+            kf = StratifiedKFold(n_splits=n_splits)
+            map_result = {}
+            for fold, (train_idx, val_idx) in enumerate(kf.split(df, y=labels)):
+                df_train = df.iloc[train_idx]
+                df_val = df.iloc[val_idx]
+                train_dataset = CustomDataset(df_train, transform=transform)
+                val_dataset = CustomDataset(df_val, transform=val_transform)
+                train_labels = df_train["label"].values
+                val_labels = df_val["label"].values
 
-    def __len__(self):
-        return self.K
-
-    def __iter__(self):
-        S_work = {c: list(self.S[c]) for c in self.classes}
-
-        for c in self.classes:
-            np.random.shuffle(S_work[c])
-
-        for _ in range(self.K):
-            batch = []
-            for c in self.classes:
-                if len(S_work[c]) < self.m_per_class:
-                    S_work[c] = list(self.S[c])
-                    np.random.shuffle(S_work[c])
-                chosen = S_work[c][: self.m_per_class]
-                S_work[c] = S_work[c][self.m_per_class :]
-                batch.extend(chosen)
-            yield batch
-
-
-def load_data(path, n_splits=5, transform=None):
-    full_dataset = CustomDataset(path, transform=transform)
-    labels = full_dataset.img_labels.values
-
-    kf = StratifiedKFold(n_splits=n_splits)
-
-    map_result = {}
-
-    for fold, (train_idx, val_idx) in enumerate(kf.split(full_dataset.df, y=labels)):
-        train_dataset = Subset(full_dataset, train_idx)
-        val_dataset = Subset(full_dataset, val_idx)
-        train_labels = labels[train_idx]
-        val_labels = labels[val_idx]
-
-        map_result[fold] = {
-            "X_train": train_dataset,
-            "y_train": train_labels,
-            "X_val": val_dataset,
-            "y_val": val_labels,
-        }
-
-    return map_result
+                map_result[fold] = {
+                    "X_train": train_dataset,
+                    "y_train": train_labels,
+                    "X_val": val_dataset,
+                    "y_val": val_labels,
+                }
+            return map_result
+        else:
+            train_df, val_df = train_test_split(df, test_size=0.2, stratify=labels)
+            train_dataset = CustomDataset(train_df, transform=transform)
+            val_dataset = CustomDataset(val_df, transform=val_transform)
+            train_labels = train_df["label"].values
+            val_labels = val_df["label"].values
+            return {
+                0: {
+                    "X_train": train_dataset,
+                    "y_train": train_labels,
+                    "X_val": val_dataset,
+                    "y_val": val_labels,
+                }
+            }
 
 
 if __name__ == "__main__":
