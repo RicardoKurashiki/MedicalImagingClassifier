@@ -96,10 +96,10 @@ def load_data(path, n_splits=5):
     return map_result
 
 if __name__ == "__main__":
-    path = "../../../datasets/CXR8/"
+    path = "../../../datasets/CXR8/train/"
     data = load_data(path, n_splits=5)
-    print(data)
-
+    for fold in data.keys():
+        print(data[fold]["y_train"].value_counts())
 
 
 
