@@ -26,4 +26,5 @@ class CustomDataset(Dataset):
         label = self.labels[idx]
         if self.transform:
             image = self.transform(image)
-        return image, label
+        shape = {"image": image, "label": label}
+        return shape
