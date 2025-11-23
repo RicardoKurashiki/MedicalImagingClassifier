@@ -229,7 +229,11 @@ def run(model_path, cross_dataset_path, pretrained_model, batch_size=32, prefix=
     print(json_path)
 
     all_results = {
-        "test_results": results,
+        "confusion_matrix": results["confusion_matrix"],
+        "total_samples": results["total_samples"],
+        "correct_predictions": results["correct_predictions"],
+        "accuracy": results["accuracy"],
+        "loss": results["loss"],
         "classification_report": report,
         "test_config": {
             "model_path": model_path,
