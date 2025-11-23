@@ -111,7 +111,7 @@ def train_model(
                 print(f"Early stopping triggered at epoch {epoch}")
                 break
             epoch_start = time.time()
-            print(f"Epoch {epoch}/{num_epochs}")
+            print(f"Epoch {epoch + 1}/{num_epochs}")
             print("-" * 10)
 
             for phase in ["train", "val"]:
