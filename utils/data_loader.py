@@ -115,7 +115,7 @@ if __name__ == "__main__":
         print("Train:")
         print(pd.DataFrame(data=data[fold]["y_train"]).value_counts(normalize=True))
         print("Val:")
-        print(data[fold]["y_val"].value_counts(normalize=True))
+        print(pd.DataFrame(data=data[fold]["y_val"]).value_counts(normalize=True))
         print("-" * 10)
         batch_sampler = CustomSampler(data[fold]["y_train"])
         dataloader = DataLoader(
@@ -136,9 +136,9 @@ if __name__ == "__main__":
     data = load_data(path, n_splits=None)
     print("All data:")
     print("Train:")
-    print(data[0]["y_train"].value_counts(normalize=True))
+    print(pd.DataFrame(data=data[0]["y_train"]).value_counts(normalize=True))
     print("Val:")
-    print(data[0]["y_val"].value_counts(normalize=True))
+    print(pd.DataFrame(data=data[0]["y_val"]).value_counts(normalize=True))
     print("-" * 10)
     batch_sampler = CustomSampler(data[0]["y_train"])
     dataloader = DataLoader(
