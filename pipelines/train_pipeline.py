@@ -311,11 +311,11 @@ def train_mobilenet(
                 for param in layer.parameters():
                     param.requires_grad = True
 
-        for param in model.fc.parameters():
+        for param in model.classifier.parameters():
             param.requires_grad = True
 
-        num_ftrs = model.fc.in_features
-        model.fc = nn.Linear(num_ftrs, 2)
+        num_ftrs = model.classifier.in_features
+        model.classifier = nn.Linear(num_ftrs, 2)
 
         model = model.to(device)
 
