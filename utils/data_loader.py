@@ -10,7 +10,6 @@ from sklearn.model_selection import StratifiedKFold, train_test_split
 
 def gen_dataframe(root_dir):
     if not os.path.isdir(root_dir):
-        print(f"Error: {root_dir} is not a directory")
         return
     map_result = {"path": [], "label": []}
     class_names = os.listdir(root_dir)
