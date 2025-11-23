@@ -30,7 +30,12 @@ parser.add_argument(
     nargs="?",
 )
 
-parser.add_argument("--batch-size", type=int, default=32, help="Batch Size")
+parser.add_argument(
+    "--batch-size",
+    type=int,
+    default=32,
+    help="Batch Size",
+)
 
 parser.add_argument(
     "--dataset",
@@ -46,7 +51,12 @@ parser.add_argument(
     default="chest_xray",
 )
 
-parser.add_argument("--epochs", type=int, default=100, help="Training Epochs")
+parser.add_argument(
+    "--epochs",
+    type=int,
+    default=100,
+    help="Training Epochs",
+)
 
 args = parser.parse_args()
 
@@ -68,18 +78,16 @@ def main():
             os.path.join(output_path, f"fold_{fold}.pt"),
             dataset_path,
             args.model,
-            args.layers,
             args.batch_size,
-            prefix="same_domain_",
+            "same_domain_",
         )
     for fold in range(args.folds if args.folds is not None else 1):
         test_pipeline(
             os.path.join(output_path, f"fold_{fold}.pt"),
             cross_dataset_path,
             args.model,
-            args.layers,
             args.batch_size,
-            prefix="cross_domain_",
+            "cross_domain_",
         )
 
 
