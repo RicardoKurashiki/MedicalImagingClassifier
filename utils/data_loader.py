@@ -32,7 +32,7 @@ def load_data(path, n_splits=None, transform=None, val_transform=None, training=
         test_labels = df["label"].values
         return {0: {"X_test": test_dataset, "y_test": test_labels}}
     else:
-        if n_splits is not None:
+        if n_splits is not None and n_splits > 0:
             kf = StratifiedKFold(n_splits=n_splits)
             map_result = {}
             for fold, (train_idx, val_idx) in enumerate(kf.split(df, y=labels)):

@@ -154,7 +154,10 @@ def train_densenet(
     )
 
     for fold in data.keys():
-        print(f"Training fold {fold + 1} of {kfolds}")
+        if kfolds > 0:
+            print(f"Training fold {fold + 1} of {kfolds}")
+        else:
+            print("Training on all data")
 
         fold_data = data[fold]
 
