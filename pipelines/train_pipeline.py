@@ -23,6 +23,8 @@ device = (
 )
 print(f"Using {device} device")
 
+EARLY_STOPPING_PATIENCE = 10
+
 
 def get_memory_usage():
     metrics = {}
@@ -97,6 +99,8 @@ def train_model(
         print(f"Saving best model to {best_model_params_path}")
         torch.save(model.state_dict(), best_model_params_path)
         best_acc = 0.0
+        best_val_loss = float("inf")
+        patience_counter = 0
 
         history = {"train_loss": [], "train_acc": [], "val_loss": [], "val_acc": []}
 
@@ -208,6 +212,22 @@ def train_model(
                     best_acc = epoch_acc
                     torch.save(model.state_dict(), best_model_params_path)
                     print(f"Best {phase} acc: {best_acc:.4f}")
+
+                if phase == "val":
+                    if epoch_loss < best_val_loss:
+                        past_loss = best_val_loss
+                        best_val_loss = epoch_loss
+                        patience_counter = 0
+                        print(
+                            f"Val loss improved from {past_loss:.4f} to {best_val_loss:.4f}"
+                        )
+                    else:
+                        patience_counter += 1
+                        print(
+                            f"Val loss did not improve from {best_val_loss:.4f} - Patience: {patience_counter}"
+                        )
+                        if patience_counter >= EARLY_STOPPING_PATIENCE:
+                            break
 
             epoch_time = time.time() - epoch_start
             metrics["epoch_times"].append({"epoch": epoch, "time_seconds": epoch_time})
@@ -348,6 +368,7 @@ def train_densenet(
             "training_history": history,
             "computational_metrics": metrics,
             "training_config": {
+                "model": "densenet",
                 "layers": layers,
                 "kfolds": kfolds,
                 "batch_size": batch_size,

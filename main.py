@@ -63,7 +63,7 @@ def main():
     )
 
     cross_dataset_path = os.path.join("../../datasets", args.cross)
-    for fold in range(args.folds):
+    for fold in range(args.folds if args.folds is not None else 1):
         test_pipeline(
             os.path.join(output_path, f"fold_{fold}.pt"),
             dataset_path,
@@ -72,7 +72,7 @@ def main():
             args.batch_size,
             prefix="same_domain_",
         )
-    for fold in range(args.folds):
+    for fold in range(args.folds if args.folds is not None else 1):
         test_pipeline(
             os.path.join(output_path, f"fold_{fold}.pt"),
             cross_dataset_path,
