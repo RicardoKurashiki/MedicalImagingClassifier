@@ -12,6 +12,7 @@ from torchvision.models import resnet50, ResNet50_Weights
 from torchvision.models import densenet121, DenseNet121_Weights
 from torchvision import transforms
 from tempfile import TemporaryDirectory
+from tqdm import tqdm
 
 device = (
     torch.accelerator.current_accelerator().type
@@ -32,6 +33,8 @@ def train_model(
         torch.save(model.state_dict(), best_model_params_path)
         best_acc = 0.0
 
+        history = {"train_loss": [], "train_acc": [], "val_loss": [], "val_acc": []}
+
         for epoch in range(num_epochs):
             print(f"Epoch {epoch}/{num_epochs}")
             print("-" * 10)
@@ -45,9 +48,14 @@ def train_model(
                 running_loss = 0.0
                 running_corrects = 0
 
-                for inputs, labels in dataloaders[phase]:
-                    print("Inputs:", inputs)
-                    print("Labels:", labels)
+                pbar = tqdm(
+                    dataloaders[phase],
+                    desc=f"{phase.capitalize():5s}",
+                    unit="batch",
+                    leave=False,
+                )
+
+                for inputs, labels in pbar:
                     inputs = inputs.to(device)
                     labels = labels.to(device)
 
@@ -65,14 +73,33 @@ def train_model(
                     running_loss += loss.item() * inputs.size(0)
                     running_corrects += torch.sum(preds == labels.data)
 
+                    batch_acc = torch.sum(preds == labels.data).double() / inputs.size(
+                        0
+                    )
+                    pbar.set_postfix(
+                        {"loss": f"{loss.item():.4f}", "acc": f"{batch_acc:.4f}"}
+                    )
+
                 epoch_loss = running_loss / dataset_sizes[phase]
                 epoch_acc = running_corrects.double() / dataset_sizes[phase]
 
                 print(f"{phase} Loss: {epoch_loss:.4f} Acc: {epoch_acc:.4f}")
 
+                if phase == "train":
+                    history["train_loss"].append(epoch_loss)
+                    history["train_acc"].append(epoch_acc.item())
+                else:
+                    history["val_loss"].append(epoch_loss)
+                    history["val_acc"].append(epoch_acc.item())
+
+                print(
+                    f"{phase.capitalize():5s} - Loss: {epoch_loss:.4f} | Acc: {epoch_acc:.4f}"
+                )
+
                 if phase == "val" and epoch_acc > best_acc:
                     best_acc = epoch_acc
                     torch.save(model.state_dict(), best_model_params_path)
+                    print(f"Best {phase} acc: {best_acc:.4f}")
 
             print()
 
@@ -84,7 +111,7 @@ def train_model(
 
         model.load_state_dict(torch.load(best_model_params_path, weights_only=True))
 
-    return model
+    return model, history
 
 
 def unfreeze_layers(model, n_layers):
