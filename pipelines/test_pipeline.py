@@ -214,7 +214,6 @@ def run(model_path, cross_dataset_path, pretrained_model, batch_size=32, prefix=
 
     report = classification_report(results, class_names=["NORMAL", "PNEUMONIA"])
 
-    print(results)
     print(report)
     print(results["confusion_matrix"])
 
@@ -223,7 +222,9 @@ def run(model_path, cross_dataset_path, pretrained_model, batch_size=32, prefix=
     fold_name = os.path.splitext(model_filename)[0]
     cross_dataset_name = os.path.basename(os.path.normpath(cross_dataset_path))
     json_filename = f"{prefix}{fold_name}_test_{cross_dataset_name}_results.json"
+    print(json_filename)
     json_path = os.path.join(model_dir, json_filename)
+    print(json_path)
 
     all_results = {
         "test_results": results,

@@ -63,14 +63,16 @@ args = parser.parse_args()
 
 def main():
     dataset_path = os.path.join("../../datasets", args.dataset)
-    output_path = train_pipeline(
-        dataset_path,
-        args.model,
-        args.layers,
-        args.folds,
-        args.batch_size,
-        args.epochs,
-    )
+    # output_path = train_pipeline(
+    #     dataset_path,
+    #     args.model,
+    #     args.layers,
+    #     args.folds,
+    #     args.batch_size,
+    #     args.epochs,
+    # )
+
+    output_path = "./results/densenet/layers_1/kfolds_None/batch_size_32/epochs_1/"
 
     cross_dataset_path = os.path.join("../../datasets", args.cross)
     for fold in range(args.folds if args.folds is not None else 1):
