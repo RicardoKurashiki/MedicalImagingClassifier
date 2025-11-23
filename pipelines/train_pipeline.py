@@ -15,6 +15,7 @@ from tempfile import TemporaryDirectory
 from utils import BatchSampler, load_data
 from torchvision.models import resnet50, ResNet50_Weights
 from torchvision.models import densenet121, DenseNet121_Weights
+from torchvision.models import mobilenet_v3_large, MobileNet_V3_Large_Weights
 
 device = (
     torch.accelerator.current_accelerator().type
@@ -272,6 +273,230 @@ def get_model_params(model):
     print()
 
 
+def train_mobilenet(
+    dataset_path,
+    layers,
+    kfolds,
+    batch_size,
+    epochs,
+    output_path="./results/",
+):
+    weights = MobileNet_V3_Large_Weights.IMAGENET1K_V2
+    transform = weights.transforms()
+    val_transform = weights.transforms()
+
+    data = load_data(
+        os.path.join(dataset_path, "train/"),
+        n_splits=kfolds,
+        transform=transform,
+        val_transform=val_transform,
+    )
+
+    for fold in data.keys():
+        if kfolds is not None and kfolds > 0:
+            print(f"Training fold {fold + 1} of {kfolds}")
+        else:
+            print("Training on all data")
+
+        model = mobilenet_v3_large(weights=weights)
+
+        for param in model.parameters():
+            param.requires_grad = False
+
+        if layers is not None and layers > 0:
+            print(f"Unfreezing {layers} layers")
+            features = list(model.features.children())
+            layers_to_unfreeze = features[-layers:]
+            for layer in layers_to_unfreeze:
+                for param in layer.parameters():
+                    param.requires_grad = True
+
+        for param in model.fc.parameters():
+            param.requires_grad = True
+
+        num_ftrs = model.fc.in_features
+        model.fc = nn.Linear(num_ftrs, 2)
+
+        model = model.to(device)
+
+        criterion = nn.CrossEntropyLoss()
+        optimizer = optim.Adam(
+            filter(lambda p: p.requires_grad, model.parameters()), lr=1e-4
+        )
+
+        get_model_params(model)
+
+        fold_data = data[fold]
+
+        train_dataset = fold_data["X_train"]
+        train_labels = fold_data["y_train"]
+        val_dataset = fold_data["X_val"]
+
+        train_sampler = BatchSampler(train_labels, batch_size)
+        train_loader = DataLoader(
+            train_dataset,
+            batch_sampler=train_sampler,
+            pin_memory=True,
+            num_workers=4,
+        )
+
+        val_loader = DataLoader(
+            val_dataset,
+            batch_size=batch_size,
+            pin_memory=True,
+            num_workers=4,
+        )
+
+        dataloaders = {
+            "train": train_loader,
+            "val": val_loader,
+        }
+
+        model, history, metrics = train_model(
+            model,
+            dataloaders,
+            criterion,
+            optimizer,
+            epochs,
+        )
+
+        print("Salvando modelo...")
+        os.makedirs(output_path, exist_ok=True)
+        torch.save(model, os.path.join(output_path, f"fold_{fold}.pt"))
+
+        print("Salvando métricas...")
+        metrics_file = os.path.join(output_path, f"fold_{fold}_metrics.json")
+        all_metrics = {
+            "training_history": history,
+            "computational_metrics": metrics,
+            "training_config": {
+                "model": "resnet",
+                "layers": layers,
+                "kfolds": kfolds,
+                "batch_size": batch_size,
+                "epochs": epochs,
+                "device": str(device),
+            },
+        }
+
+        with open(metrics_file, "w") as f:
+            json.dump(all_metrics, f, indent=2)
+
+        print(f"Métricas salvas em {metrics_file}")
+
+
+def train_resnet(
+    dataset_path,
+    layers,
+    kfolds,
+    batch_size,
+    epochs,
+    output_path="./results/",
+):
+    weights = ResNet50_Weights.IMAGENET1K_V2
+    transform = weights.transforms()
+    val_transform = weights.transforms()
+
+    data = load_data(
+        os.path.join(dataset_path, "train/"),
+        n_splits=kfolds,
+        transform=transform,
+        val_transform=val_transform,
+    )
+
+    for fold in data.keys():
+        if kfolds is not None and kfolds > 0:
+            print(f"Training fold {fold + 1} of {kfolds}")
+        else:
+            print("Training on all data")
+
+        model = resnet50(weights=weights)
+
+        for param in model.parameters():
+            param.requires_grad = False
+
+        if layers is not None and layers > 0:
+            print(f"Unfreezing {layers} layers")
+            features = list(model.features.children())
+            layers_to_unfreeze = features[-layers:]
+            for layer in layers_to_unfreeze:
+                for param in layer.parameters():
+                    param.requires_grad = True
+
+        for param in model.fc.parameters():
+            param.requires_grad = True
+
+        num_ftrs = model.fc.in_features
+        model.fc = nn.Linear(num_ftrs, 2)
+
+        model = model.to(device)
+
+        criterion = nn.CrossEntropyLoss()
+        optimizer = optim.Adam(
+            filter(lambda p: p.requires_grad, model.parameters()), lr=1e-4
+        )
+
+        get_model_params(model)
+
+        fold_data = data[fold]
+
+        train_dataset = fold_data["X_train"]
+        train_labels = fold_data["y_train"]
+        val_dataset = fold_data["X_val"]
+
+        train_sampler = BatchSampler(train_labels, batch_size)
+        train_loader = DataLoader(
+            train_dataset,
+            batch_sampler=train_sampler,
+            pin_memory=True,
+            num_workers=4,
+        )
+
+        val_loader = DataLoader(
+            val_dataset,
+            batch_size=batch_size,
+            pin_memory=True,
+            num_workers=4,
+        )
+
+        dataloaders = {
+            "train": train_loader,
+            "val": val_loader,
+        }
+
+        model, history, metrics = train_model(
+            model,
+            dataloaders,
+            criterion,
+            optimizer,
+            epochs,
+        )
+
+        print("Salvando modelo...")
+        os.makedirs(output_path, exist_ok=True)
+        torch.save(model, os.path.join(output_path, f"fold_{fold}.pt"))
+
+        print("Salvando métricas...")
+        metrics_file = os.path.join(output_path, f"fold_{fold}_metrics.json")
+        all_metrics = {
+            "training_history": history,
+            "computational_metrics": metrics,
+            "training_config": {
+                "model": "resnet",
+                "layers": layers,
+                "kfolds": kfolds,
+                "batch_size": batch_size,
+                "epochs": epochs,
+                "device": str(device),
+            },
+        }
+
+        with open(metrics_file, "w") as f:
+            json.dump(all_metrics, f, indent=2)
+
+        print(f"Métricas salvas em {metrics_file}")
+
+
 def train_densenet(
     dataset_path,
     layers,
@@ -399,8 +624,28 @@ def run(
         f"batch_size_{batch_size}",
         f"epochs_{epochs}/",
     )
+    if pretrained_model == "resnet":
+        train_resnet(
+            dataset_path,
+            trainable_layers,
+            kfolds,
+            batch_size,
+            epochs,
+            output_path=output_path,
+        )
+        return output_path
     if pretrained_model == "densenet":
         train_densenet(
+            dataset_path,
+            trainable_layers,
+            kfolds,
+            batch_size,
+            epochs,
+            output_path=output_path,
+        )
+        return output_path
+    if pretrained_model == "mobilenet":
+        train_mobilenet(
             dataset_path,
             trainable_layers,
             kfolds,
