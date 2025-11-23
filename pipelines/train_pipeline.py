@@ -33,7 +33,7 @@ def train_model(
         best_acc = 0.0
 
         for epoch in range(num_epochs):
-            print(f"Epoch {epoch}/{num_epochs - 1}")
+            print(f"Epoch {epoch}/{num_epochs}")
             print("-" * 10)
 
             for phase in ["train", "val"]:
