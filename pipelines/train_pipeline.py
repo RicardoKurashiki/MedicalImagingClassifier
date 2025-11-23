@@ -27,11 +27,11 @@ print(f"Using {device} device")
 def get_memory_usage():
     metrics = {}
 
-    # Memória CPU
+    # CPU
     process = psutil.Process(os.getpid())
     metrics["cpu_memory_mb"] = process.memory_info().rss / 1024 / 1024
 
-    # Memória GPU
+    # GPU
     if torch.cuda.is_available():
         metrics["gpu_memory_allocated_mb"] = torch.cuda.memory_allocated() / 1024 / 1024
         metrics["gpu_memory_reserved_mb"] = torch.cuda.memory_reserved() / 1024 / 1024
@@ -310,7 +310,6 @@ def train_densenet(
         train_dataset = fold_data["X_train"]
         train_labels = fold_data["y_train"]
         val_dataset = fold_data["X_val"]
-        val_labels = fold_data["y_val"]
 
         train_sampler = BatchSampler(train_labels, batch_size)
         train_loader = DataLoader(
@@ -341,7 +340,7 @@ def train_densenet(
 
         print("Salvando modelo...")
         os.makedirs(output_path, exist_ok=True)
-        torch.save(model.state_dict(), os.path.join(output_path, f"fold_{fold}.pt"))
+        torch.save(model, os.path.join(output_path, f"fold_{fold}.pt"))
 
         print("Salvando métricas...")
         metrics_file = os.path.join(output_path, f"fold_{fold}_metrics.json")
@@ -388,4 +387,4 @@ def run(
             epochs,
             output_path=output_path,
         )
-        return
+        return output_path
