@@ -13,7 +13,6 @@ from torchvision.models import densenet121, DenseNet121_Weights
 from torchvision import transforms
 from tempfile import TemporaryDirectory
 from tqdm import tqdm
-from torchinfo import summary
 
 device = (
     torch.accelerator.current_accelerator().type
@@ -24,7 +23,11 @@ print(f"Using {device} device")
 
 
 def train_model(
-    model, dataloaders, dataset_sizes, criterion, optimizer, num_epochs=100
+    model,
+    dataloaders,
+    criterion,
+    optimizer,
+    num_epochs=100,
 ):
     since = time.time()
 
@@ -118,6 +121,7 @@ def train_model(
 
 
 def get_model_params(model):
+    print("Model parameters:")
     trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     total_params = sum(p.numel() for p in model.parameters())
 
@@ -129,38 +133,18 @@ def get_model_params(model):
     for name, param in model.named_parameters():
         if param.requires_grad:
             print(f"  {name}: {param.shape}")
+    print()
 
 
 def train_densenet(
-    dataset_path, layers, kfolds, batch_size, epochs, output_path="./results/"
+    dataset_path,
+    layers,
+    kfolds,
+    batch_size,
+    epochs,
+    output_path="./results/",
 ):
     weights = DenseNet121_Weights.IMAGENET1K_V1
-    model = densenet121(weights=weights)
-
-    for param in model.parameters():
-        param.requires_grad = False
-
-    if layers > 0:
-        print(f"Unfreezing {layers} layers")
-        features = list(model.features.children())
-        layers_to_unfreeze = features[-layers:]
-        for layer in layers_to_unfreeze:
-            for param in layer.parameters():
-                param.requires_grad = True
-
-    for param in model.classifier.parameters():
-        param.requires_grad = True
-
-    num_ftrs = model.classifier.in_features
-    model.classifier = nn.Linear(num_ftrs, 2)
-
-    model = model.to(device)
-
-    criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(
-        filter(lambda p: p.requires_grad, model.parameters()), lr=1e-4
-    )
-
     transform = weights.transforms()
     val_transform = weights.transforms()
 
@@ -176,6 +160,34 @@ def train_densenet(
             print(f"Training fold {fold + 1} of {kfolds}")
         else:
             print("Training on all data")
+
+        model = densenet121(weights=weights)
+
+        for param in model.parameters():
+            param.requires_grad = False
+
+        if layers > 0:
+            print(f"Unfreezing {layers} layers")
+            features = list(model.features.children())
+            layers_to_unfreeze = features[-layers:]
+            for layer in layers_to_unfreeze:
+                for param in layer.parameters():
+                    param.requires_grad = True
+
+        for param in model.classifier.parameters():
+            param.requires_grad = True
+
+        num_ftrs = model.classifier.in_features
+        model.classifier = nn.Linear(num_ftrs, 2)
+
+        model = model.to(device)
+
+        criterion = nn.CrossEntropyLoss()
+        optimizer = optim.Adam(
+            filter(lambda p: p.requires_grad, model.parameters()), lr=1e-4
+        )
+
+        get_model_params(model)
 
         fold_data = data[fold]
 
@@ -203,18 +215,9 @@ def train_densenet(
             "val": val_loader,
         }
 
-        dataset_sizes = {
-            "train": len(train_labels),
-            "val": len(val_labels),
-        }
-
-        summary(model, input_size=(3, 224, 224))
-        get_model_params(model)
-
         model, history = train_model(
             model,
             dataloaders,
-            dataset_sizes,
             criterion,
             optimizer,
             epochs,
