@@ -114,7 +114,7 @@ def train_densenet(
         filter(lambda p: p.requires_grad, model.parameters()), lr=1e-4
     )
 
-    transform = weights.transforms
+    transform = weights.transforms()
 
     data = load_data(
         os.path.join(dataset_path, "train/"),
