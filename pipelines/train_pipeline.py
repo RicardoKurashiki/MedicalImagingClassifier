@@ -13,6 +13,7 @@ from torchvision.models import densenet121, DenseNet121_Weights
 from torchvision import transforms
 from tempfile import TemporaryDirectory
 from tqdm import tqdm
+from torchinfo import summary
 
 device = (
     torch.accelerator.current_accelerator().type
@@ -47,6 +48,7 @@ def train_model(
 
                 running_loss = 0.0
                 running_corrects = 0
+                total_samples_processed = 0
 
                 pbar = tqdm(
                     dataloaders[phase],
@@ -70,6 +72,7 @@ def train_model(
                             loss.backward()
                             optimizer.step()
 
+                    total_samples_processed += inputs.size(0)
                     running_loss += loss.item() * inputs.size(0)
                     running_corrects += torch.sum(preds == labels.data)
 
@@ -80,8 +83,8 @@ def train_model(
                         {"loss": f"{loss.item():.4f}", "acc": f"{batch_acc:.4f}"}
                     )
 
-                epoch_loss = running_loss / dataset_sizes[phase]
-                epoch_acc = running_corrects.double() / dataset_sizes[phase]
+                epoch_loss = running_loss / total_samples_processed
+                epoch_acc = running_corrects.double() / total_samples_processed
 
                 print(f"{phase} Loss: {epoch_loss:.4f} Acc: {epoch_acc:.4f}")
 
@@ -114,12 +117,18 @@ def train_model(
     return model, history
 
 
-def unfreeze_layers(model, n_layers):
-    modules = [m for m in model.modules() if len(list(m.parameters())) > 0]
-    modules_to_train = modules[-n_layers:]
-    for module in modules_to_train:
-        for param in module.parameters():
-            param.requires_grad = True
+def get_model_params(model):
+    trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    total_params = sum(p.numel() for p in model.parameters())
+
+    print(f"Trainable params: {trainable_params:,}")
+    print(f"Total params: {total_params:,}")
+    print(f"Trainable: {100 * trainable_params / total_params:.2f}%")
+
+    print("\nTrainable layers:")
+    for name, param in model.named_parameters():
+        if param.requires_grad:
+            print(f"  {name}: {param.shape}")
 
 
 def train_densenet(
@@ -131,7 +140,16 @@ def train_densenet(
     for param in model.parameters():
         param.requires_grad = False
 
-    unfreeze_layers(model, layers)
+    if layers > 0:
+        print(f"Unfreezing {layers} layers")
+        features = list(model.features.children())
+        layers_to_unfreeze = features[-layers:]
+        for layer in layers_to_unfreeze:
+            for param in layer.parameters():
+                param.requires_grad = True
+
+    for param in model.classifier.parameters():
+        param.requires_grad = True
 
     num_ftrs = model.classifier.in_features
     model.classifier = nn.Linear(num_ftrs, 2)
@@ -190,7 +208,10 @@ def train_densenet(
             "val": len(val_labels),
         }
 
-        model = train_model(
+        summary(model, input_size=(3, 224, 224))
+        get_model_params(model)
+
+        model, history = train_model(
             model,
             dataloaders,
             dataset_sizes,
