@@ -102,10 +102,14 @@ def train_model(
         best_acc = 0.0
         best_val_loss = float("inf")
         patience_counter = 0
+        early_stop = False
 
         history = {"train_loss": [], "train_acc": [], "val_loss": [], "val_acc": []}
 
         for epoch in range(num_epochs):
+            if early_stop:
+                print(f"Early stopping triggered at epoch {epoch}")
+                break
             epoch_start = time.time()
             print(f"Epoch {epoch}/{num_epochs}")
             print("-" * 10)
@@ -149,7 +153,6 @@ def train_model(
                     batch_time = time.time() - batch_start
                     batch_times.append(batch_time)
 
-                    batch_size = inputs.size(0)
                     total_samples_processed += inputs.size(0)
                     running_loss += loss.item() * inputs.size(0)
                     running_corrects += torch.sum(preds == labels.data)
@@ -209,18 +212,18 @@ def train_model(
                     f"{phase.capitalize():5s} - Loss: {epoch_loss:.4f} | Acc: {epoch_acc:.4f}"
                 )
 
-                if phase == "val" and epoch_acc > best_acc:
-                    best_acc = epoch_acc
-                    torch.save(model.state_dict(), best_model_params_path)
-                    print(f"Best {phase} acc: {best_acc:.4f}")
-
                 if phase == "val":
+                    if epoch_acc > best_acc:
+                        best_acc = epoch_acc
+                        print(f"Best {phase} acc: {best_acc:.4f}")
+
                     if epoch_loss < best_val_loss:
                         past_loss = best_val_loss
                         best_val_loss = epoch_loss
                         patience_counter = 0
+                        torch.save(model.state_dict(), best_model_params_path)
                         print(
-                            f"Val loss improved from {past_loss:.4f} to {best_val_loss:.4f}"
+                            f"Val loss improved from {past_loss:.4f} to {best_val_loss:.4f} - Saving best model"
                         )
                     else:
                         patience_counter += 1
@@ -228,7 +231,15 @@ def train_model(
                             f"Val loss did not improve from {best_val_loss:.4f} - Patience: {patience_counter}"
                         )
                         if patience_counter >= EARLY_STOPPING_PATIENCE:
+                            early_stop = True
+                            print(
+                                f"Early stopping triggered! Patience counter reached {patience_counter}"
+                            )
                             break
+
+            # Verificar early stopping após o loop de fases
+            if early_stop:
+                break
 
             epoch_time = time.time() - epoch_start
             metrics["epoch_times"].append({"epoch": epoch, "time_seconds": epoch_time})
