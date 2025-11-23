@@ -17,22 +17,31 @@ parser.add_argument(
 parser.add_argument(
     "--layers",
     type=int,
-    choices=("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"),
+    choices=(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
     help="Trainable Layers",
-    default="5",
+    nargs='?',
 )
 
 parser.add_argument(
-    "--folds", type=int, choices=("3", "5", "7", "10"), help="KFolds Qtd", default="5"
+    "--folds",
+    type=int,
+    choices=(3, 5, 7, 10),
+    help="KFolds Qtd",
+    nargs='?',
 )
 
-parser.add_argument("--batch-size", type=int, default="32", help="Batch Size")
+parser.add_argument(
+        "--batch-size",
+        type=int,
+        default=32,
+        help="Batch Size"
+        )
 
 parser.add_argument(
     "--dataset", choices=("chest_xray", "CXR8"), help="Training Dataset", default="CXR8"
 )
 
-parser.add_argument("--epochs", type=int, default="100", help="Training Epochs")
+parser.add_argument("--epochs", type=int, default=100, help="Training Epochs")
 
 args = parser.parse_args()
 

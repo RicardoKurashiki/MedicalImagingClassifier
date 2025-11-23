@@ -156,7 +156,7 @@ def train_densenet(
     )
 
     for fold in data.keys():
-        if kfolds > 0:
+        if kfolds != None and kfolds > 0:
             print(f"Training fold {fold + 1} of {kfolds}")
         else:
             print("Training on all data")
@@ -166,7 +166,7 @@ def train_densenet(
         for param in model.parameters():
             param.requires_grad = False
 
-        if layers > 0:
+        if layers != None and layers > 0:
             print(f"Unfreezing {layers} layers")
             features = list(model.features.children())
             layers_to_unfreeze = features[-layers:]
