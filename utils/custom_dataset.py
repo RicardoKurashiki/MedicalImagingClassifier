@@ -9,6 +9,9 @@ class CustomDataset(Dataset):
         self.labels = self.dataframe["label"].values
         self.transform = transform
 
+        self.unique_labels = sorted(self.dataframe["label"].unique())
+        self.label_to_idx = {label: idx for idx, label in enumerate(self.unique_labels)}
+
     def __len__(self):
         return len(self.labels)
 
@@ -24,6 +27,7 @@ class CustomDataset(Dataset):
         img_path = str(self.img_paths[idx])
         image = Image.open(img_path).convert("RGB")
         label = self.labels[idx]
+        label = self.label_to_idx[label]
         if self.transform:
             image = self.transform(image)
         return image, label
