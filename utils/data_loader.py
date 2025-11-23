@@ -93,6 +93,9 @@ def visualise_dataloader(dl, id_to_label=None):
 
         idxs_seen.extend(idxs)
 
+        print(class_ids)
+        print(class_counts)
+
         if len(class_ids) == 2:
             class_0_batch_counts.append(class_counts[0])
             class_1_batch_counts.append(class_counts[1])
