@@ -91,8 +91,8 @@ def evaluate_model(
 
             total_samples += inputs.size(0)
 
-            all_preds.extend(preds.cpu().numpy())
-            all_labels.extend(labels.cpu().numpy())
+            all_preds.extend(preds.cpu().numpy().tolist())
+            all_labels.extend(labels.cpu().numpy().tolist())
 
     conf_matrix = confusion_matrix(all_labels, all_preds, num_classes)
 
@@ -110,16 +110,18 @@ def evaluate_model(
 
     results = {
         "accuracy": accuracy,
-        "total_samples": total_samples,
-        "correct_predictions": correct_predictions,
-        "confusion_matrix": conf_matrix.numpy().tolist(),
+        "total_samples": int(total_samples),
+        "correct_predictions": int(correct_predictions),
+        "confusion_matrix": [
+            [int(x) for x in row] for row in conf_matrix.numpy().tolist()
+        ],
         "class_metrics": class_metrics,
-        "predictions": all_preds,
-        "labels": all_labels,
+        "predictions": [int(x) for x in all_preds],
+        "labels": [int(x) for x in all_labels],
     }
 
     if avg_loss is not None:
-        results["loss"] = avg_loss
+        results["loss"] = float(avg_loss)
 
     return results
 
