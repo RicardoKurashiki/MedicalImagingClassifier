@@ -144,11 +144,13 @@ def train_densenet(
     )
 
     transform = weights.transforms()
+    val_transform = weights.transforms()
 
     data = load_data(
         os.path.join(dataset_path, "train/"),
         n_splits=kfolds,
         transform=transform,
+        val_transform=val_transform,
     )
 
     for fold in data.keys():
