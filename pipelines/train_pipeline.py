@@ -135,7 +135,7 @@ def train_densenet(
         train_sampler = BatchSampler(train_labels, batch_size)
         train_loader = DataLoader(
             train_dataset,
-            sampler=train_sampler,
+            batch_sampler=train_sampler,
             pin_memory=True,
             num_workers=4,
         )
