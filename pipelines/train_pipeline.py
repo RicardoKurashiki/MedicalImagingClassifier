@@ -46,6 +46,8 @@ def train_model(
                 running_corrects = 0
 
                 for inputs, labels in dataloaders[phase]:
+                    print("Inputs:", inputs)
+                    print("Labels:", labels)
                     inputs = inputs.to(device)
                     labels = labels.to(device)
 
