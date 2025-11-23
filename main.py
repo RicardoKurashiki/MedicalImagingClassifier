@@ -66,10 +66,20 @@ def main():
     for fold in range(args.folds):
         test_pipeline(
             os.path.join(output_path, f"fold_{fold}.pt"),
+            dataset_path,
+            args.model,
+            args.layers,
+            args.batch_size,
+            prefix="same_domain_",
+        )
+    for fold in range(args.folds):
+        test_pipeline(
+            os.path.join(output_path, f"fold_{fold}.pt"),
             cross_dataset_path,
             args.model,
             args.layers,
             args.batch_size,
+            prefix="cross_domain_",
         )
 
 

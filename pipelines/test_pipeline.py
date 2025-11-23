@@ -180,7 +180,7 @@ def classification_report(results, class_names=None):
     return report
 
 
-def run(model_path, cross_dataset_path, pretrained_model, batch_size=32):
+def run(model_path, cross_dataset_path, pretrained_model, batch_size=32, prefix=""):
     model = load_densenet(model_path)
 
     print(f"Carregando dataset de teste de {cross_dataset_path}")
@@ -222,7 +222,7 @@ def run(model_path, cross_dataset_path, pretrained_model, batch_size=32):
     model_filename = os.path.basename(model_path)
     fold_name = os.path.splitext(model_filename)[0]
     cross_dataset_name = os.path.basename(os.path.normpath(cross_dataset_path))
-    json_filename = f"{fold_name}_test_{cross_dataset_name}_results.json"
+    json_filename = f"{prefix}{fold_name}_test_{cross_dataset_name}_results.json"
     json_path = os.path.join(model_dir, json_filename)
 
     all_results = {
