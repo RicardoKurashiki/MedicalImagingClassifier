@@ -4,10 +4,10 @@ import os
 import pandas as pd
 import numpy as np
 
-from utils.custom_dataset import CustomDataset
+from custom_dataset import CustomDataset
 from sklearn.model_selection import StratifiedKFold, train_test_split
 from torch.utils.data import DataLoader
-from utils.custom_sampler import CustomSampler
+from custom_sampler import CustomSampler
 
 
 def gen_dataframe(root_dir):
@@ -113,7 +113,7 @@ if __name__ == "__main__":
     for fold in data.keys():
         print(f"Fold {fold + 1}")
         print("Train:")
-        print(data[fold]["y_train"].value_counts(normalize=True))
+        print(pd.DataFrame(data=data[fold]["y_train"]).value_counts(normalize=True))
         print("Val:")
         print(data[fold]["y_val"].value_counts(normalize=True))
         print("-" * 10)
