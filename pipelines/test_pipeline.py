@@ -193,7 +193,7 @@ def run(model_path, cross_dataset_path, pretrained_model, batch_size=32, prefix=
         transform = weights.transforms()
 
     test_data = load_data(
-        cross_dataset_path,
+        os.path.join(cross_dataset_path, "test/"),
         transform=transform,
         training=False,
     )
