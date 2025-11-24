@@ -27,13 +27,11 @@ class CustomSampler(Sampler):
         for _ in range(self.K):
             batch = []
             for c in self.classes:
-                # Validação para casos onde a classe majoritária não tem o número de imagens necessárias para o batch
-                # TODO: Talvez ele faça com que alguns dados da classe minoritária não sejam usados por conta de sempre serem reiniciadas
-                # TODO: Uma maneira é talvez criar "batches" da classe minoritária para daí sim refazer esses batches depois (verificar)
-                if len(S_work[c]) < self.m_per_class:  # Se não for a classe majoritária
-                    S_work[c] = list(self.S[c])  # Reinicia a lista de imagens da classe
-                    np.random.shuffle(S_work[c])  # Embaralha a lista novamente
+                if len(S_work[c]) < self.m_per_class:
+                    S_work[c] = list(self.S[c])
+                    np.random.shuffle(S_work[c])
                 chosen = S_work[c][: self.m_per_class]
-                S_work[c] = S_work[c][self.m_per_class :]
                 batch.extend(chosen)
+                if len(S_work[c]) == self.c_max:
+                    S_work[c] = [s for s in self.S[c] if s not in chosen]
             yield batch
