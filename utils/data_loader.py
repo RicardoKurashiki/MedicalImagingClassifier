@@ -4,10 +4,10 @@ import os
 import pandas as pd
 import numpy as np
 
-from custom_dataset import CustomDataset
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader
-from custom_sampler import CustomSampler
+from .custom_dataset import CustomDataset
+from .custom_sampler import CustomSampler
 from torchvision import transforms
 
 
