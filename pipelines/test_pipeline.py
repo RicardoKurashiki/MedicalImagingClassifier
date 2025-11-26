@@ -206,7 +206,9 @@ def run(model_path, cross_dataset_path, pretrained_model, batch_size=32, prefix=
         test_dataset,
         batch_size=batch_size,
         pin_memory=True,
-        num_workers=4,
+        num_workers=2,
+        persistent_workers=True,
+        prefetch_factor=2,
     )
 
     print(f"Total de amostras de teste: {len(test_dataset)}")

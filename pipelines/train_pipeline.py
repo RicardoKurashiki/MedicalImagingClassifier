@@ -176,8 +176,8 @@ def train_model(
 
                 for inputs, labels in pbar:
                     batch_start = time.time()
-                    inputs = inputs.to(device)
-                    labels = labels.to(device)
+                    inputs = inputs.to(device, non_blocking=True)
+                    labels = labels.to(device, non_blocking=True)
 
                     optimizer.zero_grad()
 
@@ -189,6 +189,8 @@ def train_model(
                         if phase == "train":
                             loss.backward()
                             optimizer.step()
+                            if torch.cuda.is_available():
+                                torch.cuda.empty_cache()
 
                     batch_time = time.time() - batch_start
                     batch_times.append(batch_time)
@@ -287,6 +289,8 @@ def train_model(
             # Coletar memória após cada época
             epoch_memory = get_memory_usage()
             metrics["memory_usage"].append({"epoch": epoch, **epoch_memory})
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
             print()
 
         time_elapsed = time.time() - since
@@ -353,13 +357,17 @@ def train_densenet(
         train_dataset,
         batch_sampler=train_sampler,
         pin_memory=True,
-        num_workers=4,
+        num_workers=2,
+        persistent_workers=True,
+        prefetch_factor=2,
     )
     val_loader = DataLoader(
         val_dataset,
         batch_size=batch_size,
         pin_memory=True,
-        num_workers=4,
+        num_workers=2,
+        persistent_workers=True,
+        prefetch_factor=2,
     )
 
     dataloaders = {
