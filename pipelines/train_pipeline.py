@@ -315,14 +315,32 @@ def train_densenet(
     output_path="./results/",
 ):
     weights = DenseNet121_Weights.IMAGENET1K_V1
+    transform = weights.transforms()
+    val_transform = weights.transforms()
+
+    data = load_data(
+        os.path.join(dataset_path, "train/"),
+        transform=transform,
+        val_transform=val_transform,
+    )
+
+    train_dataset = data["train"]
+    val_dataset = data["val"]
+
+    n_classes = len(train_dataset.labels.unique())
 
     model = densenet121(weights=weights)
 
+    num_ftrs = model.classifier.in_features
+    model.classifier = nn.Sequential(
+        nn.Linear(num_ftrs, 512),
+        nn.ReLU(inplace=True),
+        nn.Dropout(0.2),
+        nn.Linear(512, n_classes),
+    )
+
     unfreeze_layers(model, layers)
     summary(model)
-
-    # num_ftrs = model.classifier.in_features
-    # model.classifier = nn.Linear(num_ftrs, 2)
 
     # model = model.to(device)
 
@@ -330,18 +348,6 @@ def train_densenet(
     # optimizer = optim.Adam(
     #     filter(lambda p: p.requires_grad, model.parameters()), lr=1e-4
     # )
-
-    # transform = weights.transforms()
-    # val_transform = weights.transforms()
-
-    # data = load_data(
-    #     os.path.join(dataset_path, "train/"),
-    #     transform=transform,
-    #     val_transform=val_transform,
-    # )
-
-    # train_dataset = data["train"]
-    # val_dataset = data["val"]
 
     # train_sampler = BatchSampler(train_dataset, batch_size)
     # train_loader = DataLoader(train_dataset, batch_sampler=train_sampler)
