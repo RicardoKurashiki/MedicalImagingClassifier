@@ -62,6 +62,7 @@ def main():
         args.model,
         args.layers,
         args.batch_size,
+        args.dataset,
         args.epochs,
     )
 
