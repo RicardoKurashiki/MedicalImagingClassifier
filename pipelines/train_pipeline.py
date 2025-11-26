@@ -70,29 +70,27 @@ def get_model_size(model):
 
 def unfreeze_layers(model, n_layers):
     for p in model.parameters():
-        p.requires_grad = False 
+        p.requires_grad = False
 
-    if n_layers is None:
+    if n_layers is None or n_layers <= 0:
         return
 
-    conv_layers = []
+    indexed = [
+        (idx, name, module) for idx, (name, module) in enumerate(model.named_modules())
+    ]
+    convs = [
+        (idx, name, module)
+        for idx, name, module in indexed
+        if isinstance(module, nn.Conv2d)
+    ]
+    if len(convs) < n_layers:
+        raise ValueError("O modelo não contém camadas Conv2d suficientes.")
 
-    for name, module in model.named_modules():
-        if isinstance(module, nn.Conv2d):
-            conv_layers.append((name, module))
-
-    total = len(conv_layers)
-    idx = total - n_layers
-
-    if idx < 0:
-        raise ValueError("n_layers is greater than the number of convolutional layers.")
-
-
-
-    layers_to_unfreeze = conv_layers[idx:]
-    for _, layer in layers_to_unfreeze:
-        for p in layer.parameters():
-            p.requires_grad = True
+    conv_idx = convs[n_layers - 1][0]
+    for idx, _, module in indexed:
+        if idx >= conv_idx:
+            for p in module.parameters(recurse=False):
+                p.requires_grad = True
 
 
 def summary(model):
