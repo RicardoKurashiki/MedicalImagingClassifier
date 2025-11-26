@@ -69,7 +69,14 @@ def get_model_size(model):
 
 
 def unfreeze_layers(model, n_layers):
+    for p in model.parameters():
+        p.requires_grad = False 
+
+    if n_layers is None:
+        return
+
     conv_layers = []
+
     for name, module in model.named_modules():
         if isinstance(module, nn.Conv2d):
             conv_layers.append((name, module))
@@ -80,8 +87,7 @@ def unfreeze_layers(model, n_layers):
     if idx < 0:
         raise ValueError("n_layers is greater than the number of convolutional layers.")
 
-    for p in model.parameters():
-        p.requires_grad = False
+
 
     layers_to_unfreeze = conv_layers[idx:]
     for _, layer in layers_to_unfreeze:
