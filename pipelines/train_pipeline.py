@@ -343,52 +343,50 @@ def train_densenet(
     unfreeze_layers(model, layers)
     summary(model)
 
-    # model = model.to(device)
+    model = model.to(device)
 
-    # criterion = nn.CrossEntropyLoss()
-    # optimizer = optim.Adam(
-    #     filter(lambda p: p.requires_grad, model.parameters()), lr=1e-4
-    # )
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.Adam(model.parameters(), lr=1e-4)
 
-    # train_sampler = BatchSampler(train_dataset, batch_size)
-    # train_loader = DataLoader(train_dataset, batch_sampler=train_sampler)
-    # val_loader = DataLoader(val_dataset, batch_size=batch_size)
+    train_sampler = BatchSampler(train_dataset, batch_size)
+    train_loader = DataLoader(train_dataset, batch_sampler=train_sampler)
+    val_loader = DataLoader(val_dataset, batch_size=batch_size)
 
-    # dataloaders = {
-    #     "train": train_loader,
-    #     "val": val_loader,
-    # }
+    dataloaders = {
+        "train": train_loader,
+        "val": val_loader,
+    }
 
-    # model, history, metrics = train_model(
-    #     model,
-    #     dataloaders,
-    #     criterion,
-    #     optimizer,
-    #     epochs,
-    # )
+    model, history, metrics = train_model(
+        model,
+        dataloaders,
+        criterion,
+        optimizer,
+        epochs,
+    )
 
-    # print("Salvando modelo...")
-    # os.makedirs(output_path, exist_ok=True)
-    # torch.save(model, os.path.join(output_path, "model.pt"))
+    print("Salvando modelo...")
+    os.makedirs(output_path, exist_ok=True)
+    torch.save(model, os.path.join(output_path, "model.pt"))
 
-    # print("Salvando métricas...")
-    # metrics_file = os.path.join(output_path, "model_metrics.json")
-    # all_metrics = {
-    #     "training_history": history,
-    #     "computational_metrics": metrics,
-    #     "training_config": {
-    #         "model": "densenet",
-    #         "layers": layers,
-    #         "batch_size": batch_size,
-    #         "epochs": epochs,
-    #         "device": str(device),
-    #     },
-    # }
+    print("Salvando métricas...")
+    metrics_file = os.path.join(output_path, "model_metrics.json")
+    all_metrics = {
+        "training_history": history,
+        "computational_metrics": metrics,
+        "training_config": {
+            "model": "densenet",
+            "layers": layers,
+            "batch_size": batch_size,
+            "epochs": epochs,
+            "device": str(device),
+        },
+    }
 
-    # with open(metrics_file, "w") as f:
-    #     json.dump(all_metrics, f, indent=2)
+    with open(metrics_file, "w") as f:
+        json.dump(all_metrics, f, indent=2)
 
-    # print(f"Métricas salvas em {metrics_file}")
+    print(f"Métricas salvas em {metrics_file}")
 
 
 def run(
