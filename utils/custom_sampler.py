@@ -21,9 +21,7 @@ class CustomSampler(Sampler):
     def __iter__(self):
         S_work = {c: list(self.S[c]) for c in self.classes}
 
-        for c in self.classes:
-            np.random.shuffle(S_work[c])
-
+        
         for i in range(self.K):
             print(f"Batch {i + 1} of {self.K}")
             batch = []
@@ -36,8 +34,10 @@ class CustomSampler(Sampler):
                 chosen = S_work[c][: self.m_per_class]
                 print(f"Chosen {chosen} of {self.m_per_class}")
                 batch.extend(chosen)
-                if len(S_work[c]) == self.c_max:
+                if len(self.S[c]) == self.c_max:
                     print("Removing chosen from class")
                     S_work[c] = [s for s in self.S[c] if s not in chosen]
-                    print(f"S_work[c] {S_work[c]}")
+                for c in self.classes:
+                    np.random.shuffle(S_work[c])
+
             yield batch

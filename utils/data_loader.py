@@ -83,14 +83,18 @@ if __name__ == "__main__":
     path = "../../../datasets/CXR8/train/"
     data = load_data(
         path,
-        n_splits=None,
+        n_splits=5,
         transform=transforms.ToTensor(),
         val_transform=transforms.ToTensor(),
     )
-    dt = data[0]["X_train"]
-    print(dt.labels)
-    sampler = CustomSampler(data[0]["y_train"], batch_size=32)
-    dl = DataLoader(dt, batch_sampler=sampler)
-    for batch in dl:
-        print(batch)
-        break
+    for fold in data.keys():
+        print(f"Fold {fold+1}")
+        fold_data=data[fold]
+        dt = fold_data['X_train']
+        print(f"{len(dt)} dados")
+        sampler = CustomSampler(fold_data['y_train'], batch_size=32)
+        dl = DataLoader(dt, batch_sampler=sampler)
+        print(f"Batches: {len(dl)}")
+        for batch in dl:
+            print(pd.DataFrame(data=batch[1].numpy()).value_counts())
+
