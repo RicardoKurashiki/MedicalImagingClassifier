@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import numpy as np
 import torch
 import time
 import json
@@ -327,7 +328,7 @@ def train_densenet(
     train_dataset = data["train"]
     val_dataset = data["val"]
 
-    n_classes = len(train_dataset.labels.unique())
+    n_classes = len(np.unique(train_dataset.labels))
 
     model = densenet121(weights=weights)
 
