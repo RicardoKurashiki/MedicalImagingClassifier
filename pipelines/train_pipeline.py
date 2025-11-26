@@ -349,8 +349,18 @@ def train_densenet(
     optimizer = optim.Adam(model.parameters(), lr=1e-4)
 
     train_sampler = BatchSampler(train_dataset, batch_size)
-    train_loader = DataLoader(train_dataset, batch_sampler=train_sampler)
-    val_loader = DataLoader(val_dataset, batch_size=batch_size)
+    train_loader = DataLoader(
+        train_dataset,
+        batch_sampler=train_sampler,
+        pin_memory=True,
+        num_workers=4,
+    )
+    val_loader = DataLoader(
+        val_dataset,
+        batch_size=batch_size,
+        pin_memory=True,
+        num_workers=4,
+    )
 
     dataloaders = {
         "train": train_loader,

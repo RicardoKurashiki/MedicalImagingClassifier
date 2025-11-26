@@ -18,7 +18,7 @@ device = (
 print(f"Using {device} device")
 
 
-def load_densenet(model_path):
+def load_model(model_path):
     model = torch.load(
         model_path,
         map_location=device,
@@ -183,7 +183,7 @@ def classification_report(results, class_names=None):
 
 
 def run(model_path, cross_dataset_path, pretrained_model, batch_size=32, prefix=""):
-    model = load_densenet(model_path)
+    model = load_model(model_path)
 
     print(f"Carregando dataset de teste de {cross_dataset_path}")
 
@@ -194,13 +194,13 @@ def run(model_path, cross_dataset_path, pretrained_model, batch_size=32, prefix=
         weights = DenseNet121_Weights.IMAGENET1K_V1
         transform = weights.transforms()
 
-    test_data = load_data(
+    data = load_data(
         os.path.join(cross_dataset_path, "test/"),
         transform=transform,
         training=False,
     )
 
-    test_dataset = test_data[0]["X_test"]
+    test_dataset = data["test"]
 
     test_loader = DataLoader(
         test_dataset,
