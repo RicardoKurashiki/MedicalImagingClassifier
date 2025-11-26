@@ -86,7 +86,7 @@ def unfreeze_layers(model, n_layers):
     if len(convs) < n_layers:
         raise ValueError("O modelo não contém camadas Conv2d suficientes.")
 
-    conv_idx = convs[n_layers - 1][0]
+    conv_idx = convs[-n_layers][0]
     for idx, _, module in indexed:
         if idx >= conv_idx:
             for p in module.parameters(recurse=False):
