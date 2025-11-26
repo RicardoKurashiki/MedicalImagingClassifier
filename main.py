@@ -23,14 +23,6 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    "--folds",
-    type=int,
-    choices=(3, 5, 7, 10),
-    help="KFolds Qtd",
-    nargs="?",
-)
-
-parser.add_argument(
     "--batch-size",
     type=int,
     default=32,
@@ -63,34 +55,30 @@ args = parser.parse_args()
 
 def main():
     dataset_path = os.path.join("../../datasets", args.dataset)
+    cross_dataset_path = os.path.join("../../datasets", args.cross)
 
     output_path = train_pipeline(
         dataset_path,
         args.model,
         args.layers,
-        args.folds,
         args.batch_size,
         args.epochs,
     )
 
-    cross_dataset_path = os.path.join("../../datasets", args.cross)
-
-    for fold in range(args.folds if args.folds is not None else 1):
-        test_pipeline(
-            os.path.join(output_path, f"fold_{fold}.pt"),
-            dataset_path,
-            args.model,
-            args.batch_size,
-            "same_domain_",
-        )
-    for fold in range(args.folds if args.folds is not None else 1):
-        test_pipeline(
-            os.path.join(output_path, f"fold_{fold}.pt"),
-            cross_dataset_path,
-            args.model,
-            args.batch_size,
-            "cross_domain_",
-        )
+    test_pipeline(
+        os.path.join(output_path, "model.pt"),
+        dataset_path,
+        args.model,
+        args.batch_size,
+        "same_domain_",
+    )
+    test_pipeline(
+        os.path.join(output_path, "model.pt"),
+        cross_dataset_path,
+        args.model,
+        args.batch_size,
+        "cross_domain_",
+    )
 
 
 if __name__ == "__main__":
