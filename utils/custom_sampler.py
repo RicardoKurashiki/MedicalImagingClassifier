@@ -22,6 +22,9 @@ class CustomSampler(Sampler):
     def __iter__(self):
         S_work = {c: list(self.S[c]) for c in self.classes}
 
+        for c in self.classes:
+            np.random.shuffle(S_work[c])
+
         for i in range(self.K):
             batch = []
             for c in self.classes:

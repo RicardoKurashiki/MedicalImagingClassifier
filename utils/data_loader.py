@@ -6,10 +6,9 @@ import numpy as np
 
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader
-from .custom_dataset import CustomDataset
-from .custom_sampler import CustomSampler
 from torchvision import transforms
-
+from utils.custom_dataset import CustomDataset
+from utils.custom_sampler import CustomSampler
 
 def gen_dataframe(root_dir):
     if not os.path.isdir(root_dir):
@@ -47,7 +46,7 @@ def load_data(path, transform=None, val_transform=None, training=True):
 
 
 if __name__ == "__main__":
-    path = "../../../datasets/CXR8/train/"
+    path = "../../datasets/CXR8/train/"
     data = load_data(
         path,
         transform=transforms.ToTensor(),
@@ -55,3 +54,20 @@ if __name__ == "__main__":
     )
     train_dataset = data["train"]
     val_dataset = data["val"]
+    sampler = CustomSampler(train_dataset, batch_size=32)
+    reps = 0
+
+    results = []
+
+    for batch in sampler:
+        result = {"batch": batch, "idx": []}
+        for index in batch:
+            c = train_dataset.dataframe.iloc[index]
+            result['idx'].append({"idx": index, "label": c['label'], "path": c['path']})
+        reps+=1
+        results.append(result)
+        if reps >= 10:
+            break
+
+    df = pd.DataFrame(data=results)
+    df.to_csv("test.csv", index=False)
