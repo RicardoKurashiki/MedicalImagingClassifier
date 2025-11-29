@@ -29,7 +29,7 @@ class CustomDataset(Dataset):
         }
         print(class_length)
         class_weight = {
-            label: class_length[label] / len(self.dataframe)
+            label: len(self.dataframe) / class_length[label]
             for label in self.unique_labels
         }
         print(class_weight)
