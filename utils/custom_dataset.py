@@ -24,10 +24,11 @@ class CustomDataset(Dataset):
 
         self.unique_labels = sorted(self.dataframe["label"].unique())
         self.label_to_idx = {label: idx for idx, label in enumerate(self.unique_labels)}
+
         class_weight = compute_class_weight(
             "balanced",
-            classes=self.unique_labels,
-            y=self.labels,
+            classes=self.label_to_idx.values(),
+            y=self.label_to_idx[self.labels],
         )
         print(class_weight)
         self.class_weight = torch.tensor(
