@@ -120,14 +120,15 @@ def train_model(
                 running_corrects = 0
                 total_samples_processed = 0
                 batch_times = []
-                samples_per_second = []
-
-                pbar = tqdm(
-                    dataloaders[phase],
-                    desc=f"{phase.capitalize():5s}",
-                    unit="batch",
-                    leave=False,
-                )
+                if verbose:
+                    pbar = tqdm(
+                        dataloaders[phase],
+                        desc=f"{phase.capitalize():5s}",
+                        unit="batch",
+                        leave=False,
+                    )
+                else:
+                    pbar = dataloaders[phase]
 
                 for inputs, labels in pbar:
                     batch_start = time.time()
