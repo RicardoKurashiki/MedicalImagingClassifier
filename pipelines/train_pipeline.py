@@ -365,7 +365,7 @@ def train_densenet(
 
     model = model.to(device)
 
-    criterion = nn.CrossEntropyLoss()
+    criterion = nn.CrossEntropyLoss(weight=train_dataset.class_weight)
     optimizer = optim.Adam(
         filter(lambda p: p.requires_grad, model.parameters()),
         lr=0.001,
@@ -480,7 +480,7 @@ def train_resnet(
 
     model = model.to(device)
 
-    criterion = nn.CrossEntropyLoss()
+    criterion = nn.CrossEntropyLoss(weight=train_dataset.class_weight)
     optimizer = optim.Adam(
         filter(lambda p: p.requires_grad, model.parameters()),
         lr=0.001,

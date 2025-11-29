@@ -1,3 +1,5 @@
+import torch
+
 from torch.utils.data import Dataset
 from PIL import Image
 from torchvision import transforms
@@ -14,6 +16,21 @@ class CustomDataset(Dataset):
 
         self.unique_labels = sorted(self.dataframe["label"].unique())
         self.label_to_idx = {label: idx for idx, label in enumerate(self.unique_labels)}
+
+        class_length = {
+            label: len(self.dataframe[self.dataframe["label"] == label])
+            for label in self.unique_labels
+        }
+        print(class_length)
+        class_weight = {
+            label: class_length[label] / len(self.dataframe)
+            for label in self.unique_labels
+        }
+        print(class_weight)
+        self.class_weight = torch.tensor(
+            list(class_weight.values()), dtype=torch.float32
+        )
+        print(self.class_weight)
 
     def __len__(self):
         return len(self.labels)
