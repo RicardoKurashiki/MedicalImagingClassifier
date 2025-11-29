@@ -13,7 +13,7 @@ from utils import BatchSampler, load_data, train_model
 
 from torchvision.models import resnet50, ResNet50_Weights
 from torchvision.models import densenet121, DenseNet121_Weights
-from torchvision.models import mobilenet_v3_large, MobileNet_V3_Large_Weights
+from torchvision.models import mobilenet_v3_small, MobileNet_V3_Small_Weights
 from torchvision.models import efficientnet_v2_s, EfficientNet_V2_S_Weights
 from torchvision.models import vit_b_16, ViT_B_16_Weights
 
@@ -82,14 +82,7 @@ def train_densenet(
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
         ]
     )
-    val_transform = transforms.Compose(
-        [
-            transforms.Resize(256),
-            transforms.CenterCrop(224),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-        ]
-    )
+    val_transform = weights.transforms()
 
     data = load_data(
         os.path.join(dataset_path, "train/"),
@@ -192,20 +185,13 @@ def train_resnet(
         [
             transforms.Resize(256),
             transforms.CenterCrop(224),
-            transforms.RandomRotation(5),
+            transforms.RandomRotation(10),
             transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
         ]
     )
-    val_transform = transforms.Compose(
-        [
-            transforms.Resize(256),
-            transforms.CenterCrop(224),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-        ]
-    )
+    val_transform = weights.transforms()
 
     data = load_data(
         os.path.join(dataset_path, "train/"),
@@ -307,25 +293,18 @@ def train_mobilenet(
     epochs,
     output_path="./results/",
 ):
-    weights = MobileNet_V3_Large_Weights.IMAGENET1K_V1
+    weights = MobileNet_V3_Small_Weights.IMAGENET1K_V1
     transform = transforms.Compose(
         [
             transforms.Resize(256),
             transforms.CenterCrop(224),
-            transforms.RandomRotation(5),
+            transforms.RandomRotation(10),
             transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
         ]
     )
-    val_transform = transforms.Compose(
-        [
-            transforms.Resize(256),
-            transforms.CenterCrop(224),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-        ]
-    )
+    val_transform = weights.transforms()
 
     data = load_data(
         os.path.join(dataset_path, "train/"),
@@ -338,7 +317,7 @@ def train_mobilenet(
 
     n_classes = len(np.unique(train_dataset.labels))
 
-    model = mobilenet_v3_large(weights=weights)
+    model = mobilenet_v3_small(weights=weights)
 
     num_ftrs = model.classifier[0].in_features
     model.classifier = nn.Sequential(
@@ -389,7 +368,7 @@ def train_mobilenet(
 
     model, history, metrics = train_model(
         model,
-        "resnet",
+        "mobilenet",
         dataloaders,
         criterion,
         optimizer,
@@ -406,7 +385,7 @@ def train_mobilenet(
         "training_history": history,
         "computational_metrics": metrics,
         "training_config": {
-            "model": "resnet",
+            "model": "mobilenet",
             "layers": layers,
             "batch_size": batch_size,
             "epochs": epochs,
@@ -432,20 +411,13 @@ def train_efficientnet(
         [
             transforms.Resize(256),
             transforms.CenterCrop(224),
-            transforms.RandomRotation(5),
+            transforms.RandomRotation(10),
             transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
         ]
     )
-    val_transform = transforms.Compose(
-        [
-            transforms.Resize(256),
-            transforms.CenterCrop(224),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-        ]
-    )
+    val_transform = weights.transforms()
 
     data = load_data(
         os.path.join(dataset_path, "train/"),
@@ -507,7 +479,7 @@ def train_efficientnet(
 
     model, history, metrics = train_model(
         model,
-        "resnet",
+        "efficientnet",
         dataloaders,
         criterion,
         optimizer,
@@ -524,7 +496,7 @@ def train_efficientnet(
         "training_history": history,
         "computational_metrics": metrics,
         "training_config": {
-            "model": "resnet",
+            "model": "efficientnet",
             "layers": layers,
             "batch_size": batch_size,
             "epochs": epochs,
@@ -550,20 +522,13 @@ def train_vit(
         [
             transforms.Resize(256),
             transforms.CenterCrop(224),
-            transforms.RandomRotation(5),
+            transforms.RandomRotation(10),
             transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
         ]
     )
-    val_transform = transforms.Compose(
-        [
-            transforms.Resize(256),
-            transforms.CenterCrop(224),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-        ]
-    )
+    val_transform = weights.transforms()
 
     data = load_data(
         os.path.join(dataset_path, "train/"),
@@ -624,7 +589,7 @@ def train_vit(
 
     model, history, metrics = train_model(
         model,
-        "resnet",
+        "vit",
         dataloaders,
         criterion,
         optimizer,
@@ -641,7 +606,7 @@ def train_vit(
         "training_history": history,
         "computational_metrics": metrics,
         "training_config": {
-            "model": "resnet",
+            "model": "vit",
             "layers": layers,
             "batch_size": batch_size,
             "epochs": epochs,

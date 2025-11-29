@@ -8,7 +8,7 @@ from torch.utils.data import DataLoader
 
 from torchvision.models import ResNet50_Weights
 from torchvision.models import DenseNet121_Weights
-from torchvision.models import MobileNet_V3_Large_Weights
+from torchvision.models import MobileNet_V3_Small_Weights
 from torchvision.models import EfficientNet_V2_S_Weights
 from torchvision.models import ViT_B_16_Weights
 
@@ -204,7 +204,7 @@ def run(model_path, cross_dataset_path, pretrained_model, batch_size=32, prefix=
         weights = ResNet50_Weights.IMAGENET1K_V2
         transform = weights.transforms()
     elif pretrained_model == "mobilenet":
-        weights = MobileNet_V3_Large_Weights.IMAGENET1K_V1
+        weights = MobileNet_V3_Small_Weights.IMAGENET1K_V1
         transform = weights.transforms()
     elif pretrained_model == "efficientnet":
         weights = EfficientNet_V2_S_Weights.IMAGENET1K_V1
