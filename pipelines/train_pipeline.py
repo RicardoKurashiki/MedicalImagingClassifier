@@ -364,7 +364,7 @@ def train_densenet(
     )
 
     unfreeze_layers(model, layers)
-    summary(model)
+    # summary(model)
 
     model = model.to(device)
 

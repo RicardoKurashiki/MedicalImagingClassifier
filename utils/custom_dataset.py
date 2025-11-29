@@ -4,6 +4,12 @@ from torch.utils.data import Dataset
 from PIL import Image
 from torchvision import transforms
 
+device = (
+    torch.accelerator.current_accelerator().type
+    if torch.accelerator.is_available()
+    else "cpu"
+)
+
 
 class CustomDataset(Dataset):
     def __init__(self, dataframe, transform=None):
@@ -28,7 +34,9 @@ class CustomDataset(Dataset):
         }
         print(class_weight)
         self.class_weight = torch.tensor(
-            list(class_weight.values()), dtype=torch.float32
+            list(class_weight.values()),
+            dtype=torch.float32,
+            device=device,
         )
         print(self.class_weight)
 
