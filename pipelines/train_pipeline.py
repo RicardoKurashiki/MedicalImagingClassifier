@@ -70,6 +70,7 @@ def train_densenet(
     batch_size,
     epochs,
     output_path="./results/",
+    verbose=False,
 ):
     weights = DenseNet121_Weights.IMAGENET1K_V1
     transform = transforms.Compose(
@@ -106,7 +107,9 @@ def train_densenet(
     )
 
     unfreeze_layers(model, layers)
-    summary(model)
+
+    if verbose:
+        summary(model)
 
     model = model.to(device)
 
@@ -147,13 +150,16 @@ def train_densenet(
         criterion,
         optimizer,
         epochs,
+        verbose=verbose,
     )
 
-    print("Salvando modelo...")
+    if verbose:
+        print("Salvando modelo...")
     os.makedirs(output_path, exist_ok=True)
     torch.save(model, os.path.join(output_path, "model.pt"))
 
-    print("Salvando métricas...")
+    if verbose:
+        print("Salvando métricas...")
     metrics_file = os.path.join(output_path, "model_metrics.json")
     all_metrics = {
         "training_history": history,
@@ -170,7 +176,8 @@ def train_densenet(
     with open(metrics_file, "w") as f:
         json.dump(all_metrics, f, indent=2)
 
-    print(f"Métricas salvas em {metrics_file}")
+        if verbose:
+            print(f"Métricas salvas em {metrics_file}")
 
 
 def train_resnet(
@@ -179,6 +186,7 @@ def train_resnet(
     batch_size,
     epochs,
     output_path="./results/",
+    verbose=False,
 ):
     weights = ResNet50_Weights.IMAGENET1K_V2
     transform = transforms.Compose(
@@ -218,7 +226,9 @@ def train_resnet(
     )
 
     unfreeze_layers(model, layers)
-    summary(model)
+
+    if verbose:
+        summary(model)
 
     model = model.to(device)
 
@@ -262,11 +272,13 @@ def train_resnet(
         epochs,
     )
 
-    print("Salvando modelo...")
+    if verbose:
+        print("Salvando modelo...")
     os.makedirs(output_path, exist_ok=True)
     torch.save(model, os.path.join(output_path, "model.pt"))
 
-    print("Salvando métricas...")
+    if verbose:
+        print("Salvando métricas...")
     metrics_file = os.path.join(output_path, "model_metrics.json")
     all_metrics = {
         "training_history": history,
@@ -283,7 +295,8 @@ def train_resnet(
     with open(metrics_file, "w") as f:
         json.dump(all_metrics, f, indent=2)
 
-    print(f"Métricas salvas em {metrics_file}")
+    if verbose:
+        print(f"Métricas salvas em {metrics_file}")
 
 
 def train_mobilenet(
@@ -292,6 +305,7 @@ def train_mobilenet(
     batch_size,
     epochs,
     output_path="./results/",
+    verbose=False,
 ):
     weights = MobileNet_V3_Small_Weights.IMAGENET1K_V1
     transform = transforms.Compose(
@@ -331,7 +345,9 @@ def train_mobilenet(
     )
 
     unfreeze_layers(model, layers)
-    summary(model)
+
+    if verbose:
+        summary(model)
 
     model = model.to(device)
 
@@ -375,11 +391,13 @@ def train_mobilenet(
         epochs,
     )
 
-    print("Salvando modelo...")
+    if verbose:
+        print("Salvando modelo...")
     os.makedirs(output_path, exist_ok=True)
     torch.save(model, os.path.join(output_path, "model.pt"))
 
-    print("Salvando métricas...")
+    if verbose:
+        print("Salvando métricas...")
     metrics_file = os.path.join(output_path, "model_metrics.json")
     all_metrics = {
         "training_history": history,
@@ -396,7 +414,8 @@ def train_mobilenet(
     with open(metrics_file, "w") as f:
         json.dump(all_metrics, f, indent=2)
 
-    print(f"Métricas salvas em {metrics_file}")
+    if verbose:
+        print(f"Métricas salvas em {metrics_file}")
 
 
 def train_efficientnet(
@@ -405,6 +424,7 @@ def train_efficientnet(
     batch_size,
     epochs,
     output_path="./results/",
+    verbose=False,
 ):
     weights = EfficientNet_V2_S_Weights.IMAGENET1K_V1
     transform = transforms.Compose(
@@ -442,7 +462,9 @@ def train_efficientnet(
     )
 
     unfreeze_layers(model, layers)
-    summary(model)
+
+    if verbose:
+        summary(model)
 
     model = model.to(device)
 
@@ -486,11 +508,13 @@ def train_efficientnet(
         epochs,
     )
 
-    print("Salvando modelo...")
+    if verbose:
+        print("Salvando modelo...")
     os.makedirs(output_path, exist_ok=True)
     torch.save(model, os.path.join(output_path, "model.pt"))
 
-    print("Salvando métricas...")
+    if verbose:
+        print("Salvando métricas...")
     metrics_file = os.path.join(output_path, "model_metrics.json")
     all_metrics = {
         "training_history": history,
@@ -507,7 +531,8 @@ def train_efficientnet(
     with open(metrics_file, "w") as f:
         json.dump(all_metrics, f, indent=2)
 
-    print(f"Métricas salvas em {metrics_file}")
+    if verbose:
+        print(f"Métricas salvas em {metrics_file}")
 
 
 def train_vit(
@@ -516,6 +541,7 @@ def train_vit(
     batch_size,
     epochs,
     output_path="./results/",
+    verbose=False,
 ):
     weights = ViT_B_16_Weights.IMAGENET1K_V1
     transform = transforms.Compose(
@@ -552,7 +578,9 @@ def train_vit(
     )
 
     unfreeze_layers(model, layers)
-    summary(model)
+
+    if verbose:
+        summary(model)
 
     model = model.to(device)
 
@@ -596,11 +624,13 @@ def train_vit(
         epochs,
     )
 
-    print("Salvando modelo...")
+    if verbose:
+        print("Salvando modelo...")
     os.makedirs(output_path, exist_ok=True)
     torch.save(model, os.path.join(output_path, "model.pt"))
 
-    print("Salvando métricas...")
+    if verbose:
+        print("Salvando métricas...")
     metrics_file = os.path.join(output_path, "model_metrics.json")
     all_metrics = {
         "training_history": history,
@@ -617,7 +647,8 @@ def train_vit(
     with open(metrics_file, "w") as f:
         json.dump(all_metrics, f, indent=2)
 
-    print(f"Métricas salvas em {metrics_file}")
+    if verbose:
+        print(f"Métricas salvas em {metrics_file}")
 
 
 def run(
@@ -627,6 +658,7 @@ def run(
     batch_size,
     dataset,
     epochs,
+    verbose,
 ):
     output_path = os.path.join(
         "results",
@@ -643,6 +675,7 @@ def run(
             batch_size,
             epochs,
             output_path=output_path,
+            verbose=verbose,
         )
     elif pretrained_model == "resnet":
         train_resnet(
@@ -651,6 +684,7 @@ def run(
             batch_size,
             epochs,
             output_path=output_path,
+            verbose=verbose,
         )
     elif pretrained_model == "mobilenet":
         train_mobilenet(
@@ -659,6 +693,7 @@ def run(
             batch_size,
             epochs,
             output_path=output_path,
+            verbose=verbose,
         )
     elif pretrained_model == "efficientnet":
         train_efficientnet(
@@ -667,6 +702,7 @@ def run(
             batch_size,
             epochs,
             output_path=output_path,
+            verbose=verbose,
         )
     elif pretrained_model == "vit":
         train_vit(
@@ -675,5 +711,6 @@ def run(
             batch_size,
             epochs,
             output_path=output_path,
+            verbose=verbose,
         )
     return output_path

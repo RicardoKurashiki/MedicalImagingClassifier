@@ -50,6 +50,12 @@ parser.add_argument(
     help="Training Epochs",
 )
 
+parser.add_argument(
+    "--verbose",
+    action="store_true",
+    help="Verbose Output",
+)
+
 args = parser.parse_args()
 
 
@@ -64,6 +70,7 @@ def main():
         args.batch_size,
         args.dataset,
         args.epochs,
+        args.verbose,
     )
 
     test_pipeline(
@@ -72,6 +79,7 @@ def main():
         args.model,
         args.batch_size,
         "same_domain_",
+        args.verbose,
     )
     test_pipeline(
         os.path.join(output_path, "model.pt"),
@@ -79,6 +87,7 @@ def main():
         args.model,
         args.batch_size,
         "cross_domain_",
+        args.verbose,
     )
 
 

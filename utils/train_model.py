@@ -61,6 +61,7 @@ def train_model(
     optimizer,
     num_epochs=100,
     early_stopping_patience=10,
+    verbose=False,
 ):
     since = time.time()
 
@@ -87,7 +88,8 @@ def train_model(
         best_model_params_path = os.path.join(
             tempdir, f"{pretrained_model}_best_model_params.pt"
         )
-        print(f"Melhores pesos salvos em {best_model_params_path}")
+        if verbose:
+            print(f"Melhores pesos salvos em {best_model_params_path}")
         torch.save(model.state_dict(), best_model_params_path)
         best_acc = 0.0
         best_val_loss = float("inf")
@@ -98,11 +100,14 @@ def train_model(
 
         for epoch in range(num_epochs):
             if early_stop:
-                print(f"Early stopping acionado na época {epoch}")
+                if verbose:
+                    print(f"Early stopping acionado na época {epoch}")
                 break
             epoch_start = time.time()
-            print(f"Epoch {epoch + 1}/{num_epochs}")
-            print("-" * 10)
+            if verbose:
+                print(f"Epoch {epoch + 1}/{num_epochs}")
+            if verbose:
+                print("-" * 10)
 
             for phase in ["train", "val"]:
                 phase_start = time.time()
@@ -182,8 +187,10 @@ def train_model(
                     }
                 )
 
-                print(f"{phase} Loss: {epoch_loss:.4f} Acc: {epoch_acc:.4f}")
-                print(f"{phase} Time: {phase_time:.2f}s")
+                if verbose:
+                    print(f"{phase} Loss: {epoch_loss:.4f} Acc: {epoch_acc:.4f}")
+                if verbose:
+                    print(f"{phase} Time: {phase_time:.2f}s")
 
                 if phase == "train":
                     history["train_loss"].append(epoch_loss)
@@ -192,31 +199,36 @@ def train_model(
                     history["val_loss"].append(epoch_loss)
                     history["val_acc"].append(epoch_acc.item())
 
-                print(
-                    f"{phase.capitalize():5s} - Loss: {epoch_loss:.4f} | Acc: {epoch_acc:.4f}"
-                )
+                if verbose:
+                    print(
+                        f"{phase.capitalize():5s} - Loss: {epoch_loss:.4f} | Acc: {epoch_acc:.4f}"
+                    )
 
                 if phase == "val":
                     if epoch_acc > best_acc:
                         best_acc = epoch_acc
-                        print(f"Melhor acc [{phase}]: {best_acc:.4f}")
+                        if verbose:
+                            print(f"Melhor acc [{phase}]: {best_acc:.4f}")
 
                     if epoch_loss < best_val_loss:
                         past_loss = best_val_loss
                         best_val_loss = epoch_loss
                         patience_counter = 0
                         torch.save(model.state_dict(), best_model_params_path)
-                        print(
-                            f"Loss val melhorou de {past_loss:.4f} para {best_val_loss:.4f}"
-                        )
+                        if verbose:
+                            print(
+                                f"Loss val melhorou de {past_loss:.4f} para {best_val_loss:.4f}"
+                            )
                     else:
                         patience_counter += 1
-                        print(
-                            f"Loss val não melhorou de {best_val_loss:.4f} - Paciência: {patience_counter}"
-                        )
+                        if verbose:
+                            print(
+                                f"Loss val não melhorou de {best_val_loss:.4f} - Paciência: {patience_counter}"
+                            )
                         if patience_counter >= early_stopping_patience:
                             early_stop = True
-                            print("Early stopping acionado")
+                            if verbose:
+                                print("Early stopping acionado")
                             break
 
             # Verificar early stopping após o loop de fases
@@ -231,7 +243,8 @@ def train_model(
             metrics["memory_usage"].append({"epoch": epoch, **epoch_memory})
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()
-            print()
+            if verbose:
+                print()
 
         time_elapsed = time.time() - since
         metrics["total_time_seconds"] = time_elapsed
@@ -242,10 +255,12 @@ def train_model(
         if torch.cuda.is_available():
             torch.cuda.reset_peak_memory_stats()
 
-        print(
-            f"Treinamento completo em {time_elapsed // 60:.0f}m {time_elapsed % 60:.0f}s"
-        )
-        print(f"Melhor acc [val]: {best_acc:4f}")
+        if verbose:
+            print(
+                f"Treinamento completo em {time_elapsed // 60:.0f}m {time_elapsed % 60:.0f}s"
+            )
+        if verbose:
+            print(f"Melhor acc [val]: {best_acc:4f}")
 
         model.load_state_dict(torch.load(best_model_params_path, weights_only=True))
 
