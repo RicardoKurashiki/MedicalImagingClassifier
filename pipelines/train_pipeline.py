@@ -109,6 +109,7 @@ def summary(model):
 
 def train_model(
     model,
+    pretrained_model,
     dataloaders,
     criterion,
     optimizer,
@@ -136,7 +137,9 @@ def train_model(
     metrics["initial_memory"] = initial_memory
 
     with TemporaryDirectory() as tempdir:
-        best_model_params_path = os.path.join(tempdir, "best_model_params.pt")
+        best_model_params_path = os.path.join(
+            tempdir, f"{pretrained_model}_best_model_params.pt"
+        )
         print(f"Saving best model to {best_model_params_path}")
         torch.save(model.state_dict(), best_model_params_path)
         best_acc = 0.0
@@ -397,6 +400,7 @@ def train_densenet(
 
     model, history, metrics = train_model(
         model,
+        "densenet",
         dataloaders,
         criterion,
         optimizer,
@@ -513,6 +517,7 @@ def train_resnet(
 
     model, history, metrics = train_model(
         model,
+        "resnet",
         dataloaders,
         criterion,
         optimizer,
