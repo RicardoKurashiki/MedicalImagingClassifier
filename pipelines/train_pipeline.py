@@ -367,7 +367,9 @@ def train_densenet(
 
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(
-        filter(lambda p: p.requires_grad, model.parameters()), lr=1e-4
+        filter(lambda p: p.requires_grad, model.parameters()),
+        lr=0.001,
+        weight_decay=0.0001,
     )
 
     train_sampler = BatchSampler(train_dataset, batch_size)
@@ -432,15 +434,25 @@ def train_resnet(
     epochs,
     output_path="./results/",
 ):
-    weights = ResNet50_Weights.IMAGENET1K_V1
+    weights = ResNet50_Weights.IMAGENET1K_V2
     transform = transforms.Compose(
         [
-            transforms.Resize(224),
+            transforms.Resize(256),
+            transforms.CenterCrop(224),
+            transforms.RandomRotation(5),
+            transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
         ]
     )
-    val_transform = weights.transforms()
+    val_transform = transforms.Compose(
+        [
+            transforms.Resize(256),
+            transforms.CenterCrop(224),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        ]
+    )
 
     data = load_data(
         os.path.join(dataset_path, "train/"),
@@ -453,10 +465,10 @@ def train_resnet(
 
     n_classes = len(np.unique(train_dataset.labels))
 
-    model = densenet121(weights=weights)
+    model = resnet50(weights=weights)
 
-    num_ftrs = model.classifier.in_features
-    model.classifier = nn.Sequential(
+    num_ftrs = model.fc.in_features
+    model.fc = nn.Sequential(
         nn.Linear(num_ftrs, 512),
         nn.ReLU(inplace=True),
         nn.Dropout(0.2),
@@ -469,9 +481,14 @@ def train_resnet(
     model = model.to(device)
 
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay=0.0001)
+    optimizer = optim.Adam(
+        filter(lambda p: p.requires_grad, model.parameters()),
+        lr=0.001,
+        weight_decay=0.0001,
+    )
 
     train_sampler = BatchSampler(train_dataset, batch_size)
+
     train_loader = DataLoader(
         train_dataset,
         batch_sampler=train_sampler,
@@ -512,7 +529,7 @@ def train_resnet(
         "training_history": history,
         "computational_metrics": metrics,
         "training_config": {
-            "model": "densenet",
+            "model": "resnet",
             "layers": layers,
             "batch_size": batch_size,
             "epochs": epochs,
@@ -544,6 +561,14 @@ def run(
     )
     if pretrained_model == "densenet":
         train_densenet(
+            dataset_path,
+            trainable_layers,
+            batch_size,
+            epochs,
+            output_path=output_path,
+        )
+    elif pretrained_model == "resnet":
+        train_resnet(
             dataset_path,
             trainable_layers,
             batch_size,
