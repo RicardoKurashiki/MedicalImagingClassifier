@@ -27,16 +27,15 @@ class CustomDataset(Dataset):
 
         class_weight = compute_class_weight(
             "balanced",
-            classes=self.label_to_idx.values(),
-            y=self.label_to_idx[self.labels],
+            classes=self.unique_labels,
+            y=self.labels,
         )
-        print(class_weight)
+
         self.class_weight = torch.tensor(
             class_weight,
             dtype=torch.float32,
             device=device,
         )
-        print(self.class_weight)
 
     def __len__(self):
         return len(self.labels)

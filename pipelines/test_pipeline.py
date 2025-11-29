@@ -5,7 +5,12 @@ import json
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
+
+from torchvision.models import ResNet50_Weights
 from torchvision.models import DenseNet121_Weights
+from torchvision.models import MobileNet_V3_Large_Weights
+from torchvision.models import EfficientNet_V2_S_Weights
+from torchvision.models import ViT_B_16_Weights
 
 
 from utils import load_data
@@ -15,7 +20,6 @@ device = (
     if torch.accelerator.is_available()
     else "cpu"
 )
-print(f"Using {device} device")
 
 
 def load_model(model_path):
@@ -51,7 +55,13 @@ def get_class_metrics(conf_matrix, class_idx):
     idx = torch.ones(num_classes, dtype=torch.bool)
     idx[class_idx] = False
 
-    TN = conf_matrix[idx][:, idx].sum().item()
+    TN = (
+        conf_matrix.sum()
+        - conf_matrix[class_idx, :].sum()
+        - conf_matrix[:, class_idx].sum()
+        + TP
+    ).item()
+
     FP = conf_matrix[idx, class_idx].sum().item()
     FN = conf_matrix[class_idx, idx].sum().item()
 
@@ -190,9 +200,20 @@ def run(model_path, cross_dataset_path, pretrained_model, batch_size=32, prefix=
     if pretrained_model == "densenet":
         weights = DenseNet121_Weights.IMAGENET1K_V1
         transform = weights.transforms()
-    else:
-        weights = DenseNet121_Weights.IMAGENET1K_V1
+    elif pretrained_model == "resnet":
+        weights = ResNet50_Weights.IMAGENET1K_V2
         transform = weights.transforms()
+    elif pretrained_model == "mobilenet":
+        weights = MobileNet_V3_Large_Weights.IMAGENET1K_V1
+        transform = weights.transforms()
+    elif pretrained_model == "efficientnet":
+        weights = EfficientNet_V2_S_Weights.IMAGENET1K_V1
+        transform = weights.transforms()
+    elif pretrained_model == "vit":
+        weights = ViT_B_16_Weights.IMAGENET1K_V1
+        transform = weights.transforms()
+    else:
+        raise ValueError(f"Pretrained model {pretrained_model} not supported")
 
     data = load_data(
         os.path.join(cross_dataset_path, "test/"),
@@ -218,7 +239,6 @@ def run(model_path, cross_dataset_path, pretrained_model, batch_size=32, prefix=
 
     report = classification_report(results, class_names=["NORMAL", "PNEUMONIA"])
 
-    print(report)
     print(results["confusion_matrix"])
 
     model_dir = os.path.dirname(model_path)

@@ -31,7 +31,7 @@ def load_data(path, transform=None, val_transform=None, training=True):
     df = gen_dataframe(path)
     if not training:
         test_dataset = CustomDataset(df, transform=transform)
-        print(f"Found {len(test_dataset)} test samples")
+        print(f"Encontrados {len(df)} amostras no dataset de teste")
         return {
             "test": test_dataset,
         }
@@ -39,8 +39,8 @@ def load_data(path, transform=None, val_transform=None, training=True):
         train_df, val_df = train_test_split(df, test_size=0.2, stratify=df["label"])
         train_dataset = CustomDataset(train_df, transform=transform)
         val_dataset = CustomDataset(val_df, transform=val_transform)
-        print(f"Found {len(train_dataset)} training samples")
-        print(f"Found {len(val_dataset)} validation samples")
+        print(f"Encontrados {len(train_df)} amostras no dataset de treinamento")
+        print(f"Encontrados {len(val_df)} amostras no dataset de validação")
         return {
             "train": train_dataset,
             "val": val_dataset,
