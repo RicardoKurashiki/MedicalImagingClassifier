@@ -337,83 +337,81 @@ def train_mobilenet(
 
     model = mobilenet_v3_large(weights=weights)
 
-    print(model)
+    num_ftrs = model.classifier.in_features
+    model.classifier = nn.Sequential(
+        nn.Linear(num_ftrs, 512),
+        nn.ReLU(inplace=True),
+        nn.Dropout(0.2),
+        nn.Linear(512, n_classes),
+    )
 
-    # num_ftrs = model.fc.in_features
-    # model.fc = nn.Sequential(
-    #     nn.Linear(num_ftrs, 512),
-    #     nn.ReLU(inplace=True),
-    #     nn.Dropout(0.2),
-    #     nn.Linear(512, n_classes),
-    # )
+    unfreeze_layers(model, layers)
+    summary(model)
 
-    # unfreeze_layers(model, layers)
-    # summary(model)
+    model = model.to(device)
 
-    # model = model.to(device)
+    criterion = nn.CrossEntropyLoss(weight=train_dataset.class_weight)
+    optimizer = optim.SGD(
+        filter(lambda p: p.requires_grad, model.parameters()),
+        lr=0.001,
+        weight_decay=0.0001,
+    )
 
-    # criterion = nn.CrossEntropyLoss(weight=train_dataset.class_weight)
-    # optimizer = optim.SGD(
-    #     filter(lambda p: p.requires_grad, model.parameters()),
-    #     lr=0.001,
-    #     weight_decay=0.0001,
-    # )
+    train_sampler = BatchSampler(train_dataset, batch_size)
 
-    # train_sampler = BatchSampler(train_dataset, batch_size)
+    train_loader = DataLoader(
+        train_dataset,
+        batch_sampler=train_sampler,
+        pin_memory=True,
+        num_workers=2,
+        persistent_workers=True,
+        prefetch_factor=2,
+    )
+    val_loader = DataLoader(
+        val_dataset,
+        batch_size=batch_size,
+        pin_memory=True,
+        num_workers=2,
+        persistent_workers=True,
+        prefetch_factor=2,
+    )
 
-    # train_loader = DataLoader(
-    #     train_dataset,
-    #     batch_sampler=train_sampler,
-    #     pin_memory=True,
-    #     num_workers=2,
-    #     persistent_workers=True,
-    #     prefetch_factor=2,
-    # )
-    # val_loader = DataLoader(
-    #     val_dataset,
-    #     batch_size=batch_size,
-    #     pin_memory=True,
-    #     num_workers=2,
-    #     persistent_workers=True,
-    #     prefetch_factor=2,
-    # )
+    dataloaders = {
+        "train": train_loader,
+        "val": val_loader,
+    }
 
-    # dataloaders = {
-    #     "train": train_loader,
-    #     "val": val_loader,
-    # }
+    model, history, metrics = train_model(
+        model,
+        "resnet",
+        dataloaders,
+        criterion,
+        optimizer,
+        epochs,
+    )
 
-    # model, history, metrics = train_model(
-    #     model,
-    #     "resnet",
-    #     dataloaders,
-    #     criterion,
-    #     optimizer,
-    #     epochs,
-    # )
+    print("Salvando modelo...")
+    os.makedirs(output_path, exist_ok=True)
+    torch.save(model, os.path.join(output_path, "model.pt"))
 
-    # print("Salvando modelo...")
-    # os.makedirs(output_path, exist_ok=True)
-    # torch.save(model, os.path.join(output_path, "model.pt"))
+    print("Salvando métricas...")
+    metrics_file = os.path.join(output_path, "model_metrics.json")
+    all_metrics = {
+        "training_history": history,
+        "computational_metrics": metrics,
+        "training_config": {
+            "model": "resnet",
+            "layers": layers,
+            "batch_size": batch_size,
+            "epochs": epochs,
+            "device": str(device),
+        },
+    }
 
-    # print("Salvando métricas...")
-    # metrics_file = os.path.join(output_path, "model_metrics.json")
-    # all_metrics = {
-    #     "training_history": history,
-    #     "computational_metrics": metrics,
-    #     "training_config": {
-    #         "model": "resnet",
-    #         "layers": layers,
-    #         "batch_size": batch_size,
-    #         "epochs": epochs,
-    #         "device": str(device),
-    #     },
-    # }
+    with open(metrics_file, "w") as f:
+        json.dump(all_metrics, f, indent=2)
 
-    # with open(metrics_file, "w") as f:
-    #     json.dump(all_metrics, f, indent=2)
-
-    # print(f"Métricas salvas em {metrics_file}")
+    print(f"Métricas salvas em {metrics_file}")
 
 
 def train_efficientnet(
