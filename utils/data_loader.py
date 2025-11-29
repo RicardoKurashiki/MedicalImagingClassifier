@@ -3,12 +3,14 @@
 import os
 import pandas as pd
 import numpy as np
+import datetime
 
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader
 from torchvision import transforms
 from utils.custom_dataset import CustomDataset
 from utils.custom_sampler import CustomSampler
+
 
 def gen_dataframe(root_dir):
     if not os.path.isdir(root_dir):
@@ -62,8 +64,10 @@ if __name__ == "__main__":
         result = {"batch": batch, "idx": []}
         for index in batch:
             c = train_dataset.dataframe.iloc[index]
-            result['idx'].append({"idx": index, "label": c['label'], "path": c['path']})
+            result["idx"].append({"idx": index, "label": c["label"], "path": c["path"]})
         results.append(result)
 
     df = pd.DataFrame(data=results)
-    df.to_csv("test.csv", index=False)
+    df.to_csv(
+        f"batches_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.csv", index=False
+    )

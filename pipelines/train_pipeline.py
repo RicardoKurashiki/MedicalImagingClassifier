@@ -320,7 +320,126 @@ def train_densenet(
     output_path="./results/",
 ):
     weights = DenseNet121_Weights.IMAGENET1K_V1
-    transform = weights.transforms()
+    transform = transforms.Compose(
+        [
+            transforms.Resize(256),
+            transforms.CenterCrop(224),
+            transforms.RandomRotation(5),
+            transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        ]
+    )
+    val_transform = transforms.Compose(
+        [
+            transforms.Resize(256),
+            transforms.CenterCrop(224),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        ]
+    )
+
+    data = load_data(
+        os.path.join(dataset_path, "train/"),
+        transform=transform,
+        val_transform=val_transform,
+    )
+
+    train_dataset = data["train"]
+    val_dataset = data["val"]
+
+    n_classes = len(np.unique(train_dataset.labels))
+
+    model = densenet121(weights=weights)
+
+    num_ftrs = model.classifier.in_features
+    model.classifier = nn.Sequential(
+        nn.Linear(num_ftrs, 512),
+        nn.ReLU(inplace=True),
+        nn.Dropout(0.2),
+        nn.Linear(512, n_classes),
+    )
+
+    unfreeze_layers(model, layers)
+    summary(model)
+
+    model = model.to(device)
+
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.Adam(
+        filter(lambda p: p.requires_grad, model.parameters()), lr=1e-4
+    )
+
+    train_sampler = BatchSampler(train_dataset, batch_size)
+    train_loader = DataLoader(
+        train_dataset,
+        batch_sampler=train_sampler,
+        pin_memory=True,
+        num_workers=2,
+        persistent_workers=True,
+        prefetch_factor=2,
+    )
+    val_loader = DataLoader(
+        val_dataset,
+        batch_size=batch_size,
+        pin_memory=True,
+        num_workers=2,
+        persistent_workers=True,
+        prefetch_factor=2,
+    )
+
+    dataloaders = {
+        "train": train_loader,
+        "val": val_loader,
+    }
+
+    model, history, metrics = train_model(
+        model,
+        dataloaders,
+        criterion,
+        optimizer,
+        epochs,
+    )
+
+    print("Salvando modelo...")
+    os.makedirs(output_path, exist_ok=True)
+    torch.save(model, os.path.join(output_path, "model.pt"))
+
+    print("Salvando métricas...")
+    metrics_file = os.path.join(output_path, "model_metrics.json")
+    all_metrics = {
+        "training_history": history,
+        "computational_metrics": metrics,
+        "training_config": {
+            "model": "densenet",
+            "layers": layers,
+            "batch_size": batch_size,
+            "epochs": epochs,
+            "device": str(device),
+        },
+    }
+
+    with open(metrics_file, "w") as f:
+        json.dump(all_metrics, f, indent=2)
+
+    print(f"Métricas salvas em {metrics_file}")
+
+
+def train_resnet(
+    dataset_path,
+    layers,
+    batch_size,
+    epochs,
+    output_path="./results/",
+):
+    weights = ResNet50_Weights.IMAGENET1K_V1
+    transform = transforms.Compose(
+        [
+            transforms.Resize(224),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        ]
+    )
     val_transform = weights.transforms()
 
     data = load_data(
@@ -350,7 +469,7 @@ def train_densenet(
     model = model.to(device)
 
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=1e-4)
+    optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay=0.0001)
 
     train_sampler = BatchSampler(train_dataset, batch_size)
     train_loader = DataLoader(
