@@ -29,12 +29,13 @@ class CustomSampler(Sampler):
             batch = []
             for c in self.classes:
                 if len(S_work[c]) < self.m_per_class:
+                    print("Valor do subconjunto menor que batch")
                     S_work[c] = list(self.S[c])
                     np.random.shuffle(S_work[c])
                 chosen = S_work[c][: self.m_per_class]
                 batch.extend(chosen)
                 if len(self.S[c]) == self.c_max:
-                    S_work[c] = [s for s in self.S[c] if s not in chosen]
+                    S_work[c] = S_work[c][self.m_per_class:]
                 for c in self.classes:
                     np.random.shuffle(S_work[c])
             yield batch

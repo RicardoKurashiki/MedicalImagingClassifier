@@ -55,7 +55,6 @@ if __name__ == "__main__":
     train_dataset = data["train"]
     val_dataset = data["val"]
     sampler = CustomSampler(train_dataset, batch_size=32)
-    reps = 0
 
     results = []
 
@@ -64,10 +63,7 @@ if __name__ == "__main__":
         for index in batch:
             c = train_dataset.dataframe.iloc[index]
             result['idx'].append({"idx": index, "label": c['label'], "path": c['path']})
-        reps+=1
         results.append(result)
-        if reps >= 10:
-            break
 
     df = pd.DataFrame(data=results)
     df.to_csv("test.csv", index=False)
