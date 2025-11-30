@@ -41,14 +41,10 @@ def main():
                             f"python3 main.py --model {model} --layers {layer} --batch-size {batch_size} --dataset {dataset} --cross {cross}"
                         )
 
-    for config in configs:
-        print(config)
-
     print(
         f"Total de configurações: {len(configs)} | Paralelas: {n_parallel} instâncias"
     )
 
-    return
     with Pool(processes=n_parallel) as pool:
         results = list(
             tqdm(
