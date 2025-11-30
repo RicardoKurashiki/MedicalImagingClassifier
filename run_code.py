@@ -17,10 +17,16 @@ def run_command(cmd):
 def main():
     n_parallel = 4
     models = ["densenet", "resnet", "mobilenet", "efficientnet"]
-    layers = [5, 4]
+    layers = [5]
     batch_sizes = [32]
-    datasets = ["CXR8", "chest_xray"]
-    cross_datasets = ["chest_xray", "CXR8"]
+    datasets = [
+        "chest_xray",
+        "CXR8",
+    ]
+    cross_datasets = [
+        "CXR8",
+        "chest_xray",
+    ]
 
     configs = []
 
@@ -35,10 +41,14 @@ def main():
                             f"python3 main.py --model {model} --layers {layer} --batch-size {batch_size} --dataset {dataset} --cross {cross}"
                         )
 
+    for config in configs:
+        print(config)
+
     print(
         f"Total de configurações: {len(configs)} | Paralelas: {n_parallel} instâncias"
     )
 
+    return
     with Pool(processes=n_parallel) as pool:
         results = list(
             tqdm(
