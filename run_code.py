@@ -33,20 +33,25 @@ def main():
         "cross_entropy",
         "focal_loss",
     ]
+    samplers = [
+        "weighted",
+        "balanced",
+    ]
 
     configs = []
 
     for layer in layers:
         for batch_size in batch_sizes:
             for loss in losses:
-                for dataset in datasets:
-                    for cross in cross_datasets:
-                        if cross == dataset:
-                            continue
-                        for model in models:
-                            configs.append(
-                                f"python3 main.py --model {model} --layers {layer} --batch-size {batch_size} --dataset {dataset} --cross {cross} --loss {loss}"
-                            )
+                for sampler in samplers:
+                    for dataset in datasets:
+                        for cross in cross_datasets:
+                            if cross == dataset:
+                                continue
+                            for model in models:
+                                configs.append(
+                                    f"python3 main.py --model {model} --layers {layer} --batch-size {batch_size} --dataset {dataset} --cross {cross} --loss {loss} --sampler {sampler}"
+                                )
 
     print(
         f"Total de configurações: {len(configs)} | Paralelas: {n_parallel} instâncias"
