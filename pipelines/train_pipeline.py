@@ -70,7 +70,7 @@ def train_pipeline(
 
     if sampler == "weighted":
         train_sampler = WeightedRandomSampler(
-            weights=train_dataset.weights,
+            weights=train_dataset.class_weight,
             num_samples=len(train_dataset),
             replacement=True,
         )
