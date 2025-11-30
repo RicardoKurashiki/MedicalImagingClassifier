@@ -16,13 +16,41 @@ def gen_dataframe(root_dir):
     if not os.path.isdir(root_dir):
         return
     map_result = {"path": [], "label": []}
+
+    # Extensões de imagem válidas
+    valid_extensions = {
+        ".jpg",
+        ".jpeg",
+        ".png",
+        ".bmp",
+        ".tiff",
+        ".tif",
+        ".gif",
+        ".webp",
+    }
+
     class_names = os.listdir(root_dir)
     for class_name in class_names:
         class_path = os.path.join(root_dir, class_name)
         if not os.path.isdir(class_path) or class_name.startswith("."):
             continue
         for img in os.listdir(class_path):
-            map_result["path"].append(os.path.join(class_path, img))
+            # Ignorar arquivos que começam com ponto (como .DS_Store)
+            if img.startswith("."):
+                continue
+
+            img_path = os.path.join(class_path, img)
+
+            # Verificar se é um arquivo (não um diretório)
+            if not os.path.isfile(img_path):
+                continue
+
+            # Verificar extensão válida (case-insensitive)
+            _, ext = os.path.splitext(img)
+            if ext.lower() not in valid_extensions:
+                continue
+
+            map_result["path"].append(img_path)
             map_result["label"].append(class_name)
     return pd.DataFrame(map_result)
 

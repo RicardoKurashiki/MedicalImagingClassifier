@@ -11,7 +11,11 @@ from torchvision.models import DenseNet121_Weights
 from torchvision.models import MobileNet_V3_Small_Weights
 from torchvision.models import EfficientNet_V2_S_Weights
 from torchvision.models import ViT_B_16_Weights
-
+from torchvision.models import resnet50
+from torchvision.models import densenet121
+from torchvision.models import mobilenet_v3_small
+from torchvision.models import efficientnet_v2_s
+from torchvision.models import vit_b_16
 
 from utils import load_data
 
@@ -22,12 +26,108 @@ device = (
 )
 
 
-def load_model(model_path):
-    model = torch.load(
-        model_path,
-        map_location=device,
-        weights_only=False,
+def create_densenet_model(n_classes):
+    """Cria um modelo DenseNet121 com a arquitetura customizada."""
+    weights = DenseNet121_Weights.IMAGENET1K_V1
+    model = densenet121(weights=weights)
+
+    num_ftrs = model.classifier.in_features
+    model.classifier = nn.Sequential(
+        nn.Linear(num_ftrs, 512),
+        nn.ReLU(inplace=True),
+        nn.Dropout(0.2),
+        nn.Linear(512, n_classes),
     )
+    return model
+
+
+def create_resnet_model(n_classes):
+    """Cria um modelo ResNet50 com a arquitetura customizada."""
+    weights = ResNet50_Weights.IMAGENET1K_V2
+    model = resnet50(weights=weights)
+
+    num_ftrs = model.fc.in_features
+    model.fc = nn.Sequential(
+        nn.Linear(num_ftrs, 1024),
+        nn.ReLU(inplace=True),
+        nn.Dropout(0.2),
+        nn.Linear(1024, 512),
+        nn.ReLU(inplace=True),
+        nn.Dropout(0.2),
+        nn.Linear(512, n_classes),
+    )
+    return model
+
+
+def create_mobilenet_model(n_classes):
+    """Cria um modelo MobileNet V3 Small com a arquitetura customizada."""
+    weights = MobileNet_V3_Small_Weights.IMAGENET1K_V1
+    model = mobilenet_v3_small(weights=weights)
+
+    num_ftrs = model.classifier[0].in_features
+    model.classifier = nn.Sequential(
+        nn.Linear(num_ftrs, 1024),
+        nn.Hardswish(),
+        nn.Dropout(p=0.2),
+        nn.Linear(1024, 512),
+        nn.Hardswish(),
+        nn.Dropout(p=0.2),
+        nn.Linear(512, n_classes),
+    )
+    return model
+
+
+def create_efficientnet_model(n_classes):
+    """Cria um modelo EfficientNet V2 S com a arquitetura customizada."""
+    weights = EfficientNet_V2_S_Weights.IMAGENET1K_V1
+    model = efficientnet_v2_s(weights=weights)
+
+    num_ftrs = model.classifier[1].in_features
+    model.classifier = nn.Sequential(
+        nn.Dropout(p=0.2, inplace=True),
+        nn.Linear(in_features=num_ftrs, out_features=512, bias=True),
+        nn.ReLU(inplace=True),
+        nn.Dropout(0.2),
+        nn.Linear(512, n_classes),
+    )
+    return model
+
+
+def create_vit_model(n_classes):
+    """Cria um modelo Vision Transformer B/16 com a arquitetura customizada."""
+    weights = ViT_B_16_Weights.IMAGENET1K_V1
+    model = vit_b_16(weights=weights)
+
+    num_ftrs = model.heads[0].in_features
+    model.heads = nn.Sequential(
+        nn.Linear(num_ftrs, 512),
+        nn.ReLU(inplace=True),
+        nn.Dropout(0.2),
+        nn.Linear(512, n_classes),
+    )
+    return model
+
+
+def load_model(model_path, pretrained_model, n_classes):
+    """Carrega os pesos de um modelo treinado e reconstrói a arquitetura."""
+    # Criar o modelo com a arquitetura correta
+    if pretrained_model == "densenet":
+        model = create_densenet_model(n_classes)
+    elif pretrained_model == "resnet":
+        model = create_resnet_model(n_classes)
+    elif pretrained_model == "mobilenet":
+        model = create_mobilenet_model(n_classes)
+    elif pretrained_model == "efficientnet":
+        model = create_efficientnet_model(n_classes)
+    elif pretrained_model == "vit":
+        model = create_vit_model(n_classes)
+    else:
+        raise ValueError(f"Pretrained model {pretrained_model} not supported")
+
+    # Carregar os pesos treinados
+    state_dict = torch.load(model_path, map_location=device, weights_only=True)
+    model.load_state_dict(state_dict)
+
     model = model.to(device)
     model.eval()
     return model
@@ -192,8 +292,37 @@ def classification_report(results, class_names=None):
     return report
 
 
-def run(model_path, cross_dataset_path, pretrained_model, batch_size=32, prefix=""):
-    model = load_model(model_path)
+def run(
+    model_path,
+    cross_dataset_path,
+    pretrained_model,
+    batch_size=32,
+    prefix="",
+    verbose=False,
+):
+    # Carregar número de classes do JSON de métricas
+    model_dir = os.path.dirname(model_path)
+    metrics_file = os.path.join(model_dir, "model_metrics.json")
+
+    if not os.path.exists(metrics_file):
+        raise FileNotFoundError(
+            f"Arquivo de métricas não encontrado: {metrics_file}. "
+            "Certifique-se de que o modelo foi treinado corretamente."
+        )
+
+    with open(metrics_file, "r") as f:
+        metrics_data = json.load(f)
+
+    n_classes = metrics_data.get("training_config", {}).get("n_classes", 2)
+
+    if n_classes is None:
+        raise ValueError(
+            "Número de classes não encontrado no arquivo de métricas. "
+            "Certifique-se de que o modelo foi treinado com a versão atualizada do código."
+        )
+
+    print(f"Carregando modelo com {n_classes} classes...")
+    model = load_model(model_path, pretrained_model, n_classes)
 
     print(f"Carregando dataset de teste de {cross_dataset_path}")
 
@@ -234,14 +363,24 @@ def run(model_path, cross_dataset_path, pretrained_model, batch_size=32, prefix=
 
     print(f"Total de amostras de teste: {len(test_dataset)}")
 
-    criterion = nn.CrossEntropyLoss()
-    results = evaluate_model(model, test_loader, criterion=criterion, num_classes=2)
+    # Determinar nomes das classes do dataset
+    if hasattr(test_dataset, "unique_labels"):
+        class_names = list(test_dataset.unique_labels)
+    else:
+        # Fallback para nomes padrão baseado no número de classes
+        if n_classes == 2:
+            class_names = ["NORMAL", "PNEUMONIA"]
+        else:
+            class_names = [f"Class {i}" for i in range(n_classes)]
 
-    report = classification_report(results, class_names=["NORMAL", "PNEUMONIA"])
+    criterion = nn.CrossEntropyLoss()
+    results = evaluate_model(
+        model, test_loader, criterion=criterion, num_classes=n_classes
+    )
+
+    report = classification_report(results, class_names=class_names)
 
     print(results["confusion_matrix"])
-
-    model_dir = os.path.dirname(model_path)
     cross_dataset_name = os.path.basename(os.path.normpath(cross_dataset_path))
     json_filename = f"{prefix}test_{cross_dataset_name}_results.json"
     json_path = os.path.join(model_dir, json_filename)

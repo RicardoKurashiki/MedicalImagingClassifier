@@ -125,7 +125,7 @@ def train_densenet(
         train_dataset,
         batch_sampler=train_sampler,
         pin_memory=True,
-        num_workers=2,
+        num_workers=4,
         persistent_workers=True,
         prefetch_factor=2,
     )
@@ -133,7 +133,7 @@ def train_densenet(
         val_dataset,
         batch_size=batch_size,
         pin_memory=True,
-        num_workers=2,
+        num_workers=4,
         persistent_workers=True,
         prefetch_factor=2,
     )
@@ -154,9 +154,9 @@ def train_densenet(
     )
 
     if verbose:
-        print("Salvando modelo...")
+        print("Salvando pesos do modelo...")
     os.makedirs(output_path, exist_ok=True)
-    torch.save(model, os.path.join(output_path, "model.pt"))
+    torch.save(model.state_dict(), os.path.join(output_path, "model.pt"))
 
     if verbose:
         print("Salvando métricas...")
@@ -170,6 +170,7 @@ def train_densenet(
             "batch_size": batch_size,
             "epochs": epochs,
             "device": str(device),
+            "n_classes": n_classes,
         },
     }
 
@@ -245,7 +246,7 @@ def train_resnet(
         train_dataset,
         batch_sampler=train_sampler,
         pin_memory=True,
-        num_workers=2,
+        num_workers=4,
         persistent_workers=True,
         prefetch_factor=2,
     )
@@ -253,7 +254,7 @@ def train_resnet(
         val_dataset,
         batch_size=batch_size,
         pin_memory=True,
-        num_workers=2,
+        num_workers=4,
         persistent_workers=True,
         prefetch_factor=2,
     )
@@ -273,9 +274,9 @@ def train_resnet(
     )
 
     if verbose:
-        print("Salvando modelo...")
+        print("Salvando pesos do modelo...")
     os.makedirs(output_path, exist_ok=True)
-    torch.save(model, os.path.join(output_path, "model.pt"))
+    torch.save(model.state_dict(), os.path.join(output_path, "model.pt"))
 
     if verbose:
         print("Salvando métricas...")
@@ -289,6 +290,7 @@ def train_resnet(
             "batch_size": batch_size,
             "epochs": epochs,
             "device": str(device),
+            "n_classes": n_classes,
         },
     }
 
@@ -364,7 +366,7 @@ def train_mobilenet(
         train_dataset,
         batch_sampler=train_sampler,
         pin_memory=True,
-        num_workers=2,
+        num_workers=4,
         persistent_workers=True,
         prefetch_factor=2,
     )
@@ -372,7 +374,7 @@ def train_mobilenet(
         val_dataset,
         batch_size=batch_size,
         pin_memory=True,
-        num_workers=2,
+        num_workers=4,
         persistent_workers=True,
         prefetch_factor=2,
     )
@@ -392,9 +394,9 @@ def train_mobilenet(
     )
 
     if verbose:
-        print("Salvando modelo...")
+        print("Salvando pesos do modelo...")
     os.makedirs(output_path, exist_ok=True)
-    torch.save(model, os.path.join(output_path, "model.pt"))
+    torch.save(model.state_dict(), os.path.join(output_path, "model.pt"))
 
     if verbose:
         print("Salvando métricas...")
@@ -408,6 +410,7 @@ def train_mobilenet(
             "batch_size": batch_size,
             "epochs": epochs,
             "device": str(device),
+            "n_classes": n_classes,
         },
     }
 
@@ -481,7 +484,7 @@ def train_efficientnet(
         train_dataset,
         batch_sampler=train_sampler,
         pin_memory=True,
-        num_workers=2,
+        num_workers=4,
         persistent_workers=True,
         prefetch_factor=2,
     )
@@ -489,7 +492,7 @@ def train_efficientnet(
         val_dataset,
         batch_size=batch_size,
         pin_memory=True,
-        num_workers=2,
+        num_workers=4,
         persistent_workers=True,
         prefetch_factor=2,
     )
@@ -509,9 +512,9 @@ def train_efficientnet(
     )
 
     if verbose:
-        print("Salvando modelo...")
+        print("Salvando pesos do modelo...")
     os.makedirs(output_path, exist_ok=True)
-    torch.save(model, os.path.join(output_path, "model.pt"))
+    torch.save(model.state_dict(), os.path.join(output_path, "model.pt"))
 
     if verbose:
         print("Salvando métricas...")
@@ -525,6 +528,7 @@ def train_efficientnet(
             "batch_size": batch_size,
             "epochs": epochs,
             "device": str(device),
+            "n_classes": n_classes,
         },
     }
 
@@ -597,7 +601,7 @@ def train_vit(
         train_dataset,
         batch_sampler=train_sampler,
         pin_memory=True,
-        num_workers=2,
+        num_workers=4,
         persistent_workers=True,
         prefetch_factor=2,
     )
@@ -605,7 +609,7 @@ def train_vit(
         val_dataset,
         batch_size=batch_size,
         pin_memory=True,
-        num_workers=2,
+        num_workers=4,
         persistent_workers=True,
         prefetch_factor=2,
     )
@@ -625,9 +629,9 @@ def train_vit(
     )
 
     if verbose:
-        print("Salvando modelo...")
+        print("Salvando pesos do modelo...")
     os.makedirs(output_path, exist_ok=True)
-    torch.save(model, os.path.join(output_path, "model.pt"))
+    torch.save(model.state_dict(), os.path.join(output_path, "model.pt"))
 
     if verbose:
         print("Salvando métricas...")
@@ -641,6 +645,7 @@ def train_vit(
             "batch_size": batch_size,
             "epochs": epochs,
             "device": str(device),
+            "n_classes": n_classes,
         },
     }
 

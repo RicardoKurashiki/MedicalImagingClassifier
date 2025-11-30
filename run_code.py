@@ -17,8 +17,10 @@ def run_command(cmd):
 def main():
     n_parallel = 4
     models = ["densenet", "resnet", "mobilenet", "efficientnet", "vit"]
-    layers = [5, 4, 3, 2, 1]
-    batch_sizes = [64, 32, 16, 8, 4]
+    # layers = [5, 4, 3, 2, 1]
+    layers = [5, 4, 3]
+    # batch_sizes = [64, 32, 16, 8, 4]
+    batch_sizes = [32]
     datasets = ["CXR8", "chest_xray"]
     cross_datasets = ["chest_xray", "CXR8"]
 
