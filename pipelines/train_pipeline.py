@@ -1,21 +1,14 @@
 #!/usr/bin/env python3
 
 import os
-import numpy as np
 import torch
 import json
 import torch.nn as nn
 import torch.optim as optim
 
-from torchvision import transforms
 from torch.utils.data import DataLoader
 from utils import BatchSampler, load_data, train_model
-
-from torchvision.models import resnet50, ResNet50_Weights
-from torchvision.models import densenet121, DenseNet121_Weights
-from torchvision.models import mobilenet_v3_small, MobileNet_V3_Small_Weights
-from torchvision.models import efficientnet_v2_s, EfficientNet_V2_S_Weights
-from torchvision.models import vit_b_16, ViT_B_16_Weights
+from models import ClassificationModel
 
 device = (
     torch.accelerator.current_accelerator().type
@@ -26,99 +19,41 @@ device = (
 EARLY_STOPPING_PATIENCE = 10
 
 
-def unfreeze_layers(model, n_layers):
-    for p in model.parameters():
-        p.requires_grad = False
-
-    if n_layers is None or n_layers <= 0:
-        return
-
-    indexed = [
-        (idx, name, module) for idx, (name, module) in enumerate(model.named_modules())
-    ]
-    convs = [
-        (idx, name, module)
-        for idx, name, module in indexed
-        if isinstance(module, nn.Conv2d)
-    ]
-    if len(convs) < n_layers:
-        raise ValueError("O modelo não contém camadas Conv2d suficientes.")
-
-    conv_idx = convs[-n_layers][0]
-    for idx, _, module in indexed:
-        if idx >= conv_idx:
-            for p in module.parameters(recurse=False):
-                p.requires_grad = True
-
-
-def summary(model):
-    print(f"{'Layer Name':50} {'Type':20} {'Trainable'}")
-    print("-" * 90)
-
-    for name, module in model.named_modules():
-        if name == "":
-            continue
-        has_params = any(True for _ in module.parameters(recurse=False))
-        if has_params:
-            trainable = all(p.requires_grad for p in module.parameters(recurse=False))
-            print(f"{name:50} {module.__class__.__name__:20} {trainable}")
-
-
-def train_densenet(
+def train_pipeline(
     dataset_path,
+    backbone,
     layers,
     batch_size,
     epochs,
     output_path="./results/",
     verbose=False,
 ):
-    weights = DenseNet121_Weights.IMAGENET1K_V1
-    transform = transforms.Compose(
-        [
-            transforms.Resize(256),
-            transforms.CenterCrop(224),
-            transforms.RandomRotation(10),
-            transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-        ]
+    n_classes = 2
+
+    classification_model = ClassificationModel(
+        num_classes=n_classes,
+        backbone=backbone,
+        trainable_layers=layers,
     )
-    val_transform = weights.transforms()
 
     data = load_data(
         os.path.join(dataset_path, "train/"),
-        transform=transform,
-        val_transform=val_transform,
+        transform=classification_model.transform,
+        val_transform=classification_model.val_transform,
     )
 
     train_dataset = data["train"]
     val_dataset = data["val"]
 
-    n_classes = len(np.unique(train_dataset.labels))
-
-    model = densenet121(weights=weights)
-
-    num_ftrs = model.classifier.in_features
-    model.classifier = nn.Sequential(
-        nn.Linear(num_ftrs, 512),
-        nn.ReLU(inplace=True),
-        nn.Dropout(0.2),
-        nn.Linear(512, n_classes),
-    )
-
-    unfreeze_layers(model, layers)
-
     if verbose:
-        summary(model)
+        classification_model.summary()
 
-    model = model.to(device)
-
-    # criterion = nn.CrossEntropyLoss(weight=train_dataset.class_weight)
+    model = classification_model.model
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(
         filter(lambda p: p.requires_grad, model.parameters()),
-        lr=0.001,
-        weight_decay=0.0001,
+        lr=1e-4,
+        weight_decay=1e-5,
     )
 
     train_sampler = BatchSampler(train_dataset, batch_size)
@@ -146,7 +81,7 @@ def train_densenet(
 
     model, history, metrics = train_model(
         model,
-        "densenet",
+        backbone,
         dataloaders,
         criterion,
         optimizer,
@@ -156,17 +91,19 @@ def train_densenet(
 
     if verbose:
         print("Salvando pesos do modelo...")
+
     os.makedirs(output_path, exist_ok=True)
     torch.save(model.state_dict(), os.path.join(output_path, "model.pt"))
 
     if verbose:
         print("Salvando métricas...")
+
     metrics_file = os.path.join(output_path, "model_metrics.json")
     all_metrics = {
         "training_history": history,
         "computational_metrics": metrics,
         "training_config": {
-            "model": "densenet",
+            "model": backbone,
             "layers": layers,
             "batch_size": batch_size,
             "epochs": epochs,
@@ -180,479 +117,6 @@ def train_densenet(
 
         if verbose:
             print(f"Métricas salvas em {metrics_file}")
-
-
-def train_resnet(
-    dataset_path,
-    layers,
-    batch_size,
-    epochs,
-    output_path="./results/",
-    verbose=False,
-):
-    weights = ResNet50_Weights.IMAGENET1K_V2
-    transform = transforms.Compose(
-        [
-            transforms.Resize(256),
-            transforms.CenterCrop(224),
-            transforms.RandomRotation(10),
-            transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-        ]
-    )
-    val_transform = weights.transforms()
-
-    data = load_data(
-        os.path.join(dataset_path, "train/"),
-        transform=transform,
-        val_transform=val_transform,
-    )
-
-    train_dataset = data["train"]
-    val_dataset = data["val"]
-
-    n_classes = len(np.unique(train_dataset.labels))
-
-    model = resnet50(weights=weights)
-
-    num_ftrs = model.fc.in_features
-    model.fc = nn.Sequential(
-        nn.Linear(num_ftrs, 512),
-        nn.ReLU(inplace=True),
-        nn.Dropout(0.2),
-        nn.Linear(512, n_classes),
-    )
-
-    unfreeze_layers(model, layers)
-
-    if verbose:
-        summary(model)
-
-    model = model.to(device)
-
-    # criterion = nn.CrossEntropyLoss(weight=train_dataset.class_weight)
-    criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(
-        filter(lambda p: p.requires_grad, model.parameters()),
-        lr=0.001,
-        weight_decay=0.0001,
-    )
-
-    train_sampler = BatchSampler(train_dataset, batch_size)
-
-    train_loader = DataLoader(
-        train_dataset,
-        batch_sampler=train_sampler,
-        pin_memory=True,
-        num_workers=4,
-        persistent_workers=True,
-        prefetch_factor=2,
-    )
-    val_loader = DataLoader(
-        val_dataset,
-        batch_size=batch_size,
-        pin_memory=True,
-        num_workers=4,
-        persistent_workers=True,
-        prefetch_factor=2,
-    )
-
-    dataloaders = {
-        "train": train_loader,
-        "val": val_loader,
-    }
-
-    model, history, metrics = train_model(
-        model,
-        "resnet",
-        dataloaders,
-        criterion,
-        optimizer,
-        epochs,
-    )
-
-    if verbose:
-        print("Salvando pesos do modelo...")
-    os.makedirs(output_path, exist_ok=True)
-    torch.save(model.state_dict(), os.path.join(output_path, "model.pt"))
-
-    if verbose:
-        print("Salvando métricas...")
-    metrics_file = os.path.join(output_path, "model_metrics.json")
-    all_metrics = {
-        "training_history": history,
-        "computational_metrics": metrics,
-        "training_config": {
-            "model": "resnet",
-            "layers": layers,
-            "batch_size": batch_size,
-            "epochs": epochs,
-            "device": str(device),
-            "n_classes": n_classes,
-        },
-    }
-
-    with open(metrics_file, "w") as f:
-        json.dump(all_metrics, f, indent=2)
-
-    if verbose:
-        print(f"Métricas salvas em {metrics_file}")
-
-
-def train_mobilenet(
-    dataset_path,
-    layers,
-    batch_size,
-    epochs,
-    output_path="./results/",
-    verbose=False,
-):
-    weights = MobileNet_V3_Small_Weights.IMAGENET1K_V1
-    transform = transforms.Compose(
-        [
-            transforms.Resize(256),
-            transforms.CenterCrop(224),
-            transforms.RandomRotation(10),
-            transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-        ]
-    )
-    val_transform = weights.transforms()
-
-    data = load_data(
-        os.path.join(dataset_path, "train/"),
-        transform=transform,
-        val_transform=val_transform,
-    )
-
-    train_dataset = data["train"]
-    val_dataset = data["val"]
-
-    n_classes = len(np.unique(train_dataset.labels))
-
-    model = mobilenet_v3_small(weights=weights)
-
-    num_ftrs = model.classifier[0].in_features
-    model.classifier = nn.Sequential(
-        nn.Linear(num_ftrs, 512),
-        nn.ReLU(inplace=True),
-        nn.Dropout(0.2),
-        nn.Linear(512, n_classes),
-    )
-
-    unfreeze_layers(model, layers)
-
-    if verbose:
-        summary(model)
-
-    model = model.to(device)
-
-    # criterion = nn.CrossEntropyLoss(weight=train_dataset.class_weight)
-    criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(
-        filter(lambda p: p.requires_grad, model.parameters()),
-        lr=0.001,
-        weight_decay=0.0001,
-    )
-
-    train_sampler = BatchSampler(train_dataset, batch_size)
-
-    train_loader = DataLoader(
-        train_dataset,
-        batch_sampler=train_sampler,
-        pin_memory=True,
-        num_workers=4,
-        persistent_workers=True,
-        prefetch_factor=2,
-    )
-    val_loader = DataLoader(
-        val_dataset,
-        batch_size=batch_size,
-        pin_memory=True,
-        num_workers=4,
-        persistent_workers=True,
-        prefetch_factor=2,
-    )
-
-    dataloaders = {
-        "train": train_loader,
-        "val": val_loader,
-    }
-
-    model, history, metrics = train_model(
-        model,
-        "mobilenet",
-        dataloaders,
-        criterion,
-        optimizer,
-        epochs,
-    )
-
-    if verbose:
-        print("Salvando pesos do modelo...")
-    os.makedirs(output_path, exist_ok=True)
-    torch.save(model.state_dict(), os.path.join(output_path, "model.pt"))
-
-    if verbose:
-        print("Salvando métricas...")
-    metrics_file = os.path.join(output_path, "model_metrics.json")
-    all_metrics = {
-        "training_history": history,
-        "computational_metrics": metrics,
-        "training_config": {
-            "model": "mobilenet",
-            "layers": layers,
-            "batch_size": batch_size,
-            "epochs": epochs,
-            "device": str(device),
-            "n_classes": n_classes,
-        },
-    }
-
-    with open(metrics_file, "w") as f:
-        json.dump(all_metrics, f, indent=2)
-
-    if verbose:
-        print(f"Métricas salvas em {metrics_file}")
-
-
-def train_efficientnet(
-    dataset_path,
-    layers,
-    batch_size,
-    epochs,
-    output_path="./results/",
-    verbose=False,
-):
-    weights = EfficientNet_V2_S_Weights.IMAGENET1K_V1
-    transform = transforms.Compose(
-        [
-            transforms.Resize(256),
-            transforms.CenterCrop(224),
-            transforms.RandomRotation(10),
-            transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-        ]
-    )
-    val_transform = weights.transforms()
-
-    data = load_data(
-        os.path.join(dataset_path, "train/"),
-        transform=transform,
-        val_transform=val_transform,
-    )
-
-    train_dataset = data["train"]
-    val_dataset = data["val"]
-
-    n_classes = len(np.unique(train_dataset.labels))
-
-    model = efficientnet_v2_s(weights=weights)
-
-    num_ftrs = model.classifier[1].in_features
-    model.classifier = nn.Sequential(
-        nn.Dropout(p=0.2, inplace=True),
-        nn.Linear(num_ftrs, 512),
-        nn.ReLU(inplace=True),
-        nn.Dropout(0.2),
-        nn.Linear(512, n_classes),
-    )
-
-    unfreeze_layers(model, layers)
-
-    if verbose:
-        summary(model)
-
-    model = model.to(device)
-
-    # criterion = nn.CrossEntropyLoss(weight=train_dataset.class_weight)
-    criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(
-        filter(lambda p: p.requires_grad, model.parameters()),
-        lr=0.001,
-        weight_decay=0.0001,
-    )
-
-    train_sampler = BatchSampler(train_dataset, batch_size)
-
-    train_loader = DataLoader(
-        train_dataset,
-        batch_sampler=train_sampler,
-        pin_memory=True,
-        num_workers=4,
-        persistent_workers=True,
-        prefetch_factor=2,
-    )
-    val_loader = DataLoader(
-        val_dataset,
-        batch_size=batch_size,
-        pin_memory=True,
-        num_workers=4,
-        persistent_workers=True,
-        prefetch_factor=2,
-    )
-
-    dataloaders = {
-        "train": train_loader,
-        "val": val_loader,
-    }
-
-    model, history, metrics = train_model(
-        model,
-        "efficientnet",
-        dataloaders,
-        criterion,
-        optimizer,
-        epochs,
-    )
-
-    if verbose:
-        print("Salvando pesos do modelo...")
-    os.makedirs(output_path, exist_ok=True)
-    torch.save(model.state_dict(), os.path.join(output_path, "model.pt"))
-
-    if verbose:
-        print("Salvando métricas...")
-    metrics_file = os.path.join(output_path, "model_metrics.json")
-    all_metrics = {
-        "training_history": history,
-        "computational_metrics": metrics,
-        "training_config": {
-            "model": "efficientnet",
-            "layers": layers,
-            "batch_size": batch_size,
-            "epochs": epochs,
-            "device": str(device),
-            "n_classes": n_classes,
-        },
-    }
-
-    with open(metrics_file, "w") as f:
-        json.dump(all_metrics, f, indent=2)
-
-    if verbose:
-        print(f"Métricas salvas em {metrics_file}")
-
-
-def train_vit(
-    dataset_path,
-    layers,
-    batch_size,
-    epochs,
-    output_path="./results/",
-    verbose=False,
-):
-    weights = ViT_B_16_Weights.IMAGENET1K_V1
-    transform = transforms.Compose(
-        [
-            transforms.Resize(256),
-            transforms.CenterCrop(224),
-            transforms.RandomRotation(10),
-            transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-        ]
-    )
-    val_transform = weights.transforms()
-
-    data = load_data(
-        os.path.join(dataset_path, "train/"),
-        transform=transform,
-        val_transform=val_transform,
-    )
-
-    train_dataset = data["train"]
-    val_dataset = data["val"]
-
-    n_classes = len(np.unique(train_dataset.labels))
-
-    model = vit_b_16(weights=weights)
-
-    num_ftrs = model.heads[0].in_features
-    model.heads = nn.Sequential(
-        nn.Linear(num_ftrs, 512),
-        nn.ReLU(inplace=True),
-        nn.Dropout(0.2),
-        nn.Linear(512, n_classes),
-    )
-
-    unfreeze_layers(model, layers)
-
-    if verbose:
-        summary(model)
-
-    model = model.to(device)
-
-    # criterion = nn.CrossEntropyLoss(weight=train_dataset.class_weight)
-    criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(
-        filter(lambda p: p.requires_grad, model.parameters()),
-        lr=0.001,
-        weight_decay=0.0001,
-    )
-
-    train_sampler = BatchSampler(train_dataset, batch_size)
-
-    train_loader = DataLoader(
-        train_dataset,
-        batch_sampler=train_sampler,
-        pin_memory=True,
-        num_workers=4,
-        persistent_workers=True,
-        prefetch_factor=2,
-    )
-    val_loader = DataLoader(
-        val_dataset,
-        batch_size=batch_size,
-        pin_memory=True,
-        num_workers=4,
-        persistent_workers=True,
-        prefetch_factor=2,
-    )
-
-    dataloaders = {
-        "train": train_loader,
-        "val": val_loader,
-    }
-
-    model, history, metrics = train_model(
-        model,
-        "vit",
-        dataloaders,
-        criterion,
-        optimizer,
-        epochs,
-    )
-
-    if verbose:
-        print("Salvando pesos do modelo...")
-    os.makedirs(output_path, exist_ok=True)
-    torch.save(model.state_dict(), os.path.join(output_path, "model.pt"))
-
-    if verbose:
-        print("Salvando métricas...")
-    metrics_file = os.path.join(output_path, "model_metrics.json")
-    all_metrics = {
-        "training_history": history,
-        "computational_metrics": metrics,
-        "training_config": {
-            "model": "vit",
-            "layers": layers,
-            "batch_size": batch_size,
-            "epochs": epochs,
-            "device": str(device),
-            "n_classes": n_classes,
-        },
-    }
-
-    with open(metrics_file, "w") as f:
-        json.dump(all_metrics, f, indent=2)
-
-    if verbose:
-        print(f"Métricas salvas em {metrics_file}")
 
 
 def run(
@@ -672,49 +136,15 @@ def run(
         f"batch_size_{batch_size}",
         f"epochs_{epochs}/",
     )
-    if pretrained_model == "densenet":
-        train_densenet(
-            dataset_path,
-            trainable_layers,
-            batch_size,
-            epochs,
-            output_path=output_path,
-            verbose=verbose,
-        )
-    elif pretrained_model == "resnet":
-        train_resnet(
-            dataset_path,
-            trainable_layers,
-            batch_size,
-            epochs,
-            output_path=output_path,
-            verbose=verbose,
-        )
-    elif pretrained_model == "mobilenet":
-        train_mobilenet(
-            dataset_path,
-            trainable_layers,
-            batch_size,
-            epochs,
-            output_path=output_path,
-            verbose=verbose,
-        )
-    elif pretrained_model == "efficientnet":
-        train_efficientnet(
-            dataset_path,
-            trainable_layers,
-            batch_size,
-            epochs,
-            output_path=output_path,
-            verbose=verbose,
-        )
-    elif pretrained_model == "vit":
-        train_vit(
-            dataset_path,
-            trainable_layers,
-            batch_size,
-            epochs,
-            output_path=output_path,
-            verbose=verbose,
-        )
+
+    train_pipeline(
+        dataset_path,
+        pretrained_model,
+        trainable_layers,
+        batch_size,
+        epochs,
+        output_path,
+        verbose,
+    )
+
     return output_path
