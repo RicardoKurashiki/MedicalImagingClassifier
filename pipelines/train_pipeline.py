@@ -93,7 +93,7 @@ def train_pipeline(
         print("Salvando pesos do modelo...")
 
     os.makedirs(output_path, exist_ok=True)
-    torch.save(model.state_dict(), os.path.join(output_path, "model.pt"))
+    classification_model.save_weights(output_path)
 
     if verbose:
         print("Salvando métricas...")
