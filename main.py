@@ -74,7 +74,7 @@ def main():
     )
 
     test_pipeline(
-        os.path.join(output_path, "model.pt"),
+        output_path,
         dataset_path,
         args.model,
         args.batch_size,
@@ -82,7 +82,7 @@ def main():
         args.verbose,
     )
     test_pipeline(
-        os.path.join(output_path, "model.pt"),
+        output_path,
         cross_dataset_path,
         args.model,
         args.batch_size,
