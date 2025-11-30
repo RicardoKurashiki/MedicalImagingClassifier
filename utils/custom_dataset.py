@@ -29,8 +29,6 @@ class CustomDataset(Dataset):
             1 / class_counts[i] for i in self.dataframe["label"].values
         ]
 
-        print(self.class_weight)
-
     def __len__(self):
         return len(self.labels)
 
