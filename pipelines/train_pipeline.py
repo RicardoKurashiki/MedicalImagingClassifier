@@ -113,7 +113,8 @@ def train_densenet(
 
     model = model.to(device)
 
-    criterion = nn.CrossEntropyLoss(weight=train_dataset.class_weight)
+    # criterion = nn.CrossEntropyLoss(weight=train_dataset.class_weight)
+    criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(
         filter(lambda p: p.requires_grad, model.parameters()),
         lr=0.001,
@@ -230,7 +231,8 @@ def train_resnet(
 
     model = model.to(device)
 
-    criterion = nn.CrossEntropyLoss(weight=train_dataset.class_weight)
+    # criterion = nn.CrossEntropyLoss(weight=train_dataset.class_weight)
+    criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(
         filter(lambda p: p.requires_grad, model.parameters()),
         lr=0.001,
@@ -347,7 +349,8 @@ def train_mobilenet(
 
     model = model.to(device)
 
-    criterion = nn.CrossEntropyLoss(weight=train_dataset.class_weight)
+    # criterion = nn.CrossEntropyLoss(weight=train_dataset.class_weight)
+    criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(
         filter(lambda p: p.requires_grad, model.parameters()),
         lr=0.001,
@@ -465,7 +468,8 @@ def train_efficientnet(
 
     model = model.to(device)
 
-    criterion = nn.CrossEntropyLoss(weight=train_dataset.class_weight)
+    # criterion = nn.CrossEntropyLoss(weight=train_dataset.class_weight)
+    criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(
         filter(lambda p: p.requires_grad, model.parameters()),
         lr=0.001,
@@ -582,7 +586,8 @@ def train_vit(
 
     model = model.to(device)
 
-    criterion = nn.CrossEntropyLoss(weight=train_dataset.class_weight)
+    # criterion = nn.CrossEntropyLoss(weight=train_dataset.class_weight)
+    criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(
         filter(lambda p: p.requires_grad, model.parameters()),
         lr=0.001,
