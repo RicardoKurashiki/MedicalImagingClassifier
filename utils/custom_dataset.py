@@ -40,11 +40,7 @@ class CustomDataset(Dataset):
             label: class_weight[label] / total_weight for label in self.unique_labels
         }
 
-        self.class_weight = torch.tensor(
-            list(class_weight.values()),
-            dtype=torch.float32,
-            device=device,
-        )
+        self.class_weight = list(class_weight.values())
 
     def __len__(self):
         return len(self.labels)
