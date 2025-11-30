@@ -217,10 +217,7 @@ def train_resnet(
 
     num_ftrs = model.fc.in_features
     model.fc = nn.Sequential(
-        nn.Linear(num_ftrs, 1024),
-        nn.ReLU(inplace=True),
-        nn.Dropout(0.2),
-        nn.Linear(1024, 512),
+        nn.Linear(num_ftrs, 512),
         nn.ReLU(inplace=True),
         nn.Dropout(0.2),
         nn.Linear(512, n_classes),
@@ -337,12 +334,9 @@ def train_mobilenet(
 
     num_ftrs = model.classifier[0].in_features
     model.classifier = nn.Sequential(
-        nn.Linear(num_ftrs, 1024),
-        nn.Hardswish(),
-        nn.Dropout(p=0.2),
-        nn.Linear(1024, 512),
-        nn.Hardswish(),
-        nn.Dropout(p=0.2),
+        nn.Linear(num_ftrs, 512),
+        nn.ReLU(inplace=True),
+        nn.Dropout(0.2),
         nn.Linear(512, n_classes),
     )
 
@@ -458,7 +452,7 @@ def train_efficientnet(
     num_ftrs = model.classifier[1].in_features
     model.classifier = nn.Sequential(
         nn.Dropout(p=0.2, inplace=True),
-        nn.Linear(in_features=num_ftrs, out_features=512, bias=True),
+        nn.Linear(num_ftrs, 512),
         nn.ReLU(inplace=True),
         nn.Dropout(0.2),
         nn.Linear(512, n_classes),
