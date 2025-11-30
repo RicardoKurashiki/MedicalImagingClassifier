@@ -58,7 +58,7 @@ def train_pipeline(
     if loss == "cross_entropy":
         criterion = nn.CrossEntropyLoss()
     elif loss == "focal_loss":
-        criterion = FocalLoss(alpha=0, gamma=2.0)
+        criterion = FocalLoss(alpha=0.5, gamma=2.0)
     else:
         raise ValueError(f"Loss function {loss} not supported")
 
