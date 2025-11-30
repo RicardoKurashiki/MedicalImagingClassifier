@@ -4,8 +4,6 @@ from torch.utils.data import Dataset
 from PIL import Image
 from torchvision import transforms
 
-from sklearn.utils.class_weight import compute_class_weight
-
 device = (
     torch.accelerator.current_accelerator().type
     if torch.accelerator.is_available()
@@ -25,22 +23,13 @@ class CustomDataset(Dataset):
         self.unique_labels = sorted(self.dataframe["label"].unique())
         self.label_to_idx = {label: idx for idx, label in enumerate(self.unique_labels)}
 
-        class_length = {
-            label: len(self.dataframe[self.dataframe["label"] == label])
-            for label in self.unique_labels
-        }
-        class_weight = {
-            label: len(self.dataframe) / class_length[label]
-            for label in self.unique_labels
-        }
+        class_counts = self.dataframe["label"].value_counts()
 
-        total_weight = sum(class_weight.values())
+        self.class_weight = [
+            1 / class_counts[i] for i in self.dataframe["label"].values
+        ]
 
-        class_weight = {
-            label: class_weight[label] / total_weight for label in self.unique_labels
-        }
-
-        self.class_weight = list(class_weight.values())
+        print(self.class_weight)
 
     def __len__(self):
         return len(self.labels)
