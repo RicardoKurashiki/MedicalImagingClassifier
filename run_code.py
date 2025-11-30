@@ -19,16 +19,14 @@ def main():
     models = ["densenet", "resnet", "mobilenet", "efficientnet"]
     layers = [5]
     batch_sizes = [32]
-    # datasets = [
-    #     "chest_xray",
-    #     "CXR8",
-    # ]
-    # cross_datasets = [
-    #     "CXR8",
-    #     "chest_xray",
-    # ]
-    datasets = ["CXR8"]
-    cross_datasets = ["chest_xray"]
+    datasets = [
+        "chest_xray",
+        "CXR8",
+    ]
+    cross_datasets = [
+        "CXR8",
+        "chest_xray",
+    ]
     losses = [
         "cross_entropy",
         "focal_loss",
