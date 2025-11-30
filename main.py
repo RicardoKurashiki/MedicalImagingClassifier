@@ -56,6 +56,20 @@ parser.add_argument(
     help="Verbose Output",
 )
 
+parser.add_argument(
+    "--loss",
+    choices=("cross_entropy", "focal_loss"),
+    help="Loss Function",
+    default="cross_entropy",
+)
+
+parser.add_argument(
+    "--sampler",
+    choices=("weighted", "balanced"),
+    help="Batch Sampler",
+    default="balanced",
+)
+
 args = parser.parse_args()
 
 
@@ -70,6 +84,8 @@ def main():
         args.batch_size,
         args.dataset,
         args.epochs,
+        args.loss,
+        args.sampler,
         args.verbose,
     )
 

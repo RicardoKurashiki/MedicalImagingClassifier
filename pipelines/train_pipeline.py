@@ -6,7 +6,10 @@ import json
 import torch.nn as nn
 import torch.optim as optim
 
+from torch.utils.data import WeightedRandomSampler
 from torch.utils.data import DataLoader
+
+from loss import FocalLoss
 from utils import BatchSampler, load_data, train_model
 from models import ClassificationModel
 
@@ -26,6 +29,8 @@ def train_pipeline(
     batch_size,
     epochs,
     output_path="./results/",
+    loss="cross_entropy",
+    sampler="balanced",
     verbose=False,
 ):
     n_classes = 2
@@ -49,22 +54,48 @@ def train_pipeline(
         classification_model.summary()
 
     model = classification_model.model
-    criterion = nn.CrossEntropyLoss()
+
+    if loss == "cross_entropy":
+        criterion = nn.CrossEntropyLoss()
+    elif loss == "focal_loss":
+        criterion = FocalLoss(alpha=0, gamma=2.0)
+    else:
+        raise ValueError(f"Loss function {loss} not supported")
+
     optimizer = optim.SGD(
         filter(lambda p: p.requires_grad, model.parameters()),
         lr=1e-4,
         weight_decay=1e-5,
     )
 
-    train_sampler = BatchSampler(train_dataset, batch_size)
-    train_loader = DataLoader(
-        train_dataset,
-        batch_sampler=train_sampler,
-        pin_memory=True,
-        num_workers=4,
-        persistent_workers=True,
-        prefetch_factor=2,
-    )
+    if sampler == "weighted":
+        train_sampler = WeightedRandomSampler(
+            weights=train_dataset.weights,
+            num_samples=len(train_dataset),
+            replacement=True,
+        )
+        train_loader = DataLoader(
+            train_dataset,
+            sampler=train_sampler,
+            batch_size=batch_size,
+            pin_memory=True,
+            num_workers=4,
+            persistent_workers=True,
+            prefetch_factor=2,
+        )
+    elif sampler == "balanced":
+        train_sampler = BatchSampler(train_dataset, batch_size)
+        train_loader = DataLoader(
+            train_dataset,
+            batch_sampler=train_sampler,
+            pin_memory=True,
+            num_workers=4,
+            persistent_workers=True,
+            prefetch_factor=2,
+        )
+    else:
+        raise ValueError(f"Sampler {sampler} not supported")
+
     val_loader = DataLoader(
         val_dataset,
         batch_size=batch_size,
@@ -126,6 +157,8 @@ def run(
     batch_size,
     dataset,
     epochs,
+    loss,
+    sampler,
     verbose,
 ):
     output_path = os.path.join(
@@ -134,6 +167,8 @@ def run(
         dataset,
         f"layers_{trainable_layers}",
         f"batch_size_{batch_size}",
+        f"loss_{loss}",
+        f"sampler_{sampler}",
         f"epochs_{epochs}/",
     )
 
@@ -144,6 +179,8 @@ def run(
         batch_size,
         epochs,
         output_path,
+        loss,
+        sampler,
         verbose,
     )
 

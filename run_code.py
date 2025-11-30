@@ -19,27 +19,34 @@ def main():
     models = ["densenet", "resnet", "mobilenet", "efficientnet"]
     layers = [5]
     batch_sizes = [32]
-    datasets = [
-        "chest_xray",
-        "CXR8",
-    ]
-    cross_datasets = [
-        "CXR8",
-        "chest_xray",
+    # datasets = [
+    #     "chest_xray",
+    #     "CXR8",
+    # ]
+    # cross_datasets = [
+    #     "CXR8",
+    #     "chest_xray",
+    # ]
+    datasets = ["CXR8"]
+    cross_datasets = ["chest_xray"]
+    losses = [
+        "cross_entropy",
+        "focal_loss",
     ]
 
     configs = []
 
     for layer in layers:
         for batch_size in batch_sizes:
-            for dataset in datasets:
-                for cross in cross_datasets:
-                    if cross == dataset:
-                        continue
-                    for model in models:
-                        configs.append(
-                            f"python3 main.py --model {model} --layers {layer} --batch-size {batch_size} --dataset {dataset} --cross {cross}"
-                        )
+            for loss in losses:
+                for dataset in datasets:
+                    for cross in cross_datasets:
+                        if cross == dataset:
+                            continue
+                        for model in models:
+                            configs.append(
+                                f"python3 main.py --model {model} --layers {layer} --batch-size {batch_size} --dataset {dataset} --cross {cross} --loss {loss}"
+                            )
 
     print(
         f"Total de configurações: {len(configs)} | Paralelas: {n_parallel} instâncias"
