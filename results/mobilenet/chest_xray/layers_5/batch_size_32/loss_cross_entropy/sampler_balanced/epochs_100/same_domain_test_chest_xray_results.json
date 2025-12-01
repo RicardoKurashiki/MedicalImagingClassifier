@@ -1,0 +1,51 @@
+{
+  "confusion_matrix": [
+    [
+      214,
+      20
+    ],
+    [
+      83,
+      307
+    ]
+  ],
+  "total_samples": 624,
+  "correct_predictions": 521,
+  "accuracy": 0.8349358974358975,
+  "loss": 0.38705428632406086,
+  "classification_report": {
+    "NORMAL": {
+      "precision": 0.7205387205387206,
+      "recall": 0.9145299145299145,
+      "f1_score": 0.8060263653483993,
+      "specificity": 0.7871794871794872,
+      "TP": 214,
+      "TN": 307,
+      "FP": 83,
+      "FN": 20
+    },
+    "PNEUMONIA": {
+      "precision": 0.9388379204892966,
+      "recall": 0.7871794871794872,
+      "f1_score": 0.8563458856345885,
+      "specificity": 0.9145299145299145,
+      "TP": 307,
+      "TN": 214,
+      "FP": 20,
+      "FN": 83
+    },
+    "macro_avg": {
+      "precision": 0.8296883205140086,
+      "recall": 0.8508547008547008,
+      "f1_score": 0.8311861254914938
+    },
+    "accuracy": 0.8349358974358975
+  },
+  "test_config": {
+    "model_path": "results/mobilenet/chest_xray/layers_5/batch_size_32/loss_cross_entropy/sampler_balanced/epochs_100/",
+    "cross_dataset_path": "../../datasets/chest_xray",
+    "pretrained_model": "mobilenet",
+    "batch_size": 32,
+    "device": "cuda"
+  }
+}

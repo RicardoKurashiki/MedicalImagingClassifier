@@ -15,7 +15,7 @@ def run_command(cmd):
 
 
 def main():
-    n_parallel = 4
+    n_parallel = 6
     models = ["densenet", "resnet", "mobilenet", "efficientnet"]
     layers = [5]
     batch_sizes = [32]
