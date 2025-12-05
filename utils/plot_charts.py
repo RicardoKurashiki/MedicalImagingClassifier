@@ -4,6 +4,7 @@ import os
 import json
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 
 def plot_training_history(training_history, training_config, output_path):
@@ -20,18 +21,6 @@ def plot_training_history(training_history, training_config, output_path):
     plt.xlabel("Epoch")
     plt.ylabel("Loss")
     plt.title("Training Loss History")
-
-    # Training Config
-    plt.text(
-        0.05,
-        0.95,
-        f"Training Config: {training_config}",
-        fontsize=12,
-        ha="left",
-        va="top",
-        transform=plt.gca().transAxes,
-    )
-
     plt.legend()
     plt.savefig(os.path.join(output_path, "training_loss_history.png"))
     plt.close()
@@ -40,7 +29,7 @@ def plot_training_history(training_history, training_config, output_path):
     plt.plot(training_history["train_acc"], label="Train Accuracy")
     plt.plot(training_history["val_acc"], label="Val Accuracy")
 
-    best_epoch = np.argmax(training_history["val_loss"])
+    best_epoch = np.argmin(training_history["val_loss"])
     plt.axvline(x=best_epoch, color="red", linestyle="--")
     plt.text(
         best_epoch, training_history["val_loss"][best_epoch], "Best Epoch", color="red"
@@ -49,18 +38,6 @@ def plot_training_history(training_history, training_config, output_path):
     plt.xlabel("Epoch")
     plt.ylabel("Accuracy")
     plt.title("Training Accuracy History")
-
-    # Training Config
-    plt.text(
-        0.05,
-        0.95,
-        f"Training Config: {training_config}",
-        fontsize=12,
-        ha="left",
-        va="top",
-        transform=plt.gca().transAxes,
-    )
-
     plt.legend()
     plt.savefig(os.path.join(output_path, "training_accuracy_history.png"))
     plt.close()
@@ -68,12 +45,11 @@ def plot_training_history(training_history, training_config, output_path):
 
 def plot_computational_metrics(computational_metrics, training_config, output_path):
     plt.figure(figsize=(10, 5))
-    for memory_usage in computational_metrics["memory_usage"]:
-        plt.plot(
-            memory_usage["epoch"],
-            memory_usage["cpu_memory_mb"],
-            label="CPU Memory Usage",
-        )
+    plt.plot(
+        [metric["epoch"] for metric in computational_metrics["memory_usage"]],
+        [metric["cpu_memory_mb"] for metric in computational_metrics["memory_usage"]],
+        label="CPU Memory Usage",
+    )
 
     # Média de cada métrica
     cpu_memory_mb_mean = np.mean(
@@ -94,18 +70,6 @@ def plot_computational_metrics(computational_metrics, training_config, output_pa
     plt.xlabel("Epoch")
     plt.ylabel("Memory Usage (MB)")
     plt.title("Memory Usage History")
-
-    # Training Config
-    plt.text(
-        0.05,
-        0.95,
-        f"Training Config: {training_config}",
-        fontsize=12,
-        ha="left",
-        va="top",
-        transform=plt.gca().transAxes,
-    )
-
     plt.legend()
     plt.savefig(os.path.join(output_path, "computational_metrics.png"))
     plt.close()
@@ -113,10 +77,7 @@ def plot_computational_metrics(computational_metrics, training_config, output_pa
 
 def plot_confusion_matrix(confusion_matrix, title, output_path):
     plt.figure(figsize=(10, 5))
-    plt.imshow(confusion_matrix, cmap="Blues")
-    plt.title(title)
-    plt.xlabel("Predicted")
-    plt.ylabel("True")
+    sns.heatmap(np.array(confusion_matrix), cmap="Blues", annot=True, fmt="d")
     plt.savefig(output_path)
     plt.close()
 
