@@ -96,6 +96,7 @@ def main():
             f"epochs_{args.epochs}/",
         )
         plot_charts(output_path, args.dataset, args.cross)
+        return 0
 
     output_path = train_pipeline(
         dataset_path,
