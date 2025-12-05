@@ -4,6 +4,7 @@ import os
 import argparse
 
 from pipelines import train_pipeline, test_pipeline
+from utils import plot_charts
 
 parser = argparse.ArgumentParser(prog="Medical Imaging Analysis Classifier")
 
@@ -70,12 +71,31 @@ parser.add_argument(
     default="balanced",
 )
 
+parser.add_argument(
+    "--plot-results",
+    action="store_true",
+    help="Plot Results",
+)
+
 args = parser.parse_args()
 
 
 def main():
     dataset_path = os.path.join("../../datasets", args.dataset)
     cross_dataset_path = os.path.join("../../datasets", args.cross)
+
+    if args.plot_results:
+        output_path = os.path.join(
+            "results",
+            args.model,
+            args.dataset,
+            f"layers_{args.layers}",
+            f"batch_size_{args.batch_size}",
+            f"loss_{args.loss}",
+            f"sampler_{args.sampler}",
+            f"epochs_{args.epochs}/",
+        )
+        plot_charts.run(output_path, args.dataset, args.cross)
 
     output_path = train_pipeline(
         dataset_path,

@@ -1,0 +1,171 @@
+#!/usr/bin/env python3
+
+import os
+import json
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+def plot_training_history(training_history, training_config, output_path):
+    plt.figure(figsize=(10, 5))
+    plt.plot(training_history["train_loss"], label="Train Loss")
+    plt.plot(training_history["val_loss"], label="Val Loss")
+
+    best_epoch = np.argmin(training_history["val_loss"])
+    plt.axvline(x=best_epoch, color="red", linestyle="--")
+    plt.text(
+        best_epoch, training_history["val_loss"][best_epoch], "Best Epoch", color="red"
+    )
+
+    plt.xlabel("Epoch")
+    plt.ylabel("Loss")
+    plt.title("Training Loss History")
+
+    # Training Config
+    plt.text(
+        0.05,
+        0.95,
+        f"Training Config: {training_config}",
+        fontsize=12,
+        ha="left",
+        va="top",
+        transform=plt.gca().transAxes,
+    )
+
+    plt.legend()
+    plt.savefig(os.path.join(output_path, "training_loss_history.png"))
+    plt.close()
+
+    plt.figure(figsize=(10, 5))
+    plt.plot(training_history["train_acc"], label="Train Accuracy")
+    plt.plot(training_history["val_acc"], label="Val Accuracy")
+
+    best_epoch = np.argmax(training_history["val_loss"])
+    plt.axvline(x=best_epoch, color="red", linestyle="--")
+    plt.text(
+        best_epoch, training_history["val_loss"][best_epoch], "Best Epoch", color="red"
+    )
+
+    plt.xlabel("Epoch")
+    plt.ylabel("Accuracy")
+    plt.title("Training Accuracy History")
+
+    # Training Config
+    plt.text(
+        0.05,
+        0.95,
+        f"Training Config: {training_config}",
+        fontsize=12,
+        ha="left",
+        va="top",
+        transform=plt.gca().transAxes,
+    )
+
+    plt.legend()
+    plt.savefig(os.path.join(output_path, "training_accuracy_history.png"))
+    plt.close()
+
+
+def plot_computational_metrics(computational_metrics, training_config, output_path):
+    plt.figure(figsize=(10, 5))
+    for memory_usage in computational_metrics["memory_usage"]:
+        plt.plot(
+            memory_usage["epoch"],
+            memory_usage["cpu_memory_mb"],
+            label="CPU Memory Usage",
+        )
+
+    # Média de cada métrica
+    cpu_memory_mb_mean = np.mean(
+        [
+            memory_usage["cpu_memory_mb"]
+            for memory_usage in computational_metrics["memory_usage"]
+        ]
+    )
+
+    plt.axhline(y=cpu_memory_mb_mean, color="red", linestyle="--")
+    plt.text(
+        0,
+        cpu_memory_mb_mean,
+        f"CPU Memory Usage Mean: {cpu_memory_mb_mean:.2f} MB",
+        color="red",
+    )
+
+    plt.xlabel("Epoch")
+    plt.ylabel("Memory Usage (MB)")
+    plt.title("Memory Usage History")
+
+    # Training Config
+    plt.text(
+        0.05,
+        0.95,
+        f"Training Config: {training_config}",
+        fontsize=12,
+        ha="left",
+        va="top",
+        transform=plt.gca().transAxes,
+    )
+
+    plt.legend()
+    plt.savefig(os.path.join(output_path, "computational_metrics.png"))
+    plt.close()
+
+
+def plot_confusion_matrix(confusion_matrix, title, output_path):
+    plt.figure(figsize=(10, 5))
+    plt.imshow(confusion_matrix, cmap="Blues")
+    plt.title(title)
+    plt.xlabel("Predicted")
+    plt.ylabel("True")
+    plt.savefig(output_path)
+    plt.close()
+
+
+def run(results_path, dataset_name, cross_dataset_name):
+    print(f"Plotting results for {dataset_name}")
+    output_path = os.path.join(results_path, "plots/")
+    os.makedirs(output_path, exist_ok=True)
+
+    metrics_path = os.path.join(results_path, "model_metrics.json")
+
+    with open(metrics_path, "r") as f:
+        metrics = json.load(f)
+
+    plot_training_history(
+        metrics["training_history"],
+        metrics["training_config"],
+        output_path,
+    )
+
+    plot_computational_metrics(
+        metrics["computational_metrics"],
+        metrics["training_config"],
+        output_path,
+    )
+
+    same_domain_results_path = os.path.join(
+        results_path,
+        f"same_domain_test_{dataset_name}_results.json",
+    )
+    with open(same_domain_results_path, "r") as f:
+        same_domain_results = json.load(f)
+
+    plot_confusion_matrix(
+        same_domain_results["confusion_matrix"],
+        title="Same Domain Results",
+        output_path=os.path.join(output_path, "same_domain_results.png"),
+    )
+
+    cross_domain_results_path = os.path.join(
+        results_path,
+        f"cross_domain_test_{cross_dataset_name}_results.json",
+    )
+
+    with open(cross_domain_results_path, "r") as f:
+        cross_domain_results = json.load(f)
+
+    plot_confusion_matrix(
+        cross_domain_results["confusion_matrix"],
+        title="Cross Domain Results",
+        output_path=os.path.join(output_path, "cross_domain_results.png"),
+    )

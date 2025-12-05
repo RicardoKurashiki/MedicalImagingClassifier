@@ -1,7 +1,19 @@
 import subprocess
 from multiprocessing import Pool
 
+import argparse
 from tqdm import tqdm
+
+
+parser = argparse.ArgumentParser(prog="Medical Imaging Analysis Classifier")
+
+parser.add_argument(
+    "--plot",
+    action="store_true",
+    help="Plot Results",
+)
+
+args = parser.parse_args()
 
 
 def run_command(cmd):
@@ -52,6 +64,8 @@ def main():
                                 if epochs is not None:
                                     config += f" --epochs {epochs}"
                                 config += f" --dataset {dataset} --cross {cross}"
+                                if args.plot:
+                                    config += " --plot-results"
                                 configs.append(config)
 
     print(
