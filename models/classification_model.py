@@ -24,12 +24,13 @@ class ClassificationModel:
         self.transform = transforms.Compose(
             [
                 transforms.Resize(256),
-                transforms.CenterCrop(224),
+                transforms.RandomResizedCrop(224, scale=(0.9, 1.0)),
                 transforms.RandomRotation(10),
-                transforms.ColorJitter(
-                    brightness=0.2,
-                    contrast=0.2,
-                    saturation=0.2,
+                transforms.RandomAffine(
+                    degrees=0,
+                    translate=(0.02, 0.02),
+                    scale=(0.98, 1.02),
+                    shear=2,
                 ),
                 transforms.ToTensor(),
                 transforms.Normalize(
@@ -87,7 +88,10 @@ class ClassificationModel:
                 nn.Linear(num_ftrs, 512),
                 nn.ReLU(inplace=True),
                 nn.Dropout(0.2),
-                nn.Linear(512, self.num_classes),
+                nn.Linear(512, 256),
+                nn.ReLU(inplace=True),
+                nn.Dropout(0.2),
+                nn.Linear(256, self.num_classes),
             )
             return model.to(device)
         elif backbone == "resnet":

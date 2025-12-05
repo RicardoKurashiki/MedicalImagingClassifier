@@ -16,9 +16,9 @@ def run_command(cmd):
 
 def main():
     n_parallel = 6
-    models = ["densenet", "resnet", "mobilenet", "efficientnet"]
-    layers = [5]
-    batch_sizes = [32]
+    models = ["densenet"]
+    layers = [None, 2, 5]
+    batch_sizes = [64, 32, 16]
     datasets = [
         "chest_xray",
         "CXR8",
@@ -27,14 +27,9 @@ def main():
         "CXR8",
         "chest_xray",
     ]
-    losses = [
-        "cross_entropy",
-        "focal_loss",
-    ]
-    samplers = [
-        "weighted",
-        "balanced",
-    ]
+    losses = ["cross_entropy"]
+    samplers = ["balanced"]
+    epochs = 500
 
     configs = []
 
@@ -47,9 +42,17 @@ def main():
                             if cross == dataset:
                                 continue
                             for model in models:
-                                configs.append(
-                                    f"python3 main.py --model {model} --layers {layer} --batch-size {batch_size} --dataset {dataset} --cross {cross} --loss {loss} --sampler {sampler}"
-                                )
+                                config = "python3 main.py"
+                                if model is not None:
+                                    config += f" --model {model}"
+                                if layer is not None:
+                                    config += f" --layers {layer}"
+                                if batch_size is not None:
+                                    config += f" --batch-size {batch_size}"
+                                if epochs is not None:
+                                    config += f" --epochs {epochs}"
+                                config += f" --dataset {dataset} --cross {cross}"
+                                configs.append(config)
 
     print(
         f"Total de configurações: {len(configs)} | Paralelas: {n_parallel} instâncias"
