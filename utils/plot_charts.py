@@ -78,6 +78,10 @@ def plot_computational_metrics(computational_metrics, training_config, output_pa
 def plot_confusion_matrix(confusion_matrix, title, output_path):
     plt.figure(figsize=(10, 5))
     sns.heatmap(np.array(confusion_matrix), cmap="Blues", annot=True, fmt="d")
+    plt.tight_layout()
+    plt.title(title)
+    plt.xlabel("Predicted")
+    plt.ylabel("True")
     plt.savefig(output_path)
     plt.close()
 
