@@ -24,6 +24,7 @@ def run(
 
     os.makedirs(output_folder, exist_ok=True)
 
+
     for i, img_path in enumerate(image_paths[:num_samples]):
         img = Image.open(img_path).convert("RGB")
         augmented = transform(img)
