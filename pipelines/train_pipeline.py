@@ -10,7 +10,7 @@ from torch.utils.data import WeightedRandomSampler
 from torch.utils.data import DataLoader
 
 from loss import FocalLoss
-from utils import BatchSampler, load_data, train_model
+from utils import BatchSampler, load_data, train_model, check_augmentation
 from models import ClassificationModel
 
 device = (
@@ -49,6 +49,12 @@ def train_pipeline(
 
     train_dataset = data["train"]
     val_dataset = data["val"]
+
+    check_augmentation(
+        train_dataset.dataframe["path"].values,
+        classification_model.transform,
+        os.path.join(output_path, "augmented_samples/"),
+    )
 
     if verbose:
         classification_model.summary()
