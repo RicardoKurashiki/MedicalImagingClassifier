@@ -85,6 +85,13 @@ def train_pipeline(
         )
     elif sampler == "balanced":
         train_sampler = BatchSampler(train_dataset, batch_size)
+        for batch in train_sampler:
+            check_augmentation(
+                train_dataset.dataframe.iloc[batch]["path"].values,
+                classification_model.transform,
+                os.path.join(output_path, "augmented_samples/"),
+                num_samples=batch_size,
+            )
         train_loader = DataLoader(
             train_dataset,
             batch_sampler=train_sampler,
