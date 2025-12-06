@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 
 from torchvision import transforms
-from torchvision.models import resnet50, ResNet50_Weights
+from torchvision.models import resnet18, ResNet18_Weights
 from torchvision.models import densenet121, DenseNet121_Weights
 from torchvision.models import mobilenet_v3_small, MobileNet_V3_Small_Weights
 from torchvision.models import efficientnet_v2_s, EfficientNet_V2_S_Weights
@@ -95,15 +95,15 @@ class ClassificationModel:
             )
             return model.to(device)
         elif backbone == "resnet":
-            self.weights = ResNet50_Weights.IMAGENET1K_V2
-            model = resnet50(weights=self.weights)
+            self.weights = ResNet18_Weights.IMAGENET1K_V1
+            model = resnet18(weights=self.weights)
             self._unfreeze_layers(model)
             num_ftrs = model.fc.in_features
             model.fc = nn.Sequential(
-                nn.Linear(num_ftrs, 512),
+                nn.Linear(num_ftrs, 256),
                 nn.ReLU(inplace=True),
                 nn.Dropout(0.2),
-                nn.Linear(512, self.num_classes),
+                nn.Linear(256, self.num_classes),
             )
             return model.to(device)
         elif backbone == "mobilenet":
