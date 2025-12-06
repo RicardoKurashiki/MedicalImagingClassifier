@@ -28,7 +28,7 @@ def run_command(cmd):
 
 def main():
     n_parallel = 6
-    models = ["densenet"]
+    models = ["resnet"]
     layers = [None, 2, 5]
     batch_sizes = [64, 32, 16]
     datasets = [

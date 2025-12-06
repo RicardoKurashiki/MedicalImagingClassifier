@@ -25,9 +25,9 @@ class ClassificationModel:
             [
                 transforms.Resize(256),
                 transforms.RandomResizedCrop(224, scale=(0.9, 1.0)),
-                transforms.RandomRotation(10),
+                transforms.RandomHorizontalFlip(),
                 transforms.RandomAffine(
-                    degrees=0,
+                    degrees=(-10, 10),
                     translate=(0.02, 0.02),
                     scale=(0.98, 1.02),
                     shear=2,
