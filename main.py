@@ -127,6 +127,8 @@ def main():
         args.verbose,
     )
 
+    plot_charts(output_path, args.dataset, args.cross)
+
 
 if __name__ == "__main__":
     main()
