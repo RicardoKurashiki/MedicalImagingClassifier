@@ -90,11 +90,7 @@ def plot_confusion_matrix(confusion_matrix, title, output_path):
 
 def plot_tsne(features, labels, output_path):
     plt.figure(figsize=(10, 5))
-    n_samples = features.shape[0]
-    # Perplexity must be less than n_samples
-    # Use a reasonable default (30) but cap it at n_samples - 1
-    perplexity = min(30, max(5, n_samples - 1))
-    tsne = TSNE(n_components=2, random_state=42, perplexity=perplexity)
+    tsne = TSNE(n_components=2, random_state=42)
     features_2d = tsne.fit_transform(features)
     plt.scatter(features_2d[:, 0], features_2d[:, 1], c=labels, cmap="viridis")
     plt.colorbar()

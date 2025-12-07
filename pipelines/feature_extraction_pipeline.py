@@ -105,18 +105,28 @@ def run(
     os.makedirs(output_path, exist_ok=True)
 
     for phase in dataloaders:
+        all_features = []
+        all_labels = []
+
         for inputs, labels in dataloaders[phase]:
             inputs = inputs.to(device)
             labels = labels.to(device)
             with torch.no_grad():
                 features = extraction_model(inputs)
-            np.save(
-                os.path.join(output_path, f"{prefix}{phase}_features.npy"),
-                features.cpu().detach().numpy(),
-            )
-            np.save(
-                os.path.join(output_path, f"{prefix}{phase}_labels.npy"),
-                labels.cpu().numpy(),
-            )
+            all_features.append(features.cpu().detach().numpy())
+            all_labels.append(labels.cpu().numpy())
+
+        # Concatena todos os batches e salva uma única vez
+        all_features = np.concatenate(all_features, axis=0)
+        all_labels = np.concatenate(all_labels, axis=0)
+
+        np.save(
+            os.path.join(output_path, f"{prefix}{phase}_features.npy"),
+            all_features,
+        )
+        np.save(
+            os.path.join(output_path, f"{prefix}{phase}_labels.npy"),
+            all_labels,
+        )
 
     return output_path
