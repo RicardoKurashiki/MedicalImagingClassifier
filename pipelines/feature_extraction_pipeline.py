@@ -56,6 +56,7 @@ def run(
         os.path.join(dataset_path, "test/"),
         transform=transform,
         val_transform=transform,
+        training=False,
     )
 
     train_dataset = train_data["train"]
