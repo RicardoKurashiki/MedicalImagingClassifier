@@ -41,7 +41,6 @@ class CompleteModel(nn.Module):
                 "classifier_weights.pt",
             ),
         )
-        print(f"Weights saved to {output_path}")
         return output_path
 
     def load_weights(self, input_path):
@@ -59,5 +58,4 @@ class CompleteModel(nn.Module):
                 weights_only=True,
             )
         )
-        print(f"Weights loaded from {input_path}")
         return input_path

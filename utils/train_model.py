@@ -124,6 +124,7 @@ def train_model(
                     desc=f"{phase.capitalize():5s}",
                     unit="batch",
                     leave=False,
+                    disable=not verbose,
                 )
 
                 for inputs, labels in pbar:
