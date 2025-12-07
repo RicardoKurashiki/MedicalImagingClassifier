@@ -6,6 +6,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+from sklearn.manifold import TSNE
+
 
 def plot_training_history(training_history, training_config, output_path):
     plt.figure(figsize=(10, 5))
@@ -86,6 +88,16 @@ def plot_confusion_matrix(confusion_matrix, title, output_path):
     plt.close()
 
 
+def plot_tsne(features, labels, output_path):
+    plt.figure(figsize=(10, 5))
+    tsne = TSNE(n_components=2, random_state=42)
+    features_2d = tsne.fit_transform(features)
+    plt.scatter(features_2d[:, 0], features_2d[:, 1], c=labels, cmap="viridis")
+    plt.colorbar()
+    plt.savefig(output_path)
+    plt.close()
+
+
 def run(results_path, dataset_name, cross_dataset_name):
     print(f"Plotting results for {dataset_name}")
     output_path = os.path.join(results_path, "plots/")
@@ -134,3 +146,19 @@ def run(results_path, dataset_name, cross_dataset_name):
         title="Cross Domain Results",
         output_path=os.path.join(output_path, "cross_domain_results.png"),
     )
+
+    for phase in ["train", "val", "test"]:
+        for domain in ["same_domain", "cross_domain"]:
+            features_path = os.path.join(
+                results_path, "features", f"{domain}_{phase}_features.npy"
+            )
+            labels_path = os.path.join(
+                results_path, "features", f"{domain}_{phase}_labels.npy"
+            )
+            features = np.load(features_path)
+            labels = np.load(labels_path)
+            plot_tsne(
+                features,
+                labels,
+                os.path.join(output_path, f"{domain}_{phase}_tsne.png"),
+            )

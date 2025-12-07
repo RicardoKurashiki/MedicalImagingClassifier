@@ -72,6 +72,27 @@ parser.add_argument(
 args = parser.parse_args()
 
 
+def test(
+    output_path, dataset_path, cross_dataset_path, pretrained_model, batch_size, verbose
+):
+    test_pipeline(
+        output_path,
+        dataset_path,
+        pretrained_model,
+        batch_size,
+        "same_domain_",
+        verbose,
+    )
+    test_pipeline(
+        output_path,
+        cross_dataset_path,
+        pretrained_model,
+        batch_size,
+        "cross_domain_",
+        verbose,
+    )
+
+
 def plot(output_path, dataset, cross):
     plot_charts(output_path, dataset, cross)
 
@@ -132,24 +153,15 @@ def main():
         output_path,
     )
 
-    test_pipeline(
+    test(
         output_path,
         dataset_path,
-        args.model,
-        args.batch_size,
-        "same_domain_",
-        args.verbose,
-    )
-    test_pipeline(
-        output_path,
         cross_dataset_path,
         args.model,
         args.batch_size,
-        "cross_domain_",
         args.verbose,
     )
 
-    plot(output_path, args.dataset, args.cross)
     extract(
         output_path,
         dataset_path,
@@ -157,6 +169,8 @@ def main():
         args.model,
         args.batch_size,
     )
+
+    plot(output_path, args.dataset, args.cross)
 
 
 if __name__ == "__main__":
