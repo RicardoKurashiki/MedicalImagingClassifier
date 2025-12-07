@@ -237,10 +237,11 @@ def train_model(
 
             if scheduler is not None:
                 scheduler.step()
-                current_lr = scheduler.get_last_lr()[0]
-                print(
-                    f"Epoch {epoch + 1}/{num_epochs} - New Learning Rate: {current_lr:.6f}"
-                )
+                if verbose:
+                    current_lr = scheduler.get_last_lr()[0]
+                    print(
+                        f"Epoch {epoch + 1}/{num_epochs} - New Learning Rate: {current_lr:.6f}"
+                    )
 
             epoch_time = time.time() - epoch_start
             metrics["epoch_times"].append({"epoch": epoch, "time_seconds": epoch_time})
