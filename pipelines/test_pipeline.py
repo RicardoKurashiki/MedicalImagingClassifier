@@ -26,6 +26,7 @@ def load_model(model_path, pretrained_model, n_classes):
     classification_model.load_weights(model_path)
 
     model = classification_model.model
+    model.to(device)
     model.eval()
 
     return model

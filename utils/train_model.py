@@ -132,7 +132,8 @@ def train_model(
                     inputs = inputs.to(device, non_blocking=True)
                     labels = labels.to(device, non_blocking=True)
 
-                    optimizer.zero_grad()
+                    if phase == "train":
+                        optimizer.zero_grad()
 
                     with torch.set_grad_enabled(phase == "train"):
                         outputs = model(inputs)
