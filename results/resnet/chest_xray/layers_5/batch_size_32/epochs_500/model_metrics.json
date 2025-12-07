@@ -1,0 +1,1072 @@
+{
+  "training_history": {
+    "train_loss": [
+      0.02325155029297862,
+      0.020823853806229364,
+      0.01007200441694829,
+      0.018802419912390178,
+      0.016548902849859288,
+      0.00750276822486974,
+      0.02053330437291189,
+      0.011266837487804052,
+      0.008920527235870357,
+      0.012927330470345099,
+      0.005472875913837175,
+      0.011220920253820332,
+      0.0021125232437531013,
+      0.003404322314391842,
+      0.005088974230461973,
+      0.004250575306744011,
+      0.009469646626787356,
+      0.0031468080661449403,
+      0.019256025694593303,
+      0.009573583335988643,
+      0.004246904597840915,
+      0.015074147408845467,
+      0.006264687535504075,
+      0.004399880421766921,
+      0.006161539296963664,
+      0.017749137210951622,
+      0.018791847345485238
+    ],
+    "train_acc": [
+      0.990979381443299,
+      0.9942010309278351,
+      0.9958118556701031,
+      0.9938788659793815,
+      0.9961340206185567,
+      0.9980670103092784,
+      0.9953286082474226,
+      0.9959729381443299,
+      0.9972615979381443,
+      0.9961340206185567,
+      0.9982280927835051,
+      0.9964561855670103,
+      0.9995167525773195,
+      0.9987113402061856,
+      0.998389175257732,
+      0.9985502577319587,
+      0.9961340206185567,
+      0.9988724226804123,
+      0.9942010309278351,
+      0.9967783505154639,
+      0.9982280927835051,
+      0.9940399484536082,
+      0.9980670103092784,
+      0.998389175257732,
+      0.9977448453608248,
+      0.9924291237113402,
+      0.9938788659793815
+    ],
+    "val_loss": [
+      0.1570064982773997,
+      0.2592546918227403,
+      0.190499442611956,
+      0.13391744736490865,
+      0.27828192562505305,
+      0.21731546672585816,
+      0.1444300437025347,
+      0.1634629775319643,
+      0.16124334721426778,
+      0.10668328808408312,
+      0.13207092728728648,
+      0.07656252568574853,
+      0.06815135703788318,
+      0.06982898168637133,
+      0.06887756382660597,
+      0.07189889503530719,
+      0.05520141246922687,
+      0.056481593542292804,
+      0.07520958212223916,
+      0.06993710191360228,
+      0.0647768855153774,
+      0.07825033765210473,
+      0.07731282343599795,
+      0.07735536004518286,
+      0.09676153846648629,
+      0.07581706989108339,
+      0.09071485091449771
+    ],
+    "val_acc": [
+      0.9703915950334289,
+      0.9503342884431709,
+      0.9598853868194842,
+      0.9656160458452722,
+      0.9321872015281757,
+      0.9608404966571156,
+      0.9608404966571156,
+      0.9608404966571156,
+      0.9589302769818528,
+      0.9646609360076408,
+      0.9608404966571156,
+      0.9761222540592168,
+      0.9789875835721108,
+      0.9837631327602674,
+      0.979942693409742,
+      0.979942693409742,
+      0.9837631327602674,
+      0.9818529130850048,
+      0.98567335243553,
+      0.9837631327602674,
+      0.9837631327602674,
+      0.9818529130850048,
+      0.982808022922636,
+      0.9818529130850048,
+      0.982808022922636,
+      0.982808022922636,
+      0.9818529130850048
+    ]
+  },
+  "computational_metrics": {
+    "total_time_seconds": 1001.8790302276611,
+    "epoch_times": [
+      {
+        "epoch": 0,
+        "time_seconds": 36.66167235374451
+      },
+      {
+        "epoch": 1,
+        "time_seconds": 35.63754677772522
+      },
+      {
+        "epoch": 2,
+        "time_seconds": 36.58108639717102
+      },
+      {
+        "epoch": 3,
+        "time_seconds": 39.433396339416504
+      },
+      {
+        "epoch": 4,
+        "time_seconds": 38.65689444541931
+      },
+      {
+        "epoch": 5,
+        "time_seconds": 36.30947780609131
+      },
+      {
+        "epoch": 6,
+        "time_seconds": 37.87937617301941
+      },
+      {
+        "epoch": 7,
+        "time_seconds": 33.01589035987854
+      },
+      {
+        "epoch": 8,
+        "time_seconds": 40.7276566028595
+      },
+      {
+        "epoch": 9,
+        "time_seconds": 41.50886392593384
+      },
+      {
+        "epoch": 10,
+        "time_seconds": 38.70665168762207
+      },
+      {
+        "epoch": 11,
+        "time_seconds": 37.39493441581726
+      },
+      {
+        "epoch": 12,
+        "time_seconds": 37.05865526199341
+      },
+      {
+        "epoch": 13,
+        "time_seconds": 37.27855062484741
+      },
+      {
+        "epoch": 14,
+        "time_seconds": 40.138824701309204
+      },
+      {
+        "epoch": 15,
+        "time_seconds": 38.48901581764221
+      },
+      {
+        "epoch": 16,
+        "time_seconds": 38.644697189331055
+      },
+      {
+        "epoch": 17,
+        "time_seconds": 38.88152241706848
+      },
+      {
+        "epoch": 18,
+        "time_seconds": 38.254638671875
+      },
+      {
+        "epoch": 19,
+        "time_seconds": 37.178152561187744
+      },
+      {
+        "epoch": 20,
+        "time_seconds": 34.51849555969238
+      },
+      {
+        "epoch": 21,
+        "time_seconds": 38.71738886833191
+      },
+      {
+        "epoch": 22,
+        "time_seconds": 35.99185562133789
+      },
+      {
+        "epoch": 23,
+        "time_seconds": 36.478071212768555
+      },
+      {
+        "epoch": 24,
+        "time_seconds": 35.47643303871155
+      },
+      {
+        "epoch": 25,
+        "time_seconds": 32.33178162574768
+      }
+    ],
+    "batch_times": {
+      "train": [
+        {
+          "epoch": 0,
+          "avg_batch_time_seconds": 0.028925552810590293,
+          "total_batches": 194,
+          "total_time_seconds": 31.820443391799927
+        },
+        {
+          "epoch": 1,
+          "avg_batch_time_seconds": 0.020020558662021282,
+          "total_batches": 194,
+          "total_time_seconds": 31.471511363983154
+        },
+        {
+          "epoch": 2,
+          "avg_batch_time_seconds": 0.020230122448242818,
+          "total_batches": 194,
+          "total_time_seconds": 32.14960479736328
+        },
+        {
+          "epoch": 3,
+          "avg_batch_time_seconds": 0.01993552925660438,
+          "total_batches": 194,
+          "total_time_seconds": 34.98746299743652
+        },
+        {
+          "epoch": 4,
+          "avg_batch_time_seconds": 0.019879907676854085,
+          "total_batches": 194,
+          "total_time_seconds": 34.53351140022278
+        },
+        {
+          "epoch": 5,
+          "avg_batch_time_seconds": 0.020550871632762792,
+          "total_batches": 194,
+          "total_time_seconds": 31.9467830657959
+        },
+        {
+          "epoch": 6,
+          "avg_batch_time_seconds": 0.02007159621445174,
+          "total_batches": 194,
+          "total_time_seconds": 33.057101011276245
+        },
+        {
+          "epoch": 7,
+          "avg_batch_time_seconds": 0.01952932298797922,
+          "total_batches": 194,
+          "total_time_seconds": 28.515655755996704
+        },
+        {
+          "epoch": 8,
+          "avg_batch_time_seconds": 0.020051770603533872,
+          "total_batches": 194,
+          "total_time_seconds": 35.89168906211853
+        },
+        {
+          "epoch": 9,
+          "avg_batch_time_seconds": 0.0197654581561531,
+          "total_batches": 194,
+          "total_time_seconds": 36.509719371795654
+        },
+        {
+          "epoch": 10,
+          "avg_batch_time_seconds": 0.01927157529850596,
+          "total_batches": 194,
+          "total_time_seconds": 34.05015182495117
+        },
+        {
+          "epoch": 11,
+          "avg_batch_time_seconds": 0.019520381062301164,
+          "total_batches": 194,
+          "total_time_seconds": 32.36906576156616
+        },
+        {
+          "epoch": 12,
+          "avg_batch_time_seconds": 0.01988061678778265,
+          "total_batches": 194,
+          "total_time_seconds": 32.064002990722656
+        },
+        {
+          "epoch": 13,
+          "avg_batch_time_seconds": 0.02108095478765743,
+          "total_batches": 194,
+          "total_time_seconds": 32.48025608062744
+        },
+        {
+          "epoch": 14,
+          "avg_batch_time_seconds": 0.020354924742708502,
+          "total_batches": 194,
+          "total_time_seconds": 35.53816890716553
+        },
+        {
+          "epoch": 15,
+          "avg_batch_time_seconds": 0.020224350014912712,
+          "total_batches": 194,
+          "total_time_seconds": 33.6704158782959
+        },
+        {
+          "epoch": 16,
+          "avg_batch_time_seconds": 0.021145182786528598,
+          "total_batches": 194,
+          "total_time_seconds": 33.75465440750122
+        },
+        {
+          "epoch": 17,
+          "avg_batch_time_seconds": 0.019141741634644185,
+          "total_batches": 194,
+          "total_time_seconds": 33.98779225349426
+        },
+        {
+          "epoch": 18,
+          "avg_batch_time_seconds": 0.020212152569564348,
+          "total_batches": 194,
+          "total_time_seconds": 33.15332531929016
+        },
+        {
+          "epoch": 19,
+          "avg_batch_time_seconds": 0.019746181891136562,
+          "total_batches": 194,
+          "total_time_seconds": 32.26640343666077
+        },
+        {
+          "epoch": 20,
+          "avg_batch_time_seconds": 0.02026374929959012,
+          "total_batches": 194,
+          "total_time_seconds": 29.87761092185974
+        },
+        {
+          "epoch": 21,
+          "avg_batch_time_seconds": 0.01960188334750146,
+          "total_batches": 194,
+          "total_time_seconds": 33.959919452667236
+        },
+        {
+          "epoch": 22,
+          "avg_batch_time_seconds": 0.01982095192388161,
+          "total_batches": 194,
+          "total_time_seconds": 31.08350968360901
+        },
+        {
+          "epoch": 23,
+          "avg_batch_time_seconds": 0.02029314237771575,
+          "total_batches": 194,
+          "total_time_seconds": 31.975785970687866
+        },
+        {
+          "epoch": 24,
+          "avg_batch_time_seconds": 0.018310796354234833,
+          "total_batches": 194,
+          "total_time_seconds": 31.29101824760437
+        },
+        {
+          "epoch": 25,
+          "avg_batch_time_seconds": 0.017373907197382032,
+          "total_batches": 194,
+          "total_time_seconds": 28.644346952438354
+        },
+        {
+          "epoch": 26,
+          "avg_batch_time_seconds": 0.01742512294926594,
+          "total_batches": 194,
+          "total_time_seconds": 25.428837776184082
+        }
+      ],
+      "val": [
+        {
+          "epoch": 0,
+          "avg_batch_time_seconds": 0.006728735837069425,
+          "total_batches": 33,
+          "total_time_seconds": 4.734130620956421
+        },
+        {
+          "epoch": 1,
+          "avg_batch_time_seconds": 0.005304965105923739,
+          "total_batches": 33,
+          "total_time_seconds": 4.164963483810425
+        },
+        {
+          "epoch": 2,
+          "avg_batch_time_seconds": 0.005518031842780836,
+          "total_batches": 33,
+          "total_time_seconds": 4.431090831756592
+        },
+        {
+          "epoch": 3,
+          "avg_batch_time_seconds": 0.0059772260261304454,
+          "total_batches": 33,
+          "total_time_seconds": 4.283613443374634
+        },
+        {
+          "epoch": 4,
+          "avg_batch_time_seconds": 0.0055589459159157495,
+          "total_batches": 33,
+          "total_time_seconds": 4.121255159378052
+        },
+        {
+          "epoch": 5,
+          "avg_batch_time_seconds": 0.005344007954452977,
+          "total_batches": 33,
+          "total_time_seconds": 4.362383842468262
+        },
+        {
+          "epoch": 6,
+          "avg_batch_time_seconds": 0.006405736460830226,
+          "total_batches": 33,
+          "total_time_seconds": 4.821762323379517
+        },
+        {
+          "epoch": 7,
+          "avg_batch_time_seconds": 0.006922483444213867,
+          "total_batches": 33,
+          "total_time_seconds": 4.498529672622681
+        },
+        {
+          "epoch": 8,
+          "avg_batch_time_seconds": 0.007142565467140891,
+          "total_batches": 33,
+          "total_time_seconds": 4.83544135093689
+        },
+        {
+          "epoch": 9,
+          "avg_batch_time_seconds": 0.006066199504967892,
+          "total_batches": 33,
+          "total_time_seconds": 4.83092737197876
+        },
+        {
+          "epoch": 10,
+          "avg_batch_time_seconds": 0.006462581229932381,
+          "total_batches": 33,
+          "total_time_seconds": 4.655858993530273
+        },
+        {
+          "epoch": 11,
+          "avg_batch_time_seconds": 0.006872805682095614,
+          "total_batches": 33,
+          "total_time_seconds": 4.861567974090576
+        },
+        {
+          "epoch": 12,
+          "avg_batch_time_seconds": 0.006043947104251746,
+          "total_batches": 33,
+          "total_time_seconds": 4.811858654022217
+        },
+        {
+          "epoch": 13,
+          "avg_batch_time_seconds": 0.005719567790175929,
+          "total_batches": 33,
+          "total_time_seconds": 4.797827482223511
+        },
+        {
+          "epoch": 14,
+          "avg_batch_time_seconds": 0.007004687280365915,
+          "total_batches": 33,
+          "total_time_seconds": 4.598592758178711
+        },
+        {
+          "epoch": 15,
+          "avg_batch_time_seconds": 0.0062407652537028,
+          "total_batches": 33,
+          "total_time_seconds": 4.815797805786133
+        },
+        {
+          "epoch": 16,
+          "avg_batch_time_seconds": 0.006862524783972538,
+          "total_batches": 33,
+          "total_time_seconds": 4.70585036277771
+        },
+        {
+          "epoch": 17,
+          "avg_batch_time_seconds": 0.00715869123285467,
+          "total_batches": 33,
+          "total_time_seconds": 4.879565954208374
+        },
+        {
+          "epoch": 18,
+          "avg_batch_time_seconds": 0.0072209979548598785,
+          "total_batches": 33,
+          "total_time_seconds": 5.10067892074585
+        },
+        {
+          "epoch": 19,
+          "avg_batch_time_seconds": 0.007163062240138199,
+          "total_batches": 33,
+          "total_time_seconds": 4.911068916320801
+        },
+        {
+          "epoch": 20,
+          "avg_batch_time_seconds": 0.006810592882560961,
+          "total_batches": 33,
+          "total_time_seconds": 4.640074014663696
+        },
+        {
+          "epoch": 21,
+          "avg_batch_time_seconds": 0.006477941166270863,
+          "total_batches": 33,
+          "total_time_seconds": 4.756987810134888
+        },
+        {
+          "epoch": 22,
+          "avg_batch_time_seconds": 0.007098566402088512,
+          "total_batches": 33,
+          "total_time_seconds": 4.904113531112671
+        },
+        {
+          "epoch": 23,
+          "avg_batch_time_seconds": 0.005557305885083748,
+          "total_batches": 33,
+          "total_time_seconds": 4.495483160018921
+        },
+        {
+          "epoch": 24,
+          "avg_batch_time_seconds": 0.005677172631928415,
+          "total_batches": 33,
+          "total_time_seconds": 4.1805925369262695
+        },
+        {
+          "epoch": 25,
+          "avg_batch_time_seconds": 0.004906155846335671,
+          "total_batches": 33,
+          "total_time_seconds": 3.687262773513794
+        },
+        {
+          "epoch": 26,
+          "avg_batch_time_seconds": 0.005256985173080907,
+          "total_batches": 33,
+          "total_time_seconds": 4.337963581085205
+        }
+      ]
+    },
+    "throughput": {
+      "train": [
+        {
+          "epoch": 0,
+          "total_samples": 6208,
+          "total_time_seconds": 31.820443391799927
+        },
+        {
+          "epoch": 1,
+          "total_samples": 6208,
+          "total_time_seconds": 31.471511363983154
+        },
+        {
+          "epoch": 2,
+          "total_samples": 6208,
+          "total_time_seconds": 32.14960479736328
+        },
+        {
+          "epoch": 3,
+          "total_samples": 6208,
+          "total_time_seconds": 34.98746299743652
+        },
+        {
+          "epoch": 4,
+          "total_samples": 6208,
+          "total_time_seconds": 34.53351140022278
+        },
+        {
+          "epoch": 5,
+          "total_samples": 6208,
+          "total_time_seconds": 31.9467830657959
+        },
+        {
+          "epoch": 6,
+          "total_samples": 6208,
+          "total_time_seconds": 33.057101011276245
+        },
+        {
+          "epoch": 7,
+          "total_samples": 6208,
+          "total_time_seconds": 28.515655755996704
+        },
+        {
+          "epoch": 8,
+          "total_samples": 6208,
+          "total_time_seconds": 35.89168906211853
+        },
+        {
+          "epoch": 9,
+          "total_samples": 6208,
+          "total_time_seconds": 36.509719371795654
+        },
+        {
+          "epoch": 10,
+          "total_samples": 6208,
+          "total_time_seconds": 34.05015182495117
+        },
+        {
+          "epoch": 11,
+          "total_samples": 6208,
+          "total_time_seconds": 32.36906576156616
+        },
+        {
+          "epoch": 12,
+          "total_samples": 6208,
+          "total_time_seconds": 32.064002990722656
+        },
+        {
+          "epoch": 13,
+          "total_samples": 6208,
+          "total_time_seconds": 32.48025608062744
+        },
+        {
+          "epoch": 14,
+          "total_samples": 6208,
+          "total_time_seconds": 35.53816890716553
+        },
+        {
+          "epoch": 15,
+          "total_samples": 6208,
+          "total_time_seconds": 33.6704158782959
+        },
+        {
+          "epoch": 16,
+          "total_samples": 6208,
+          "total_time_seconds": 33.75465440750122
+        },
+        {
+          "epoch": 17,
+          "total_samples": 6208,
+          "total_time_seconds": 33.98779225349426
+        },
+        {
+          "epoch": 18,
+          "total_samples": 6208,
+          "total_time_seconds": 33.15332531929016
+        },
+        {
+          "epoch": 19,
+          "total_samples": 6208,
+          "total_time_seconds": 32.26640343666077
+        },
+        {
+          "epoch": 20,
+          "total_samples": 6208,
+          "total_time_seconds": 29.87761092185974
+        },
+        {
+          "epoch": 21,
+          "total_samples": 6208,
+          "total_time_seconds": 33.959919452667236
+        },
+        {
+          "epoch": 22,
+          "total_samples": 6208,
+          "total_time_seconds": 31.08350968360901
+        },
+        {
+          "epoch": 23,
+          "total_samples": 6208,
+          "total_time_seconds": 31.975785970687866
+        },
+        {
+          "epoch": 24,
+          "total_samples": 6208,
+          "total_time_seconds": 31.29101824760437
+        },
+        {
+          "epoch": 25,
+          "total_samples": 6208,
+          "total_time_seconds": 28.644346952438354
+        },
+        {
+          "epoch": 26,
+          "total_samples": 6208,
+          "total_time_seconds": 25.428837776184082
+        }
+      ],
+      "val": [
+        {
+          "epoch": 0,
+          "total_samples": 1047,
+          "total_time_seconds": 4.734130620956421
+        },
+        {
+          "epoch": 1,
+          "total_samples": 1047,
+          "total_time_seconds": 4.164963483810425
+        },
+        {
+          "epoch": 2,
+          "total_samples": 1047,
+          "total_time_seconds": 4.431090831756592
+        },
+        {
+          "epoch": 3,
+          "total_samples": 1047,
+          "total_time_seconds": 4.283613443374634
+        },
+        {
+          "epoch": 4,
+          "total_samples": 1047,
+          "total_time_seconds": 4.121255159378052
+        },
+        {
+          "epoch": 5,
+          "total_samples": 1047,
+          "total_time_seconds": 4.362383842468262
+        },
+        {
+          "epoch": 6,
+          "total_samples": 1047,
+          "total_time_seconds": 4.821762323379517
+        },
+        {
+          "epoch": 7,
+          "total_samples": 1047,
+          "total_time_seconds": 4.498529672622681
+        },
+        {
+          "epoch": 8,
+          "total_samples": 1047,
+          "total_time_seconds": 4.83544135093689
+        },
+        {
+          "epoch": 9,
+          "total_samples": 1047,
+          "total_time_seconds": 4.83092737197876
+        },
+        {
+          "epoch": 10,
+          "total_samples": 1047,
+          "total_time_seconds": 4.655858993530273
+        },
+        {
+          "epoch": 11,
+          "total_samples": 1047,
+          "total_time_seconds": 4.861567974090576
+        },
+        {
+          "epoch": 12,
+          "total_samples": 1047,
+          "total_time_seconds": 4.811858654022217
+        },
+        {
+          "epoch": 13,
+          "total_samples": 1047,
+          "total_time_seconds": 4.797827482223511
+        },
+        {
+          "epoch": 14,
+          "total_samples": 1047,
+          "total_time_seconds": 4.598592758178711
+        },
+        {
+          "epoch": 15,
+          "total_samples": 1047,
+          "total_time_seconds": 4.815797805786133
+        },
+        {
+          "epoch": 16,
+          "total_samples": 1047,
+          "total_time_seconds": 4.70585036277771
+        },
+        {
+          "epoch": 17,
+          "total_samples": 1047,
+          "total_time_seconds": 4.879565954208374
+        },
+        {
+          "epoch": 18,
+          "total_samples": 1047,
+          "total_time_seconds": 5.10067892074585
+        },
+        {
+          "epoch": 19,
+          "total_samples": 1047,
+          "total_time_seconds": 4.911068916320801
+        },
+        {
+          "epoch": 20,
+          "total_samples": 1047,
+          "total_time_seconds": 4.640074014663696
+        },
+        {
+          "epoch": 21,
+          "total_samples": 1047,
+          "total_time_seconds": 4.756987810134888
+        },
+        {
+          "epoch": 22,
+          "total_samples": 1047,
+          "total_time_seconds": 4.904113531112671
+        },
+        {
+          "epoch": 23,
+          "total_samples": 1047,
+          "total_time_seconds": 4.495483160018921
+        },
+        {
+          "epoch": 24,
+          "total_samples": 1047,
+          "total_time_seconds": 4.1805925369262695
+        },
+        {
+          "epoch": 25,
+          "total_samples": 1047,
+          "total_time_seconds": 3.687262773513794
+        },
+        {
+          "epoch": 26,
+          "total_samples": 1047,
+          "total_time_seconds": 4.337963581085205
+        }
+      ]
+    },
+    "memory_usage": [
+      {
+        "epoch": 0,
+        "cpu_memory_mb": 1743.05859375,
+        "gpu_memory_allocated_mb": 139.36474609375,
+        "gpu_memory_reserved_mb": 482.0,
+        "gpu_memory_max_allocated_mb": 339.865234375,
+        "gpu_utilization": 72
+      },
+      {
+        "epoch": 1,
+        "cpu_memory_mb": 1743.98046875,
+        "gpu_memory_allocated_mb": 139.365234375,
+        "gpu_memory_reserved_mb": 462.0,
+        "gpu_memory_max_allocated_mb": 339.86572265625,
+        "gpu_utilization": 36
+      },
+      {
+        "epoch": 2,
+        "cpu_memory_mb": 1744.23046875,
+        "gpu_memory_allocated_mb": 139.365234375,
+        "gpu_memory_reserved_mb": 462.0,
+        "gpu_memory_max_allocated_mb": 339.8662109375,
+        "gpu_utilization": 25
+      },
+      {
+        "epoch": 3,
+        "cpu_memory_mb": 1743.9140625,
+        "gpu_memory_allocated_mb": 139.365234375,
+        "gpu_memory_reserved_mb": 462.0,
+        "gpu_memory_max_allocated_mb": 339.8662109375,
+        "gpu_utilization": 1
+      },
+      {
+        "epoch": 4,
+        "cpu_memory_mb": 1744.10546875,
+        "gpu_memory_allocated_mb": 139.365234375,
+        "gpu_memory_reserved_mb": 462.0,
+        "gpu_memory_max_allocated_mb": 339.8662109375,
+        "gpu_utilization": 63
+      },
+      {
+        "epoch": 5,
+        "cpu_memory_mb": 1744.23046875,
+        "gpu_memory_allocated_mb": 139.365234375,
+        "gpu_memory_reserved_mb": 462.0,
+        "gpu_memory_max_allocated_mb": 339.8662109375,
+        "gpu_utilization": 26
+      },
+      {
+        "epoch": 6,
+        "cpu_memory_mb": 1743.91796875,
+        "gpu_memory_allocated_mb": 139.365234375,
+        "gpu_memory_reserved_mb": 462.0,
+        "gpu_memory_max_allocated_mb": 339.8662109375,
+        "gpu_utilization": 84
+      },
+      {
+        "epoch": 7,
+        "cpu_memory_mb": 1744.35546875,
+        "gpu_memory_allocated_mb": 139.365234375,
+        "gpu_memory_reserved_mb": 462.0,
+        "gpu_memory_max_allocated_mb": 339.8662109375,
+        "gpu_utilization": 4
+      },
+      {
+        "epoch": 8,
+        "cpu_memory_mb": 1744.359375,
+        "gpu_memory_allocated_mb": 139.365234375,
+        "gpu_memory_reserved_mb": 462.0,
+        "gpu_memory_max_allocated_mb": 339.8662109375,
+        "gpu_utilization": 0
+      },
+      {
+        "epoch": 9,
+        "cpu_memory_mb": 1744.609375,
+        "gpu_memory_allocated_mb": 139.365234375,
+        "gpu_memory_reserved_mb": 462.0,
+        "gpu_memory_max_allocated_mb": 339.8662109375,
+        "gpu_utilization": 25
+      },
+      {
+        "epoch": 10,
+        "cpu_memory_mb": 1744.23046875,
+        "gpu_memory_allocated_mb": 139.365234375,
+        "gpu_memory_reserved_mb": 462.0,
+        "gpu_memory_max_allocated_mb": 339.8662109375,
+        "gpu_utilization": 0
+      },
+      {
+        "epoch": 11,
+        "cpu_memory_mb": 1744.48046875,
+        "gpu_memory_allocated_mb": 139.36474609375,
+        "gpu_memory_reserved_mb": 462.0,
+        "gpu_memory_max_allocated_mb": 339.8662109375,
+        "gpu_utilization": 35
+      },
+      {
+        "epoch": 12,
+        "cpu_memory_mb": 1744.48046875,
+        "gpu_memory_allocated_mb": 139.36474609375,
+        "gpu_memory_reserved_mb": 462.0,
+        "gpu_memory_max_allocated_mb": 339.8662109375,
+        "gpu_utilization": 7
+      },
+      {
+        "epoch": 13,
+        "cpu_memory_mb": 1744.23046875,
+        "gpu_memory_allocated_mb": 139.36474609375,
+        "gpu_memory_reserved_mb": 462.0,
+        "gpu_memory_max_allocated_mb": 339.8662109375,
+        "gpu_utilization": 38
+      },
+      {
+        "epoch": 14,
+        "cpu_memory_mb": 1744.0703125,
+        "gpu_memory_allocated_mb": 139.365234375,
+        "gpu_memory_reserved_mb": 462.0,
+        "gpu_memory_max_allocated_mb": 339.8662109375,
+        "gpu_utilization": 71
+      },
+      {
+        "epoch": 15,
+        "cpu_memory_mb": 1744.16796875,
+        "gpu_memory_allocated_mb": 139.365234375,
+        "gpu_memory_reserved_mb": 462.0,
+        "gpu_memory_max_allocated_mb": 339.8662109375,
+        "gpu_utilization": 32
+      },
+      {
+        "epoch": 16,
+        "cpu_memory_mb": 1744.35546875,
+        "gpu_memory_allocated_mb": 139.365234375,
+        "gpu_memory_reserved_mb": 462.0,
+        "gpu_memory_max_allocated_mb": 339.8662109375,
+        "gpu_utilization": 15
+      },
+      {
+        "epoch": 17,
+        "cpu_memory_mb": 1744.35546875,
+        "gpu_memory_allocated_mb": 139.365234375,
+        "gpu_memory_reserved_mb": 462.0,
+        "gpu_memory_max_allocated_mb": 339.8662109375,
+        "gpu_utilization": 49
+      },
+      {
+        "epoch": 18,
+        "cpu_memory_mb": 1744.48046875,
+        "gpu_memory_allocated_mb": 139.36474609375,
+        "gpu_memory_reserved_mb": 462.0,
+        "gpu_memory_max_allocated_mb": 339.8662109375,
+        "gpu_utilization": 62
+      },
+      {
+        "epoch": 19,
+        "cpu_memory_mb": 1744.35546875,
+        "gpu_memory_allocated_mb": 139.365234375,
+        "gpu_memory_reserved_mb": 462.0,
+        "gpu_memory_max_allocated_mb": 339.8662109375,
+        "gpu_utilization": 66
+      },
+      {
+        "epoch": 20,
+        "cpu_memory_mb": 1744.41796875,
+        "gpu_memory_allocated_mb": 139.365234375,
+        "gpu_memory_reserved_mb": 462.0,
+        "gpu_memory_max_allocated_mb": 339.8662109375,
+        "gpu_utilization": 70
+      },
+      {
+        "epoch": 21,
+        "cpu_memory_mb": 1744.10546875,
+        "gpu_memory_allocated_mb": 139.365234375,
+        "gpu_memory_reserved_mb": 462.0,
+        "gpu_memory_max_allocated_mb": 339.8662109375,
+        "gpu_utilization": 84
+      },
+      {
+        "epoch": 22,
+        "cpu_memory_mb": 1744.35546875,
+        "gpu_memory_allocated_mb": 139.365234375,
+        "gpu_memory_reserved_mb": 462.0,
+        "gpu_memory_max_allocated_mb": 339.8662109375,
+        "gpu_utilization": 98
+      },
+      {
+        "epoch": 23,
+        "cpu_memory_mb": 1744.35546875,
+        "gpu_memory_allocated_mb": 139.365234375,
+        "gpu_memory_reserved_mb": 462.0,
+        "gpu_memory_max_allocated_mb": 339.8662109375,
+        "gpu_utilization": 24
+      },
+      {
+        "epoch": 24,
+        "cpu_memory_mb": 1743.54296875,
+        "gpu_memory_allocated_mb": 139.365234375,
+        "gpu_memory_reserved_mb": 462.0,
+        "gpu_memory_max_allocated_mb": 339.8662109375,
+        "gpu_utilization": 27
+      },
+      {
+        "epoch": 25,
+        "cpu_memory_mb": 1744.29296875,
+        "gpu_memory_allocated_mb": 139.365234375,
+        "gpu_memory_reserved_mb": 462.0,
+        "gpu_memory_max_allocated_mb": 339.8662109375,
+        "gpu_utilization": 51
+      }
+    ],
+    "model_info": {
+      "total_params": 11308354,
+      "trainable_params": 8525570,
+      "model_size_mb": 43.174720764160156
+    },
+    "initial_memory": {
+      "cpu_memory_mb": 901.40234375,
+      "gpu_memory_allocated_mb": 43.18994140625,
+      "gpu_memory_reserved_mb": 66.0,
+      "gpu_memory_max_allocated_mb": 43.18994140625,
+      "gpu_utilization": 4
+    },
+    "final_memory": {
+      "cpu_memory_mb": 1744.29296875,
+      "gpu_memory_allocated_mb": 139.365234375,
+      "gpu_memory_reserved_mb": 462.0,
+      "gpu_memory_max_allocated_mb": 339.8662109375,
+      "gpu_utilization": 62
+    }
+  },
+  "training_config": {
+    "model": "resnet",
+    "layers": 5,
+    "batch_size": 32,
+    "epochs": 500,
+    "device": "cuda",
+    "n_classes": 2
+  }
+}
