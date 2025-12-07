@@ -7,6 +7,7 @@ import torch.nn as nn
 import torch.optim as optim
 
 from torch.utils.data import DataLoader
+from torchvision import transforms
 
 from utils import BatchSampler, load_data, train_model, check_augmentation
 from models import ClassificationModel
@@ -29,7 +30,44 @@ def train_pipeline(
     output_path="./results/",
     verbose=False,
 ):
-    n_classes = 2
+    transform = transforms.Compose(
+        [
+            transforms.Resize((224, 224)),
+            transforms.RandomHorizontalFlip(),
+            transforms.RandomAffine(
+                degrees=(-10, 10),
+                translate=(0.02, 0.02),
+                scale=(0.98, 1.02),
+                shear=2,
+            ),
+            transforms.ToTensor(),
+            transforms.Normalize(
+                mean=[0.485, 0.456, 0.406],
+                std=[0.229, 0.224, 0.225],
+            ),
+        ]
+    )
+    val_transform = transforms.Compose(
+        [
+            transforms.Resize((224, 224)),
+            transforms.ToTensor(),
+            transforms.Normalize(
+                mean=[0.485, 0.456, 0.406],
+                std=[0.229, 0.224, 0.225],
+            ),
+        ]
+    )
+
+    data = load_data(
+        os.path.join(dataset_path, "train/"),
+        transform=transform,
+        val_transform=val_transform,
+    )
+
+    train_dataset = data["train"]
+    val_dataset = data["val"]
+
+    n_classes = train_dataset.n_classes
 
     classification_model = ClassificationModel(
         num_classes=n_classes,
@@ -37,14 +75,7 @@ def train_pipeline(
         trainable_layers=layers,
     )
 
-    data = load_data(
-        os.path.join(dataset_path, "train/"),
-        transform=classification_model.transform,
-        val_transform=classification_model.val_transform,
-    )
-
-    train_dataset = data["train"]
-    val_dataset = data["val"]
+    print(classification_model.model)
 
     if verbose:
         classification_model.summary()
@@ -54,7 +85,7 @@ def train_pipeline(
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(
         filter(lambda p: p.requires_grad, model.parameters()),
-        lr=1e-4,
+        lr=1e-3,
     )
 
     scheduler = optim.lr_scheduler.StepLR(

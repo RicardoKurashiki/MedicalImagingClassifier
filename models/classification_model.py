@@ -1,13 +1,6 @@
-import os
-
 import torch
-import torch.nn as nn
 
-from torchvision import transforms
-from torchvision.models import resnet18, ResNet18_Weights
-from torchvision.models import densenet121, DenseNet121_Weights
-from torchvision.models import mobilenet_v3_small, MobileNet_V3_Small_Weights
-from torchvision.models import efficientnet_v2_s, EfficientNet_V2_S_Weights
+from .complete_model import CompleteModel
 
 device = (
     torch.accelerator.current_accelerator().type
@@ -20,34 +13,10 @@ class ClassificationModel:
     def __init__(self, num_classes, backbone="densenet", trainable_layers=None):
         self.num_classes = num_classes
         self.trainable_layers = trainable_layers
-        self.backbone = backbone
-        self.model = self._build_model()
-        self.transform = transforms.Compose(
-            [
-                transforms.Resize((224, 224)),
-                transforms.RandomHorizontalFlip(),
-                transforms.RandomAffine(
-                    degrees=(-10, 10),
-                    translate=(0.02, 0.02),
-                    scale=(0.98, 1.02),
-                    shear=2,
-                ),
-                transforms.ToTensor(),
-                transforms.Normalize(
-                    mean=[0.485, 0.456, 0.406],
-                    std=[0.229, 0.224, 0.225],
-                ),
-            ]
-        )
-        self.val_transform = transforms.Compose(
-            [
-                transforms.Resize((224, 224)),
-                transforms.ToTensor(),
-                transforms.Normalize(
-                    mean=[0.485, 0.456, 0.406],
-                    std=[0.229, 0.224, 0.225],
-                ),
-            ]
+        self.model = CompleteModel(
+            num_classes=num_classes,
+            backbone=backbone,
+            trainable_layers=trainable_layers,
         )
 
     def summary(self):
@@ -65,108 +34,10 @@ class ClassificationModel:
                 print(f"{name:50} {module.__class__.__name__:20} {trainable}")
 
     def save_weights(self, output_path):
-        os.makedirs(output_path, exist_ok=True)
-        torch.save(
-            self.model.state_dict(),
-            os.path.join(
-                output_path,
-                "model_weights.pt",
-            ),
-        )
-        print(f"Weights saved to {output_path}")
+        self.model.save_weights(output_path)
         return output_path
 
     def load_weights(self, input_path):
-        self.model.load_state_dict(
-            torch.load(
-                os.path.join(input_path, "model_weights.pt"),
-                map_location=device,
-                weights_only=True,
-            )
-        )
+        self.model.load_weights(input_path)
         print(f"Weights loaded from {input_path}")
         return input_path
-
-    def _build_model(self):
-        if self.backbone == "densenet":
-            self.weights = DenseNet121_Weights.IMAGENET1K_V1
-            model = densenet121(weights=self.weights)
-            self._unfreeze_layers(model)
-            num_ftrs = model.classifier.in_features
-            model.classifier = nn.Sequential(
-                nn.Linear(num_ftrs, 512),
-                nn.ReLU(inplace=True),
-                nn.Dropout(0.2),
-                nn.Linear(512, 256),
-                nn.ReLU(inplace=True),
-                nn.Dropout(0.2),
-                nn.Linear(256, self.num_classes),
-            )
-            return model.to(device)
-        elif self.backbone == "resnet":
-            self.weights = ResNet18_Weights.IMAGENET1K_V1
-            model = resnet18(weights=self.weights)
-            self._unfreeze_layers(model)
-            num_ftrs = model.fc.in_features
-            model.fc = nn.Sequential(
-                nn.Linear(num_ftrs, 256),
-                nn.ReLU(inplace=True),
-                nn.Dropout(0.2),
-                nn.Linear(256, self.num_classes),
-            )
-            return model.to(device)
-        elif self.backbone == "mobilenet":
-            self.weights = MobileNet_V3_Small_Weights.IMAGENET1K_V1
-            model = mobilenet_v3_small(weights=self.weights)
-            self._unfreeze_layers(model)
-            num_ftrs = model.classifier[0].in_features
-            model.classifier = nn.Sequential(
-                nn.Linear(num_ftrs, 512),
-                nn.ReLU(inplace=True),
-                nn.Dropout(0.2),
-                nn.Linear(512, 256),
-                nn.ReLU(inplace=True),
-                nn.Dropout(0.2),
-                nn.Linear(256, self.num_classes),
-            )
-            return model.to(device)
-        elif self.backbone == "efficientnet":
-            self.weights = EfficientNet_V2_S_Weights.IMAGENET1K_V1
-            model = efficientnet_v2_s(weights=self.weights)
-            self._unfreeze_layers(model)
-            num_ftrs = model.classifier[1].in_features
-            model.classifier = nn.Sequential(
-                nn.Linear(num_ftrs, 512),
-                nn.ReLU(inplace=True),
-                nn.Dropout(0.2),
-                nn.Linear(512, 256),
-                nn.ReLU(inplace=True),
-                nn.Dropout(0.2),
-                nn.Linear(256, self.num_classes),
-            )
-            return model.to(device)
-
-    def _unfreeze_layers(self, model):
-        for p in model.parameters():
-            p.requires_grad = False
-
-        if self.trainable_layers is None or self.trainable_layers <= 0:
-            return
-
-        indexed = [
-            (idx, name, module)
-            for idx, (name, module) in enumerate(model.named_modules())
-        ]
-        convs = [
-            (idx, name, module)
-            for idx, name, module in indexed
-            if isinstance(module, nn.Conv2d)
-        ]
-        if len(convs) < self.trainable_layers:
-            raise ValueError("O modelo não contém camadas Conv2d suficientes.")
-
-        conv_idx = convs[-self.trainable_layers][0]
-        for idx, _, module in indexed:
-            if idx >= conv_idx:
-                for p in module.parameters(recurse=False):
-                    p.requires_grad = True

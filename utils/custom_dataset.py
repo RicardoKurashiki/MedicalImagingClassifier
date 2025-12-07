@@ -16,6 +16,7 @@ class CustomDataset(Dataset):
         self.dataframe = dataframe
         self.img_paths = self.dataframe["path"].values
         self.labels = self.dataframe["label"].values
+        self.n_classes = len(self.dataframe["label"].unique())
         self.transform = transform
         if transform is None:
             self.transform = transforms.ToTensor()

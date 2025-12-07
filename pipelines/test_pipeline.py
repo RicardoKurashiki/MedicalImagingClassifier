@@ -4,10 +4,11 @@ import os
 import json
 import torch
 import torch.nn as nn
+
 from torch.utils.data import DataLoader
+from torchvision import transforms
 
 from models import ClassificationModel
-
 from utils import load_data
 
 device = (
@@ -27,7 +28,7 @@ def load_model(model_path, pretrained_model, n_classes):
     model = classification_model.model
     model.eval()
 
-    return classification_model, model
+    return model
 
 
 def confusion_matrix(labels, predictions, num_classes=2):
@@ -193,24 +194,32 @@ def run(
     prefix="",
     verbose=False,
 ):
-    model_dir = os.path.dirname(model_path)
-    n_classes = 2
-
-    if verbose:
-        print(f"Carregando modelo com {n_classes} classes...")
-    cm, model = load_model(model_path, pretrained_model, n_classes)
-
-    if verbose:
-        print(f"Carregando dataset de teste de {cross_dataset_path}")
-
+    transform = transforms.Compose(
+        [
+            transforms.Resize((224, 224)),
+            transforms.ToTensor(),
+            transforms.Normalize(
+                mean=[0.485, 0.456, 0.406],
+                std=[0.229, 0.224, 0.225],
+            ),
+        ]
+    )
     data = load_data(
         os.path.join(cross_dataset_path, "test/"),
-        transform=cm.val_transform,
-        val_transform=cm.val_transform,
+        transform=transform,
+        val_transform=transform,
         training=False,
     )
 
     test_dataset = data["test"]
+    n_classes = test_dataset.n_classes
+
+    if verbose:
+        print(f"Carregando modelo com {n_classes} classes...")
+    model = load_model(model_path, pretrained_model, n_classes)
+
+    if verbose:
+        print(f"Carregando dataset de teste de {cross_dataset_path}")
 
     test_loader = DataLoader(
         test_dataset,
@@ -245,7 +254,7 @@ def run(
 
     cross_dataset_name = os.path.basename(os.path.normpath(cross_dataset_path))
     json_filename = f"{prefix}test_{cross_dataset_name}_results.json"
-    json_path = os.path.join(model_dir, json_filename)
+    json_path = os.path.join(model_path, json_filename)
 
     all_results = {
         "confusion_matrix": results["confusion_matrix"],
@@ -263,7 +272,7 @@ def run(
         },
     }
 
-    os.makedirs(model_dir, exist_ok=True)
+    os.makedirs(model_path, exist_ok=True)
     with open(json_path, "w") as f:
         json.dump(all_results, f, indent=2)
     if verbose:
