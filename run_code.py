@@ -61,7 +61,7 @@ def main():
                             config += f" --epochs {epochs}"
                         config += f" --dataset {dataset} --cross {cross}"
                         if args.plot:
-                            config += " --plot-results"
+                            config += " --plot"
                         configs.append(config)
 
     print(

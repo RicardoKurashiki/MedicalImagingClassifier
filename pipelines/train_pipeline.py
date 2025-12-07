@@ -176,16 +176,8 @@ def run(
     dataset,
     epochs,
     verbose,
+    output_path,
 ):
-    output_path = os.path.join(
-        "results",
-        pretrained_model,
-        dataset,
-        f"layers_{trainable_layers}",
-        f"batch_size_{batch_size}",
-        f"epochs_{epochs}/",
-    )
-
     train_pipeline(
         dataset_path,
         pretrained_model,

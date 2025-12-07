@@ -3,7 +3,7 @@
 import os
 import argparse
 
-from pipelines import train_pipeline, test_pipeline
+from pipelines import train_pipeline, test_pipeline, feature_extraction_pipeline
 from utils import plot_charts
 
 parser = argparse.ArgumentParser(prog="Medical Imaging Analysis Classifier")
@@ -58,9 +58,15 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    "--plot-results",
+    "--plot",
     action="store_true",
     help="Plot Results",
+)
+
+parser.add_argument(
+    "--extract",
+    action="store_true",
+    help="Extract Features",
 )
 
 args = parser.parse_args()
@@ -69,20 +75,29 @@ args = parser.parse_args()
 def main():
     dataset_path = os.path.join("../../datasets", args.dataset)
     cross_dataset_path = os.path.join("../../datasets", args.cross)
+    output_path = os.path.join(
+        "results",
+        args.model,
+        args.dataset,
+        f"layers_{args.layers}",
+        f"batch_size_{args.batch_size}",
+        f"epochs_{args.epochs}/",
+    )
 
-    if args.plot_results:
-        output_path = os.path.join(
-            "results",
-            args.model,
-            args.dataset,
-            f"layers_{args.layers}",
-            f"batch_size_{args.batch_size}",
-            f"epochs_{args.epochs}/",
-        )
+    if args.plot:
         plot_charts(output_path, args.dataset, args.cross)
         return 0
 
-    output_path = train_pipeline(
+    if args.extract:
+        feature_extraction_pipeline(
+            output_path,
+            dataset_path,
+            args.model,
+            args.batch_size,
+        )
+        return 0
+
+    train_pipeline(
         dataset_path,
         args.model,
         args.layers,
@@ -90,6 +105,7 @@ def main():
         args.dataset,
         args.epochs,
         args.verbose,
+        output_path,
     )
 
     test_pipeline(
@@ -110,6 +126,12 @@ def main():
     )
 
     plot_charts(output_path, args.dataset, args.cross)
+    feature_extraction_pipeline(
+        output_path,
+        dataset_path,
+        args.model,
+        args.batch_size,
+    )
 
 
 if __name__ == "__main__":
