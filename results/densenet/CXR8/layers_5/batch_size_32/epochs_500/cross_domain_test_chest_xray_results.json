@@ -1,45 +1,45 @@
 {
   "confusion_matrix": [
     [
-      234,
-      0
+      196,
+      38
     ],
     [
-      390,
-      0
+      290,
+      100
     ]
   ],
   "total_samples": 624,
-  "correct_predictions": 234,
-  "accuracy": 0.375,
-  "loss": 9.03785444127763,
+  "correct_predictions": 296,
+  "accuracy": 0.47435897435897434,
+  "loss": 0.8000153952684158,
   "classification_report": {
     "NORMAL": {
-      "precision": 0.375,
-      "recall": 1.0,
-      "f1_score": 0.5454541487606192,
-      "specificity": 0.0,
-      "TP": 234,
-      "TN": 0,
-      "FP": 390,
-      "FN": 0
+      "precision": 0.40329218106995884,
+      "recall": 0.8376068376068376,
+      "f1_score": 0.544444005694798,
+      "specificity": 0.2564102564102564,
+      "TP": 196,
+      "TN": 100,
+      "FP": 290,
+      "FN": 38
     },
     "PNEUMONIA": {
-      "precision": 0.0,
-      "recall": 0.0,
-      "f1_score": 0.0,
-      "specificity": 1.0,
-      "TP": 0,
-      "TN": 234,
-      "FP": 0,
-      "FN": 390
+      "precision": 0.7246376811594203,
+      "recall": 0.2564102564102564,
+      "f1_score": 0.3787874926829004,
+      "specificity": 0.8376068376068376,
+      "TP": 100,
+      "TN": 196,
+      "FP": 38,
+      "FN": 290
     },
     "macro_avg": {
-      "precision": 0.1875,
-      "recall": 0.5,
-      "f1_score": 0.2727270743803096
+      "precision": 0.5639649311146896,
+      "recall": 0.5470085470085471,
+      "f1_score": 0.4616157491888492
     },
-    "accuracy": 0.375
+    "accuracy": 0.47435897435897434
   },
   "test_config": {
     "model_path": "results/densenet/CXR8/layers_5/batch_size_32/epochs_500/",
