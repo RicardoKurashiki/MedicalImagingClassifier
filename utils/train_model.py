@@ -64,6 +64,9 @@ def train_model(
     early_stopping_patience=10,
     verbose=False,
 ):
+    # Move model to device
+    model = model.to(device)
+
     since = time.time()
 
     metrics = {
@@ -214,7 +217,7 @@ def train_model(
                         past_loss = best_val_loss
                         best_val_loss = epoch_loss
                         patience_counter = 0
-                        torch.save(model.state_dict(), best_model_params_path)
+                        model.save_weights(best_model_params_path)
                         if verbose:
                             print(
                                 f"Loss val melhorou de {past_loss:.4f} para {best_val_loss:.4f}"
@@ -270,6 +273,6 @@ def train_model(
         if verbose:
             print(f"Melhor acc [val]: {best_acc:.4f}")
 
-        model.load_state_dict(torch.load(best_model_params_path, weights_only=True))
+        model.load_weights(best_model_params_path)
 
     return model, history, metrics
