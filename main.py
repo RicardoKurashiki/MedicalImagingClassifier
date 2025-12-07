@@ -72,6 +72,29 @@ parser.add_argument(
 args = parser.parse_args()
 
 
+def plot(output_path, dataset, cross):
+    plot_charts(output_path, dataset, cross)
+
+
+def extract(
+    output_path, dataset_path, cross_dataset_path, pretrained_model, batch_size
+):
+    feature_extraction_pipeline(
+        output_path,
+        dataset_path,
+        pretrained_model,
+        batch_size,
+        "same_domain_",
+    )
+    feature_extraction_pipeline(
+        output_path,
+        cross_dataset_path,
+        pretrained_model,
+        batch_size,
+        "cross_domain_",
+    )
+
+
 def main():
     dataset_path = os.path.join("../../datasets", args.dataset)
     cross_dataset_path = os.path.join("../../datasets", args.cross)
@@ -85,13 +108,14 @@ def main():
     )
 
     if args.plot:
-        plot_charts(output_path, args.dataset, args.cross)
+        plot(output_path, args.dataset, args.cross)
         return 0
 
     if args.extract:
-        feature_extraction_pipeline(
+        extract(
             output_path,
             dataset_path,
+            cross_dataset_path,
             args.model,
             args.batch_size,
         )
@@ -125,10 +149,11 @@ def main():
         args.verbose,
     )
 
-    plot_charts(output_path, args.dataset, args.cross)
-    feature_extraction_pipeline(
+    plot(output_path, args.dataset, args.cross)
+    extract(
         output_path,
         dataset_path,
+        cross_dataset_path,
         args.model,
         args.batch_size,
     )

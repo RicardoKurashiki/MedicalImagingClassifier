@@ -36,6 +36,7 @@ def run(
     dataset_path,
     pretrained_model,
     batch_size=32,
+    prefix="",
 ):
     transform = transforms.Compose(
         [
@@ -110,11 +111,12 @@ def run(
             with torch.no_grad():
                 features = extraction_model(inputs)
             np.save(
-                os.path.join(output_path, f"{phase}_features.npy"),
+                os.path.join(output_path, f"{prefix}{phase}_features.npy"),
                 features.cpu().detach().numpy(),
             )
             np.save(
-                os.path.join(output_path, f"{phase}_labels.npy"), labels.cpu().numpy()
+                os.path.join(output_path, f"{prefix}{phase}_labels.npy"),
+                labels.cpu().numpy(),
             )
 
     return output_path
