@@ -20,7 +20,8 @@ class ClassificationModel:
     def __init__(self, num_classes, backbone="densenet", trainable_layers=None):
         self.num_classes = num_classes
         self.trainable_layers = trainable_layers
-        self.model = self._build_model(backbone)
+        self.backbone = backbone
+        self.model = self._build_model()
         self.transform = transforms.Compose(
             [
                 transforms.Resize((224, 224)),
@@ -86,8 +87,8 @@ class ClassificationModel:
         print(f"Weights loaded from {input_path}")
         return input_path
 
-    def _build_model(self, backbone):
-        if backbone == "densenet":
+    def _build_model(self):
+        if self.backbone == "densenet":
             self.weights = DenseNet121_Weights.IMAGENET1K_V1
             model = densenet121(weights=self.weights)
             self._unfreeze_layers(model)
@@ -102,7 +103,7 @@ class ClassificationModel:
                 nn.Linear(256, self.num_classes),
             )
             return model.to(device)
-        elif backbone == "resnet":
+        elif self.backbone == "resnet":
             self.weights = ResNet18_Weights.IMAGENET1K_V1
             model = resnet18(weights=self.weights)
             self._unfreeze_layers(model)
@@ -114,7 +115,7 @@ class ClassificationModel:
                 nn.Linear(256, self.num_classes),
             )
             return model.to(device)
-        elif backbone == "mobilenet":
+        elif self.backbone == "mobilenet":
             self.weights = MobileNet_V3_Small_Weights.IMAGENET1K_V1
             model = mobilenet_v3_small(weights=self.weights)
             self._unfreeze_layers(model)
@@ -123,10 +124,13 @@ class ClassificationModel:
                 nn.Linear(num_ftrs, 512),
                 nn.ReLU(inplace=True),
                 nn.Dropout(0.2),
-                nn.Linear(512, self.num_classes),
+                nn.Linear(512, 256),
+                nn.ReLU(inplace=True),
+                nn.Dropout(0.2),
+                nn.Linear(256, self.num_classes),
             )
             return model.to(device)
-        elif backbone == "efficientnet":
+        elif self.backbone == "efficientnet":
             self.weights = EfficientNet_V2_S_Weights.IMAGENET1K_V1
             model = efficientnet_v2_s(weights=self.weights)
             self._unfreeze_layers(model)
@@ -135,7 +139,10 @@ class ClassificationModel:
                 nn.Linear(num_ftrs, 512),
                 nn.ReLU(inplace=True),
                 nn.Dropout(0.2),
-                nn.Linear(512, self.num_classes),
+                nn.Linear(512, 256),
+                nn.ReLU(inplace=True),
+                nn.Dropout(0.2),
+                nn.Linear(256, self.num_classes),
             )
             return model.to(device)
 

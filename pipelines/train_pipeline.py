@@ -54,8 +54,7 @@ def train_pipeline(
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(
         filter(lambda p: p.requires_grad, model.parameters()),
-        lr=0.001,
-        weight_decay=1e-5,
+        lr=1e-4,
     )
 
     scheduler = optim.lr_scheduler.StepLR(
