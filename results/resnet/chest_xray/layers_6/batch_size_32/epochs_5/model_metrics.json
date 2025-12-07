@@ -1,121 +1,121 @@
 {
   "training_history": {
     "train_loss": [
-      0.036594093219240884,
-      0.014900073593454771,
-      0.0077830883062055475,
-      0.012352199818292085,
-      0.019081966913909502
+      0.15437915354077494,
+      0.05297910197596274,
+      0.054246927979888754,
+      0.03565464687095816,
+      0.0311417171432734
     ],
     "train_acc": [
-      0.9880798969072164,
-      0.9954896907216495,
-      0.9975837628865979,
-      0.9964561855670103,
-      0.9959729381443299
+      0.9505597014925373,
+      0.9808768656716418,
+      0.9808768656716418,
+      0.9878731343283582,
+      0.9878731343283582
     ],
     "val_loss": [
-      0.1556076186441362,
-      0.2804581942846207,
-      0.1573609107013394,
-      0.14853680483611764,
-      0.15222466457006945
+      0.10149727748936432,
+      0.07586152240306623,
+      0.08137928801940073,
+      0.0699943524305891,
+      0.06908441376592163
     ],
     "val_acc": [
-      0.9570200573065902,
-      0.9264565425023877,
-      0.9608404966571156,
-      0.9646609360076408,
-      0.9560649474689589
+      0.9579751671442216,
+      0.9675262655205348,
+      0.9665711556829035,
+      0.9713467048710601,
+      0.9761222540592168
     ]
   },
   "computational_metrics": {
-    "total_time_seconds": 72.2423038482666,
+    "total_time_seconds": 32.81974816322327,
     "epoch_times": [
       {
         "epoch": 0,
-        "time_seconds": 14.112049341201782
+        "time_seconds": 6.864574670791626
       },
       {
         "epoch": 1,
-        "time_seconds": 13.98446249961853
+        "time_seconds": 6.4285314083099365
       },
       {
         "epoch": 2,
-        "time_seconds": 13.94539189338684
+        "time_seconds": 6.485857009887695
       },
       {
         "epoch": 3,
-        "time_seconds": 15.003888845443726
+        "time_seconds": 6.474287986755371
       },
       {
         "epoch": 4,
-        "time_seconds": 15.18417501449585
+        "time_seconds": 6.5510149002075195
       }
     ],
     "batch_times": {
       "train": [
         {
           "epoch": 0,
-          "avg_batch_time_seconds": 0.011167473399762026,
-          "total_batches": 194,
-          "total_time_seconds": 12.188015699386597
+          "avg_batch_time_seconds": 0.014377391160424077,
+          "total_batches": 67,
+          "total_time_seconds": 4.800503492355347
         },
         {
           "epoch": 1,
-          "avg_batch_time_seconds": 0.008412270201850184,
-          "total_batches": 194,
-          "total_time_seconds": 12.17924427986145
+          "avg_batch_time_seconds": 0.00938236535485111,
+          "total_batches": 67,
+          "total_time_seconds": 4.516290903091431
         },
         {
           "epoch": 2,
-          "avg_batch_time_seconds": 0.008345878001340885,
-          "total_batches": 194,
-          "total_time_seconds": 12.140348434448242
+          "avg_batch_time_seconds": 0.009309370126297225,
+          "total_batches": 67,
+          "total_time_seconds": 4.642247676849365
         },
         {
           "epoch": 3,
-          "avg_batch_time_seconds": 0.008554189475541263,
-          "total_batches": 194,
-          "total_time_seconds": 13.1558518409729
+          "avg_batch_time_seconds": 0.009470345369025843,
+          "total_batches": 67,
+          "total_time_seconds": 4.540868520736694
         },
         {
           "epoch": 4,
-          "avg_batch_time_seconds": 0.008504133863547413,
-          "total_batches": 194,
-          "total_time_seconds": 13.373801708221436
+          "avg_batch_time_seconds": 0.009128908612834873,
+          "total_batches": 67,
+          "total_time_seconds": 4.647857666015625
         }
       ],
       "val": [
         {
           "epoch": 0,
-          "avg_batch_time_seconds": 0.001755187005707712,
+          "avg_batch_time_seconds": 0.0016231320121071556,
           "total_batches": 33,
-          "total_time_seconds": 1.8838489055633545
+          "total_time_seconds": 2.0232174396514893
         },
         {
           "epoch": 1,
-          "avg_batch_time_seconds": 0.0016222722602613044,
+          "avg_batch_time_seconds": 0.0014352581717751243,
           "total_batches": 33,
-          "total_time_seconds": 1.804948329925537
+          "total_time_seconds": 1.8599522113800049
         },
         {
           "epoch": 2,
-          "avg_batch_time_seconds": 0.0016240784616181345,
+          "avg_batch_time_seconds": 0.0014311906063195431,
           "total_batches": 33,
-          "total_time_seconds": 1.8048441410064697
+          "total_time_seconds": 1.8434202671051025
         },
         {
           "epoch": 3,
-          "avg_batch_time_seconds": 0.0015485142216537938,
+          "avg_batch_time_seconds": 0.0015892476746530244,
           "total_batches": 33,
-          "total_time_seconds": 1.7954542636871338
+          "total_time_seconds": 1.8786444664001465
         },
         {
           "epoch": 4,
-          "avg_batch_time_seconds": 0.0015254237435080788,
+          "avg_batch_time_seconds": 0.0015744223739161637,
           "total_batches": 33,
-          "total_time_seconds": 1.8101794719696045
+          "total_time_seconds": 1.8488550186157227
         }
       ]
     },
@@ -123,98 +123,98 @@
       "train": [
         {
           "epoch": 0,
-          "total_samples": 6208,
-          "total_time_seconds": 12.188015699386597
+          "total_samples": 2144,
+          "total_time_seconds": 4.800503492355347
         },
         {
           "epoch": 1,
-          "total_samples": 6208,
-          "total_time_seconds": 12.17924427986145
+          "total_samples": 2144,
+          "total_time_seconds": 4.516290903091431
         },
         {
           "epoch": 2,
-          "total_samples": 6208,
-          "total_time_seconds": 12.140348434448242
+          "total_samples": 2144,
+          "total_time_seconds": 4.642247676849365
         },
         {
           "epoch": 3,
-          "total_samples": 6208,
-          "total_time_seconds": 13.1558518409729
+          "total_samples": 2144,
+          "total_time_seconds": 4.540868520736694
         },
         {
           "epoch": 4,
-          "total_samples": 6208,
-          "total_time_seconds": 13.373801708221436
+          "total_samples": 2144,
+          "total_time_seconds": 4.647857666015625
         }
       ],
       "val": [
         {
           "epoch": 0,
           "total_samples": 1047,
-          "total_time_seconds": 1.8838489055633545
+          "total_time_seconds": 2.0232174396514893
         },
         {
           "epoch": 1,
           "total_samples": 1047,
-          "total_time_seconds": 1.804948329925537
+          "total_time_seconds": 1.8599522113800049
         },
         {
           "epoch": 2,
           "total_samples": 1047,
-          "total_time_seconds": 1.8048441410064697
+          "total_time_seconds": 1.8434202671051025
         },
         {
           "epoch": 3,
           "total_samples": 1047,
-          "total_time_seconds": 1.7954542636871338
+          "total_time_seconds": 1.8786444664001465
         },
         {
           "epoch": 4,
           "total_samples": 1047,
-          "total_time_seconds": 1.8101794719696045
+          "total_time_seconds": 1.8488550186157227
         }
       ]
     },
     "memory_usage": [
       {
         "epoch": 0,
-        "cpu_memory_mb": 1732.2265625,
+        "cpu_memory_mb": 1731.5390625,
         "gpu_memory_allocated_mb": 178.9755859375,
         "gpu_memory_reserved_mb": 482.0,
         "gpu_memory_max_allocated_mb": 380.1435546875,
-        "gpu_utilization": 12
+        "gpu_utilization": 19
       },
       {
         "epoch": 1,
-        "cpu_memory_mb": 1732.7734375,
-        "gpu_memory_allocated_mb": 178.97607421875,
+        "cpu_memory_mb": 1731.5546875,
+        "gpu_memory_allocated_mb": 178.9755859375,
         "gpu_memory_reserved_mb": 482.0,
         "gpu_memory_max_allocated_mb": 380.14404296875,
-        "gpu_utilization": 11
+        "gpu_utilization": 0
       },
       {
         "epoch": 2,
-        "cpu_memory_mb": 1732.05078125,
-        "gpu_memory_allocated_mb": 178.9755859375,
-        "gpu_memory_reserved_mb": 482.0,
-        "gpu_memory_max_allocated_mb": 380.14404296875,
-        "gpu_utilization": 12
-      },
-      {
-        "epoch": 3,
-        "cpu_memory_mb": 1731.86328125,
-        "gpu_memory_allocated_mb": 178.9755859375,
-        "gpu_memory_reserved_mb": 482.0,
-        "gpu_memory_max_allocated_mb": 380.14404296875,
-        "gpu_utilization": 5
-      },
-      {
-        "epoch": 4,
-        "cpu_memory_mb": 1731.953125,
+        "cpu_memory_mb": 1732.0546875,
         "gpu_memory_allocated_mb": 178.97607421875,
         "gpu_memory_reserved_mb": 482.0,
         "gpu_memory_max_allocated_mb": 380.14404296875,
-        "gpu_utilization": 12
+        "gpu_utilization": 0
+      },
+      {
+        "epoch": 3,
+        "cpu_memory_mb": 1731.5234375,
+        "gpu_memory_allocated_mb": 178.9755859375,
+        "gpu_memory_reserved_mb": 482.0,
+        "gpu_memory_max_allocated_mb": 380.14404296875,
+        "gpu_utilization": 0
+      },
+      {
+        "epoch": 4,
+        "cpu_memory_mb": 1731.7734375,
+        "gpu_memory_allocated_mb": 178.9755859375,
+        "gpu_memory_reserved_mb": 482.0,
+        "gpu_memory_max_allocated_mb": 380.14404296875,
+        "gpu_utilization": 0
       }
     ],
     "model_info": {
@@ -223,18 +223,18 @@
       "model_size_mb": 43.174720764160156
     },
     "initial_memory": {
-      "cpu_memory_mb": 899.5625,
+      "cpu_memory_mb": 894.59765625,
       "gpu_memory_allocated_mb": 43.18994140625,
       "gpu_memory_reserved_mb": 66.0,
       "gpu_memory_max_allocated_mb": 43.18994140625,
       "gpu_utilization": 0
     },
     "final_memory": {
-      "cpu_memory_mb": 1731.953125,
-      "gpu_memory_allocated_mb": 178.97607421875,
+      "cpu_memory_mb": 1731.7734375,
+      "gpu_memory_allocated_mb": 178.9755859375,
       "gpu_memory_reserved_mb": 286.0,
       "gpu_memory_max_allocated_mb": 380.14404296875,
-      "gpu_utilization": 12
+      "gpu_utilization": 0
     }
   },
   "training_config": {
