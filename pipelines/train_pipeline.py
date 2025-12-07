@@ -75,8 +75,6 @@ def train_pipeline(
         trainable_layers=layers,
     )
 
-    print(classification_model.model)
-
     if verbose:
         classification_model.summary()
 
