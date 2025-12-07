@@ -97,7 +97,7 @@ def train_pipeline(
     for batch in BatchSampler(train_dataset, batch_size):
         check_augmentation(
             train_dataset.dataframe.iloc[batch]["path"].values,
-            classification_model.transform,
+            transform,
             os.path.join(output_path, "augmented_samples/"),
             num_samples=batch_size,
         )
