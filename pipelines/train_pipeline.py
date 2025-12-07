@@ -18,7 +18,7 @@ device = (
     else "cpu"
 )
 
-EARLY_STOPPING_PATIENCE = 25
+EARLY_STOPPING_PATIENCE = 30
 
 
 def train_pipeline(
