@@ -2,7 +2,7 @@ import os
 import time
 import psutil
 import torch
-import torch.nn as nn
+
 from tqdm import tqdm
 from tempfile import TemporaryDirectory
 
@@ -64,7 +64,6 @@ def train_model(
     early_stopping_patience=10,
     verbose=False,
 ):
-    # Move model to device
     model = model.to(device)
 
     since = time.time()
@@ -84,17 +83,13 @@ def train_model(
         },
     }
 
-    # Memória inicial
     initial_memory = get_memory_usage()
     metrics["initial_memory"] = initial_memory
 
     with TemporaryDirectory() as tempdir:
-        best_model_params_path = os.path.join(
-            tempdir, f"{pretrained_model}_best_model_params.pt"
-        )
+        best_model_params_path = tempdir
         if verbose:
             print(f"Melhores pesos salvos em {best_model_params_path}")
-        torch.save(model.state_dict(), best_model_params_path)
         best_acc = 0.0
         best_val_loss = float("inf")
         patience_counter = 0
@@ -234,7 +229,6 @@ def train_model(
                                 print("Early stopping acionado")
                             break
 
-            # Verificar early stopping após o loop de fases
             if early_stop:
                 break
 
@@ -249,7 +243,6 @@ def train_model(
             epoch_time = time.time() - epoch_start
             metrics["epoch_times"].append({"epoch": epoch, "time_seconds": epoch_time})
 
-            # Coletar memória após cada época
             epoch_memory = get_memory_usage()
             metrics["memory_usage"].append({"epoch": epoch, **epoch_memory})
             if torch.cuda.is_available():

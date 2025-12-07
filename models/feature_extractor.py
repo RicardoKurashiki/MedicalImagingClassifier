@@ -87,7 +87,7 @@ class FeatureExtractor(nn.Module):
         return x
 
     def _unfreeze_layers(self):
-        for p in self.parameters():
+        for p in self.backbone_model.parameters():
             p.requires_grad = False
 
         if self.trainable_layers is None or self.trainable_layers <= 0:
