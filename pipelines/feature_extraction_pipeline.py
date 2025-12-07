@@ -107,10 +107,11 @@ def run(
         for inputs, labels in dataloaders[phase]:
             inputs = inputs.to(device)
             labels = labels.to(device)
-            features = extraction_model(inputs)
+            with torch.no_grad():
+                features = extraction_model(inputs)
             np.save(
                 os.path.join(output_path, f"{phase}_features.npy"),
-                features.cpu().numpy(),
+                features.cpu().detach().numpy(),
             )
             np.save(
                 os.path.join(output_path, f"{phase}_labels.npy"), labels.cpu().numpy()
