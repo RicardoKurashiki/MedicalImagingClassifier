@@ -6,10 +6,8 @@ import json
 import torch.nn as nn
 import torch.optim as optim
 
-from torch.utils.data import WeightedRandomSampler
 from torch.utils.data import DataLoader
 
-from loss import FocalLoss
 from utils import BatchSampler, load_data, train_model, check_augmentation
 from models import ClassificationModel
 
@@ -29,8 +27,6 @@ def train_pipeline(
     batch_size,
     epochs,
     output_path="./results/",
-    loss="cross_entropy",
-    sampler="balanced",
     verbose=False,
 ):
     n_classes = 2
@@ -55,53 +51,38 @@ def train_pipeline(
 
     model = classification_model.model
 
-    if loss == "cross_entropy":
-        criterion = nn.CrossEntropyLoss()
-    elif loss == "focal_loss":
-        criterion = FocalLoss(alpha=None, gamma=2.0)
-    else:
-        raise ValueError(f"Loss function {loss} not supported")
-
-    optimizer = optim.SGD(
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.Adam(
         filter(lambda p: p.requires_grad, model.parameters()),
-        lr=1e-4,
+        lr=0.001,
         weight_decay=1e-5,
     )
 
-    if sampler == "weighted":
-        train_sampler = WeightedRandomSampler(
-            weights=train_dataset.class_weight,
-            num_samples=len(train_dataset),
-            replacement=True,
+    scheduler = optim.lr_scheduler.StepLR(
+        optimizer,
+        step_size=3,
+        gamma=0.5,
+    )
+
+    for batch in BatchSampler(train_dataset, batch_size):
+        check_augmentation(
+            train_dataset.dataframe.iloc[batch]["path"].values,
+            classification_model.transform,
+            os.path.join(output_path, "augmented_samples/"),
+            num_samples=batch_size,
         )
-        train_loader = DataLoader(
-            train_dataset,
-            sampler=train_sampler,
-            batch_size=batch_size,
-            pin_memory=True,
-            num_workers=4,
-            persistent_workers=True,
-            prefetch_factor=2,
-        )
-    elif sampler == "balanced":
-        train_sampler = BatchSampler(train_dataset, batch_size)
-        for batch in train_sampler:
-            check_augmentation(
-                train_dataset.dataframe.iloc[batch]["path"].values,
-                classification_model.transform,
-                os.path.join(output_path, "augmented_samples/"),
-                num_samples=batch_size,
-            )
-        train_loader = DataLoader(
-            train_dataset,
-            batch_sampler=train_sampler,
-            pin_memory=True,
-            num_workers=4,
-            persistent_workers=True,
-            prefetch_factor=2,
-        )
-    else:
-        raise ValueError(f"Sampler {sampler} not supported")
+        break
+
+    train_sampler = BatchSampler(train_dataset, batch_size)
+
+    train_loader = DataLoader(
+        train_dataset,
+        batch_sampler=train_sampler,
+        pin_memory=True,
+        num_workers=4,
+        persistent_workers=True,
+        prefetch_factor=2,
+    )
 
     val_loader = DataLoader(
         val_dataset,
@@ -123,7 +104,9 @@ def train_pipeline(
         dataloaders,
         criterion,
         optimizer,
-        epochs,
+        scheduler,
+        num_epochs=epochs,
+        early_stopping_patience=EARLY_STOPPING_PATIENCE,
         verbose=verbose,
     )
 
@@ -164,8 +147,6 @@ def run(
     batch_size,
     dataset,
     epochs,
-    loss,
-    sampler,
     verbose,
 ):
     output_path = os.path.join(
@@ -174,8 +155,6 @@ def run(
         dataset,
         f"layers_{trainable_layers}",
         f"batch_size_{batch_size}",
-        f"loss_{loss}",
-        f"sampler_{sampler}",
         f"epochs_{epochs}/",
     )
 
@@ -186,8 +165,6 @@ def run(
         batch_size,
         epochs,
         output_path,
-        loss,
-        sampler,
         verbose,
     )
 

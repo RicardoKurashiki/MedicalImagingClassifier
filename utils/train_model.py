@@ -59,6 +59,7 @@ def train_model(
     dataloaders,
     criterion,
     optimizer,
+    scheduler=None,
     num_epochs=100,
     early_stopping_patience=10,
     verbose=False,
@@ -234,6 +235,14 @@ def train_model(
             if early_stop:
                 break
 
+            if scheduler is not None:
+                scheduler.step()
+                if verbose:
+                    current_lr = scheduler.get_last_lr()[0]
+                    print(
+                        f"Epoch {epoch + 1}/{num_epochs} - New Learning Rate: {current_lr:.6f}"
+                    )
+
             epoch_time = time.time() - epoch_start
             metrics["epoch_times"].append({"epoch": epoch, "time_seconds": epoch_time})
 
@@ -259,7 +268,7 @@ def train_model(
                 f"Treinamento completo em {time_elapsed // 60:.0f}m {time_elapsed % 60:.0f}s"
             )
         if verbose:
-            print(f"Melhor acc [val]: {best_acc:4f}")
+            print(f"Melhor acc [val]: {best_acc:.4f}")
 
         model.load_state_dict(torch.load(best_model_params_path, weights_only=True))
 

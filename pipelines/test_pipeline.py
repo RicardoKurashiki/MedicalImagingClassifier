@@ -153,11 +153,7 @@ def classification_report(results, class_names=None):
 
         recall = TP / (TP + FN) if (TP + FN) > 0 else 0.0
 
-        f1_score = (
-            2 * (precision * recall) / (precision + recall)
-            if (precision + recall) > 0
-            else 0.0
-        )
+        f1_score = 2 * (precision * recall) / (precision + recall + 1e-6)
 
         specificity = TN / (TN + FP) if (TN + FP) > 0 else 0.0
 

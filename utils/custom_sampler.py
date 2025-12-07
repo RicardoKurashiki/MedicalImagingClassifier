@@ -2,6 +2,8 @@ import numpy as np
 
 from torch.utils.data import Sampler
 
+np.random.seed(42)
+
 
 class CustomSampler(Sampler):
     def __init__(self, dataset, batch_size=32):
@@ -35,6 +37,4 @@ class CustomSampler(Sampler):
                 batch.extend(chosen)
                 if len(self.S[c]) == self.c_max:
                     S_work[c] = S_work[c][self.m_per_class :]
-                for c in self.classes:
-                    np.random.shuffle(S_work[c])
             yield batch

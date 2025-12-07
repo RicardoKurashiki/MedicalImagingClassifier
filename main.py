@@ -58,20 +58,6 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    "--loss",
-    choices=("cross_entropy", "focal_loss"),
-    help="Loss Function",
-    default="cross_entropy",
-)
-
-parser.add_argument(
-    "--sampler",
-    choices=("weighted", "balanced"),
-    help="Batch Sampler",
-    default="balanced",
-)
-
-parser.add_argument(
     "--plot-results",
     action="store_true",
     help="Plot Results",
@@ -91,8 +77,6 @@ def main():
             args.dataset,
             f"layers_{args.layers}",
             f"batch_size_{args.batch_size}",
-            f"loss_{args.loss}",
-            f"sampler_{args.sampler}",
             f"epochs_{args.epochs}/",
         )
         plot_charts(output_path, args.dataset, args.cross)
@@ -105,8 +89,6 @@ def main():
         args.batch_size,
         args.dataset,
         args.epochs,
-        args.loss,
-        args.sampler,
         args.verbose,
     )
 

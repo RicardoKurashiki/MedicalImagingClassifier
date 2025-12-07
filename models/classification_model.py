@@ -23,8 +23,7 @@ class ClassificationModel:
         self.model = self._build_model(backbone)
         self.transform = transforms.Compose(
             [
-                transforms.Resize(256),
-                transforms.RandomResizedCrop(224, scale=(0.9, 1.0)),
+                transforms.Resize(224),
                 transforms.RandomHorizontalFlip(),
                 transforms.RandomAffine(
                     degrees=(-10, 10),
@@ -39,7 +38,16 @@ class ClassificationModel:
                 ),
             ]
         )
-        self.val_transform = self.weights.transforms()
+        self.val_transform = transforms.Compose(
+            [
+                transforms.Resize(224),
+                transforms.ToTensor(),
+                transforms.Normalize(
+                    mean=[0.485, 0.456, 0.406],
+                    std=[0.229, 0.224, 0.225],
+                ),
+            ]
+        )
 
     def summary(self):
         print(f"{'Layer Name':50} {'Type':20} {'Trainable'}")
