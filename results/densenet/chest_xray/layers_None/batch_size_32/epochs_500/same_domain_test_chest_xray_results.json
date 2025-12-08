@@ -1,45 +1,45 @@
 {
   "confusion_matrix": [
     [
-      171,
-      63
+      169,
+      65
     ],
     [
-      20,
-      370
+      23,
+      367
     ]
   ],
   "total_samples": 624,
-  "correct_predictions": 541,
-  "accuracy": 0.8669871794871795,
-  "loss": 0.35365342463438326,
+  "correct_predictions": 536,
+  "accuracy": 0.8589743589743589,
+  "loss": 0.3550157566101123,
   "classification_report": {
     "NORMAL": {
-      "precision": 0.8952879581151832,
-      "recall": 0.7307692307692307,
-      "f1_score": 0.8047053874715846,
-      "specificity": 0.9487179487179487,
-      "TP": 171,
-      "TN": 370,
-      "FP": 20,
-      "FN": 63
+      "precision": 0.8802083333333334,
+      "recall": 0.7222222222222222,
+      "f1_score": 0.7934267349074041,
+      "specificity": 0.941025641025641,
+      "TP": 169,
+      "TN": 367,
+      "FP": 23,
+      "FN": 65
     },
     "PNEUMONIA": {
-      "precision": 0.8545034642032333,
-      "recall": 0.9487179487179487,
-      "f1_score": 0.8991489545851239,
-      "specificity": 0.7307692307692307,
-      "TP": 370,
-      "TN": 171,
-      "FP": 63,
-      "FN": 20
+      "precision": 0.8495370370370371,
+      "recall": 0.941025641025641,
+      "f1_score": 0.8929435402350628,
+      "specificity": 0.7222222222222222,
+      "TP": 367,
+      "TN": 169,
+      "FP": 65,
+      "FN": 23
     },
     "macro_avg": {
-      "precision": 0.8748957111592083,
-      "recall": 0.8397435897435896,
-      "f1_score": 0.8519271710283542
+      "precision": 0.8648726851851852,
+      "recall": 0.8316239316239316,
+      "f1_score": 0.8431851375712335
     },
-    "accuracy": 0.8669871794871795
+    "accuracy": 0.8589743589743589
   },
   "test_config": {
     "model_path": "results/densenet/chest_xray/layers_None/batch_size_32/epochs_500/",
