@@ -1,11 +1,13 @@
 import os
 import numpy as np
+import matplotlib.pyplot as plt
 
 import torch
 import torch.nn as nn
 import torch.optim as optim
 
 from torch.utils.data import DataLoader, Dataset
+from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
 
 from models import AutoEncoder
@@ -29,22 +31,38 @@ class AEDataset(Dataset):
         return self.features[idx], self.labels[idx]
 
 
-def train_autoencoder(model, source: DataLoader, target: DataLoader):
-    phases = {
-        "train": source,
-        "test": target,
-    }
-    criterion = nn.MSELoss()
+def plot_pca(features, labels, output_path, file_name, title):
+    plt.figure(figsize=(10, 5))
+    pca = PCA(n_components=2)
+    features_2d = pca.fit_transform(features)
+    plt.scatter(features_2d[:, 0], features_2d[:, 1], c=labels, cmap="viridis")
+    plt.colorbar()
+    plt.title(title)
+    plt.savefig(os.path.join(output_path, f"{file_name}.png"))
+    plt.close()
+
+
+def train_autoencoder(model, source: DataLoader, target: DataLoader, epochs=100):
+    mse_loss = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=1e-3)
 
-    for phase in phases:
-        for inputs, labels in phases[phase]:
-            inputs = inputs.to(device)
-            labels = labels.to(device)
-            outputs = model(inputs)
-            loss = criterion(outputs, labels)
+    model.to(device)
+    model.train()
+
+    for epoch in range(epochs):
+        print(f"Epoch {epoch + 1}/{epochs}")
+        for (source_inputs, _), (target_inputs, _) in zip(source, target):
+            source_inputs = source_inputs.to(device)
+            target_inputs = target_inputs.to(device)
+
+            x_recon, _ = model(source_inputs)
+            loss = mse_loss(x_recon, target_inputs)
+
+            optimizer.zero_grad()
             loss.backward()
             optimizer.step()
+
+    return model
 
 
 def map_features_to_centroids(features, labels, centroids):
@@ -87,7 +105,25 @@ def get_centroids(features, labels, k=1):
     return result
 
 
-def run(output_path, k=1):
+def extract_features(model, dataloader):
+    all_features = []
+    all_labels = []
+
+    for inputs, labels in dataloader:
+        inputs = inputs.to(device)
+        labels = labels.to(device)
+        with torch.no_grad():
+            x_recon, _ = model(inputs)
+        all_features.append(x_recon.cpu().detach().numpy())
+        all_labels.append(labels.cpu().numpy())
+
+    all_features = np.concatenate(all_features, axis=0)
+    all_labels = np.concatenate(all_labels, axis=0)
+
+    return all_features, all_labels
+
+
+def run(output_path, k=1, epochs=100):
     features_path = os.path.join(output_path, "features/")
     centroids_path = os.path.join(output_path, "centroids/")
     os.makedirs(centroids_path, exist_ok=True)
@@ -125,4 +161,31 @@ def run(output_path, k=1):
     )
 
     model = AutoEncoder()
-    train_autoencoder(model, source_dataloader, target_dataloader)
+    model = train_autoencoder(model, source_dataloader, target_dataloader, epochs)
+
+    features, labels = extract_features(model, source_dataloader)
+    plot_pca(
+        features,
+        labels,
+        output_path,
+        "source_features",
+        "Mapped Target Train Features",
+    )
+
+    target_features = np.load(
+        os.path.join(features_path, "cross_domain_test_features.npy")
+    )
+    target_labels = np.load(os.path.join(features_path, "cross_domain_test_labels.npy"))
+    source_dataloader = DataLoader(
+        AEDataset(target_features, target_labels),
+        batch_size=32,
+    )
+
+    features, labels = extract_features(model, source_dataloader)
+    plot_pca(
+        features,
+        labels,
+        output_path,
+        "target_features",
+        "Mapped Target Test Features",
+    )
