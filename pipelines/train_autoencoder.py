@@ -1,17 +1,50 @@
 import os
 import numpy as np
-import matplotlib.pyplot as plt
 
+import torch
+import torch.nn as nn
+import torch.optim as optim
+
+from torch.utils.data import DataLoader, Dataset
 from sklearn.cluster import KMeans
-from sklearn.decomposition import PCA
+
+from models import AutoEncoder
+
+device = (
+    torch.accelerator.current_accelerator().type
+    if torch.accelerator.is_available()
+    else "cpu"
+)
 
 
-def plot_pca(features, labels, output_path, file_name):
-    pca = PCA(n_components=2)
-    features_pca = pca.fit_transform(features)
-    plt.scatter(features_pca[:, 0], features_pca[:, 1], c=labels)
-    plt.savefig(os.path.join(output_path, f"{file_name}.png"))
-    plt.close()
+class AEDataset(Dataset):
+    def __init__(self, features, labels):
+        self.features = torch.tensor(features).to(device)
+        self.labels = torch.tensor(labels).to(device)
+
+    def __len__(self):
+        return len(self.features)
+
+    def __getitem__(self, idx):
+        return self.features[idx], self.labels[idx]
+
+
+def train_autoencoder(model, source: DataLoader, target: DataLoader):
+    phases = {
+        "train": source,
+        "test": target,
+    }
+    criterion = nn.MSELoss()
+    optimizer = optim.Adam(model.parameters(), lr=1e-3)
+
+    for phase in phases:
+        for inputs, labels in phases[phase]:
+            inputs = inputs.to(device)
+            labels = labels.to(device)
+            outputs = model(inputs)
+            loss = criterion(outputs, labels)
+            loss.backward()
+            optimizer.step()
 
 
 def map_features_to_centroids(features, labels, centroids):
@@ -82,6 +115,14 @@ def run(output_path, k=1):
         target_features, target_labels, source_centroids
     )
 
-    plot_pca(
-        mapped_target_features, target_labels, output_path, "mapped_target_features"
+    source_dataloader = DataLoader(
+        AEDataset(target_features, target_labels),
+        batch_size=32,
     )
+    target_dataloader = DataLoader(
+        AEDataset(mapped_target_features, target_labels),
+        batch_size=32,
+    )
+
+    model = AutoEncoder()
+    train_autoencoder(model, source_dataloader, target_dataloader)
