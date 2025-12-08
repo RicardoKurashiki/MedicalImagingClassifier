@@ -50,7 +50,6 @@ def train_autoencoder(model, source: DataLoader, target: DataLoader, epochs=100)
     model.train()
 
     for epoch in range(epochs):
-        print(f"Epoch {epoch + 1}/{epochs}")
         for (source_inputs, _), (target_inputs, _) in zip(source, target):
             source_inputs = source_inputs.to(device)
             target_inputs = target_inputs.to(device)
@@ -61,6 +60,10 @@ def train_autoencoder(model, source: DataLoader, target: DataLoader, epochs=100)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
+
+        print(f"Epoch {epoch + 1}/{epochs} - Loss: {loss.item():.4f}")
+        print("-" * 10)
+        print()
 
     return model
 
@@ -123,7 +126,7 @@ def extract_features(model, dataloader):
     return all_features, all_labels
 
 
-def run(output_path, k=1, epochs=100):
+def run(output_path, k=1, epochs=50):
     features_path = os.path.join(output_path, "features/")
     centroids_path = os.path.join(output_path, "centroids/")
     os.makedirs(centroids_path, exist_ok=True)

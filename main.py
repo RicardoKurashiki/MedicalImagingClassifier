@@ -162,11 +162,7 @@ def main():
         return 0
 
     if args.align:
-        ae_training_pipeline(
-            output_path,
-            k=args.k,
-            epochs=args.epochs,
-        )
+        ae_training_pipeline(output_path, k=args.k)
         return 0
 
     train_pipeline(
@@ -198,11 +194,7 @@ def main():
     )
 
     plot(output_path, args.dataset, args.cross)
-    ae_training_pipeline(
-        output_path,
-        k=args.k,
-        epochs=args.epochs,
-    )
+    ae_training_pipeline(output_path, k=args.k)
 
 
 if __name__ == "__main__":
