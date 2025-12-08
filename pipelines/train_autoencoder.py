@@ -365,12 +365,14 @@ def run(output_path, k=1, epochs=50, pretrained_model="densenet"):
         os.path.join(features_path, "cross_domain_test_features.npy")
     )
     target_labels = np.load(os.path.join(features_path, "cross_domain_test_labels.npy"))
+
     source_dataloader = DataLoader(
         AEDataset(target_features, target_labels),
         batch_size=32,
     )
 
     features, labels = extract_features(model, source_dataloader)
+
     plot_pca(
         features,
         labels,
@@ -380,12 +382,17 @@ def run(output_path, k=1, epochs=50, pretrained_model="densenet"):
         centroids=source_centroids,
     )
 
+    mapped_dataloader = DataLoader(
+        AEDataset(target_features, target_labels),
+        batch_size=32,
+    )
+
     cm = ClassificationModel(num_classes=2, backbone=pretrained_model)
     cm.load_weights(output_path)
     classification_module = cm.model.classifier
     classification_module.to(device)
 
-    results = evaluate_model(classification_module, source_dataloader, num_classes=2)
+    results = evaluate_model(classification_module, mapped_dataloader, num_classes=2)
 
     report = classification_report(results, class_names=["NORMAL", "PNEUMONIA"])
 
