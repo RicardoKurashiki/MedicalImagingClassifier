@@ -383,7 +383,7 @@ def run(output_path, k=1, epochs=50, pretrained_model="densenet"):
     )
 
     mapped_dataloader = DataLoader(
-        AEDataset(target_features, target_labels),
+        AEDataset(features, labels),
         batch_size=32,
     )
 
