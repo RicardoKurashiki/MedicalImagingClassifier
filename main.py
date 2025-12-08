@@ -3,7 +3,13 @@
 import os
 import argparse
 
-from pipelines import train_pipeline, test_pipeline, feature_extraction_pipeline
+from pipelines import (
+    train_pipeline,
+    test_pipeline,
+    feature_extraction_pipeline,
+    ae_training_pipeline,
+)
+
 from utils import plot_charts
 
 parser = argparse.ArgumentParser(prog="Medical Imaging Analysis Classifier")
@@ -52,6 +58,13 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "--k",
+    type=int,
+    default=1,
+    help="Number of Centroids",
+)
+
+parser.add_argument(
     "--verbose",
     action="store_true",
     help="Verbose Output",
@@ -67,6 +80,12 @@ parser.add_argument(
     "--extract",
     action="store_true",
     help="Extract Features",
+)
+
+parser.add_argument(
+    "--align",
+    action="store_true",
+    help="Align Features",
 )
 
 args = parser.parse_args()
@@ -142,6 +161,10 @@ def main():
         )
         return 0
 
+    if args.align:
+        ae_training_pipeline(output_path, k=args.k)
+        return 0
+
     train_pipeline(
         dataset_path,
         args.model,
@@ -171,6 +194,7 @@ def main():
     )
 
     plot(output_path, args.dataset, args.cross)
+    ae_training_pipeline(output_path, k=args.k)
 
 
 if __name__ == "__main__":
