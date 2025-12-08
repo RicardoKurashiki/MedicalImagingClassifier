@@ -15,14 +15,23 @@ def plot_pca(features, labels, output_path, file_name):
 
 
 def map_features_to_centroids(features, labels, centroids):
+    mapped_features = np.zeros_like(features)
     features_by_labels = get_separated_labels(features, labels)
+
     for label in features_by_labels:
-        for feature in features_by_labels[label]:
-            closest_centroid = np.argmin(
-                np.linalg.norm(feature - centroids[label], axis=1)
-            )
-            features_by_labels[label][feature] = closest_centroid
-    return features_by_labels
+        if label not in centroids:
+            mapped_features[np.array(labels) == label] = features_by_labels[label]
+            continue
+
+        label_indices = np.where(np.array(labels) == label)[0]
+        label_features = features_by_labels[label]
+
+        for idx, feature in enumerate(label_features):
+            distances = np.linalg.norm(feature - centroids[label], axis=1)
+            closest_centroid_idx = np.argmin(distances)
+            mapped_features[label_indices[idx]] = centroids[label][closest_centroid_idx]
+
+    return mapped_features
 
 
 def get_separated_labels(features, labels):
@@ -41,7 +50,7 @@ def get_centroids(features, labels, k=1):
             kmeans = KMeans(n_clusters=k, random_state=42, n_init="auto").fit(
                 features_by_labels[label]
             )
-        result[label] = kmeans.cluster_centers_
+            result[label] = kmeans.cluster_centers_
     return result
 
 
