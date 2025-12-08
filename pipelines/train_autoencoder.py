@@ -126,7 +126,7 @@ def extract_features(model, dataloader):
     return all_features, all_labels
 
 
-def run(output_path, k=1, epochs=50):
+def run(output_path, k=1, epochs=5):
     features_path = os.path.join(output_path, "features/")
     centroids_path = os.path.join(output_path, "centroids/")
     os.makedirs(centroids_path, exist_ok=True)
