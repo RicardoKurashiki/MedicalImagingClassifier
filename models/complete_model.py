@@ -22,8 +22,9 @@ class CompleteModel(nn.Module):
         self.classifier = FeatureClassifier(num_classes=num_classes)
 
     def forward(self, x):
-        features = self.extractor(x)
-        return self.classifier(features)
+        f = self.extractor(x)
+        c = self.classifier(f)
+        return c
 
     def save_weights(self, output_path):
         os.makedirs(output_path, exist_ok=True)
