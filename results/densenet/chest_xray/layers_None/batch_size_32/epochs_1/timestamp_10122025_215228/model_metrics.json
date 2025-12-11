@@ -1,0 +1,96 @@
+{
+  "training_history": {
+    "train_loss": [
+      0.44278600078020525
+    ],
+    "train_acc": [
+      0.8726679104477612
+    ],
+    "val_loss": [
+      0.2506841999241138
+    ],
+    "val_acc": [
+      0.9140401146131805
+    ]
+  },
+  "computational_metrics": {
+    "total_time_seconds": 6.738386392593384,
+    "epoch_times": [
+      {
+        "epoch": 0,
+        "time_seconds": 6.72441840171814
+      }
+    ],
+    "batch_times": {
+      "train": [
+        {
+          "epoch": 0,
+          "avg_batch_time_seconds": 0.027109864932387623,
+          "total_batches": 67,
+          "total_time_seconds": 4.857675790786743
+        }
+      ],
+      "val": [
+        {
+          "epoch": 0,
+          "avg_batch_time_seconds": 0.007471221866029681,
+          "total_batches": 33,
+          "total_time_seconds": 1.821150541305542
+        }
+      ]
+    },
+    "throughput": {
+      "train": [
+        {
+          "epoch": 0,
+          "total_samples": 2144,
+          "total_time_seconds": 4.857675790786743
+        }
+      ],
+      "val": [
+        {
+          "epoch": 0,
+          "total_samples": 1047,
+          "total_time_seconds": 1.821150541305542
+        }
+      ]
+    },
+    "memory_usage": [
+      {
+        "epoch": 0,
+        "cpu_memory_mb": 1717.65234375,
+        "gpu_memory_allocated_mb": 67.43115234375,
+        "gpu_memory_reserved_mb": 562.0,
+        "gpu_memory_max_allocated_mb": 380.34912109375,
+        "gpu_utilization": 32
+      }
+    ],
+    "model_info": {
+      "total_params": 7610498,
+      "trainable_params": 656642,
+      "model_size_mb": 29.351760864257812
+    },
+    "initial_memory": {
+      "cpu_memory_mb": 926.796875,
+      "gpu_memory_allocated_mb": 29.4541015625,
+      "gpu_memory_reserved_mb": 46.0,
+      "gpu_memory_max_allocated_mb": 29.4541015625,
+      "gpu_utilization": 1
+    },
+    "final_memory": {
+      "cpu_memory_mb": 1717.65234375,
+      "gpu_memory_allocated_mb": 67.43115234375,
+      "gpu_memory_reserved_mb": 132.0,
+      "gpu_memory_max_allocated_mb": 380.34912109375,
+      "gpu_utilization": 32
+    }
+  },
+  "training_config": {
+    "model": "densenet",
+    "layers": null,
+    "batch_size": 32,
+    "epochs": 1,
+    "device": "cuda",
+    "n_classes": 2
+  }
+}
