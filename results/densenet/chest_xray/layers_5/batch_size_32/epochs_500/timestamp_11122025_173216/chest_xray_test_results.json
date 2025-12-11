@@ -1,0 +1,51 @@
+{
+  "confusion_matrix": [
+    [
+      153,
+      81
+    ],
+    [
+      6,
+      384
+    ]
+  ],
+  "total_samples": 624,
+  "correct_predictions": 537,
+  "accuracy": 0.8605769230769231,
+  "loss": 0.4595838877826165,
+  "classification_report": {
+    "NORMAL": {
+      "precision": 0.9622641509433962,
+      "recall": 0.6538461538461539,
+      "f1_score": 0.7786254724086661,
+      "specificity": 0.9846153846153847,
+      "TP": 153,
+      "TN": 384,
+      "FP": 6,
+      "FN": 81
+    },
+    "PNEUMONIA": {
+      "precision": 0.8258064516129032,
+      "recall": 0.9846153846153847,
+      "f1_score": 0.8982451178826995,
+      "specificity": 0.6538461538461539,
+      "TP": 384,
+      "TN": 153,
+      "FP": 81,
+      "FN": 6
+    },
+    "macro_avg": {
+      "precision": 0.8940353012781497,
+      "recall": 0.8192307692307692,
+      "f1_score": 0.8384352951456828
+    },
+    "accuracy": 0.8605769230769231
+  },
+  "test_config": {
+    "model_path": "results/densenet/chest_xray/layers_5/batch_size_32/epochs_500/timestamp_11122025_173216/",
+    "cross_dataset_path": "../../datasets/chest_xray",
+    "pretrained_model": "densenet",
+    "batch_size": 32,
+    "device": "cuda"
+  }
+}
