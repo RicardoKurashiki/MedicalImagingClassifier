@@ -78,5 +78,7 @@ def run(model_path, dataset_name, k=1):
         plot_path = os.path.join(
             model_path, "plots", f"{dataset_name}_{phase}_centroids.png"
         )
-        pca = np.load(pca_path)
+        pca_components = np.load(pca_path)
+        pca = PCA(n_components=2)
+        pca.components_ = pca_components
         plot_pca(pca, features, labels, centroids, plot_path)
