@@ -1,0 +1,51 @@
+{
+  "confusion_matrix": [
+    [
+      2060,
+      2075
+    ],
+    [
+      153,
+      1622
+    ]
+  ],
+  "total_samples": 5910,
+  "correct_predictions": 3682,
+  "accuracy": 0.6230118443316413,
+  "loss": 0.6870868874483705,
+  "classification_report": {
+    "NORMAL": {
+      "precision": 0.9308630817894261,
+      "recall": 0.49818621523579204,
+      "f1_score": 0.6490228602656609,
+      "specificity": 0.9138028169014084,
+      "TP": 2060,
+      "TN": 1622,
+      "FP": 153,
+      "FN": 2075
+    },
+    "PNEUMONIA": {
+      "precision": 0.4387341087368136,
+      "recall": 0.9138028169014084,
+      "f1_score": 0.5928358189959793,
+      "specificity": 0.49818621523579204,
+      "TP": 1622,
+      "TN": 2060,
+      "FP": 2075,
+      "FN": 153
+    },
+    "macro_avg": {
+      "precision": 0.6847985952631199,
+      "recall": 0.7059945160686002,
+      "f1_score": 0.6209293396308201
+    },
+    "accuracy": 0.6230118443316413
+  },
+  "test_config": {
+    "model_path": "results/densenet/CXR8/layers_None/batch_size_32/epochs_10/timestamp_11122025_091009/",
+    "cross_dataset_path": "../../datasets/rsna",
+    "pretrained_model": "densenet",
+    "batch_size": 32,
+    "device": "cuda"
+  }
+}
