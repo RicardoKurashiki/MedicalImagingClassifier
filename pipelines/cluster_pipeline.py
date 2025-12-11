@@ -1,5 +1,6 @@
 import os
 import numpy as np
+import pickle as pk
 
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
@@ -74,11 +75,9 @@ def run(model_path, dataset_name, k=1):
                 ),
                 centroids[label],
             )
-        pca_path = os.path.join(model_path, "pca", f"{dataset_name}_{phase}_pca.npy")
+        pca_path = os.path.join(model_path, "pca", f"{dataset_name}_{phase}_pca.pkl")
         plot_path = os.path.join(
             model_path, "plots", f"{dataset_name}_{phase}_centroids.png"
         )
-        pca_components = np.load(pca_path)
-        pca = PCA(n_components=2)
-        pca.components_ = pca_components
+        pca = pk.load(open(pca_path, "rb"))
         plot_pca(pca, features, labels, centroids, plot_path)

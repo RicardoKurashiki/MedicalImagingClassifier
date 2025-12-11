@@ -5,6 +5,7 @@ import json
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import pickle as pk
 
 from sklearn.decomposition import PCA
 
@@ -150,7 +151,10 @@ def run(results_path, dataset_name):
 
         pca_path = os.path.join(results_path, "pca/")
         os.makedirs(pca_path, exist_ok=True)
-        np.save(
-            os.path.join(pca_path, f"{dataset_name}_{phase}_pca.npy"),
-            pca.components_,
+        pk.dump(
+            pca,
+            open(
+                os.path.join(pca_path, f"{dataset_name}_{phase}_pca.pkl"),
+                "wb",
+            ),
         )
