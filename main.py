@@ -145,8 +145,10 @@ def main():
             source_name=args.dataset,
             target_name=cross_dataset,
             pretrained_model=args.model,
-            epochs=100,
+            epochs=500,
             batch_size=args.batch_size,
+            early_stopping_patience=25,
+            verbose=args.verbose,
         )
 
 
