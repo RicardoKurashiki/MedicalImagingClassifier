@@ -24,8 +24,6 @@ device = (
     else "cpu"
 )
 
-EARLY_STOPPING_PATIENCE = 100
-
 
 def get_memory_usage():
     metrics = {}
@@ -67,56 +65,11 @@ def get_model_size(model):
     return size_all_mb
 
 
-def validate_autoencoder(
-    model,
-    source: DataLoader,
-    target: DataLoader,
-    criterion=nn.MSELoss(),
-    verbose=False,
-):
-    model.eval()
-
-    total_loss = 0.0
-    total_samples = 0
-    batch_times = []
-
-    with torch.no_grad():
-        pbar = tqdm(
-            zip(source, target),
-            desc="Val     ",
-            unit="batch",
-            leave=False,
-            disable=not verbose,
-        )
-        for (source_inputs, _), (target_inputs, _) in pbar:
-            batch_start = time.time()
-            source_inputs = source_inputs.to(device, non_blocking=True)
-            target_inputs = target_inputs.to(device, non_blocking=True)
-
-            x_recon, _ = model(source_inputs)
-            loss = criterion(x_recon, target_inputs)
-
-            batch_time = time.time() - batch_start
-            batch_times.append(batch_time)
-
-            total_loss += loss.item() * source_inputs.size(0)
-            total_samples += source_inputs.size(0)
-
-            pbar.set_postfix({"loss": f"{loss.item():.4f}"})
-
-    avg_loss = total_loss / total_samples if total_samples > 0 else 0.0
-
-    return avg_loss, batch_times, total_samples
-
-
 def train_autoencoder(
     model,
     source_train: DataLoader,
     target_train: DataLoader,
-    source_val: DataLoader = None,
-    target_val: DataLoader = None,
     epochs=500,
-    output_path="./results/",
     verbose=True,
 ):
     criterion = nn.MSELoss()
@@ -143,187 +96,93 @@ def train_autoencoder(
     initial_memory = get_memory_usage()
     metrics["initial_memory"] = initial_memory
 
-    history = {"train_loss": [], "val_loss": []}
-    best_val_loss = float("inf")
-    patience_counter = 0
-    best_model_state = None
-    early_stop = False
+    history = {"train_loss": []}
+    if verbose:
+        print("Melhores pesos serão salvos temporariamente")
 
-    with TemporaryDirectory() as tempdir:
-        best_model_params_path = tempdir
+    for epoch in range(epochs):
+        epoch_start = time.time()
         if verbose:
-            print("Melhores pesos serão salvos temporariamente")
+            print(f"Epoch {epoch + 1}/{epochs}")
+            print("-" * 10)
 
-        for epoch in range(epochs):
-            if early_stop:
-                if verbose:
-                    print(f"Early stopping acionado na época {epoch}")
-                break
+        model.train()
+        phase_start = time.time()
+        epoch_train_loss = 0.0
+        train_samples = 0
+        train_batch_times = []
 
-            epoch_start = time.time()
-            if verbose:
-                print(f"Epoch {epoch + 1}/{epochs}")
-                print("-" * 10)
+        pbar = tqdm(
+            zip(source_train, target_train),
+            desc="Train   ",
+            unit="batch",
+            leave=False,
+            disable=not verbose,
+        )
 
-            model.train()
-            phase_start = time.time()
-            epoch_train_loss = 0.0
-            train_samples = 0
-            train_batch_times = []
+        for (source_inputs, _), (target_inputs, _) in pbar:
+            batch_start = time.time()
+            source_inputs = source_inputs.to(device, non_blocking=True)
+            target_inputs = target_inputs.to(device, non_blocking=True)
 
-            pbar = tqdm(
-                zip(source_train, target_train),
-                desc="Train   ",
-                unit="batch",
-                leave=False,
-                disable=not verbose,
-            )
+            x_recon, _ = model(source_inputs)
+            loss = criterion(x_recon, target_inputs)
 
-            for (source_inputs, _), (target_inputs, _) in pbar:
-                batch_start = time.time()
-                source_inputs = source_inputs.to(device, non_blocking=True)
-                target_inputs = target_inputs.to(device, non_blocking=True)
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
 
-                x_recon, _ = model(source_inputs)
-                loss = criterion(x_recon, target_inputs)
+            batch_time = time.time() - batch_start
+            train_batch_times.append(batch_time)
 
-                optimizer.zero_grad()
-                loss.backward()
-                optimizer.step()
+            epoch_train_loss += loss.item() * source_inputs.size(0)
+            train_samples += source_inputs.size(0)
 
-                batch_time = time.time() - batch_start
-                train_batch_times.append(batch_time)
-
-                epoch_train_loss += loss.item() * source_inputs.size(0)
-                train_samples += source_inputs.size(0)
-
-                pbar.set_postfix({"loss": f"{loss.item():.4f}"})
-
-                if torch.cuda.is_available():
-                    torch.cuda.empty_cache()
-
-            phase_time = time.time() - phase_start
-            avg_train_loss = (
-                epoch_train_loss / train_samples if train_samples > 0 else 0.0
-            )
-            history["train_loss"].append(avg_train_loss)
-
-            avg_batch_time = (
-                sum(train_batch_times) / len(train_batch_times)
-                if train_batch_times
-                else 0
-            )
-
-            metrics["batch_times"]["train"].append(
-                {
-                    "epoch": epoch,
-                    "avg_batch_time_seconds": avg_batch_time,
-                    "total_batches": len(train_batch_times),
-                    "total_time_seconds": phase_time,
-                }
-            )
-
-            metrics["throughput"]["train"].append(
-                {
-                    "epoch": epoch,
-                    "total_samples": train_samples,
-                    "total_time_seconds": phase_time,
-                }
-            )
-
-            if verbose:
-                print(f"Train Loss: {avg_train_loss:.6f}")
-                print(f"Train Time: {phase_time:.2f}s")
-
-            if source_val is not None and target_val is not None:
-                phase_start = time.time()
-                avg_val_loss, val_batch_times, val_samples = validate_autoencoder(
-                    model, source_val, target_val, criterion, verbose
-                )
-                phase_time = time.time() - phase_start
-
-                history["val_loss"].append(avg_val_loss)
-                avg_batch_time = (
-                    sum(val_batch_times) / len(val_batch_times)
-                    if val_batch_times
-                    else 0
-                )
-
-                metrics["batch_times"]["val"].append(
-                    {
-                        "epoch": epoch,
-                        "avg_batch_time_seconds": avg_batch_time,
-                        "total_batches": len(val_batch_times),
-                        "total_time_seconds": phase_time,
-                    }
-                )
-
-                metrics["throughput"]["val"].append(
-                    {
-                        "epoch": epoch,
-                        "total_samples": val_samples,
-                        "total_time_seconds": phase_time,
-                    }
-                )
-
-                if verbose:
-                    print(f"Val Loss: {avg_val_loss:.6f}")
-                    print(f"Val Time: {phase_time:.2f}s")
-
-                if avg_val_loss < best_val_loss:
-                    past_loss = best_val_loss
-                    best_val_loss = avg_val_loss
-                    patience_counter = 0
-
-                    model.save_weights(best_model_params_path)
-                    best_model_state = {
-                        "encoder": model.encoder.state_dict().copy(),
-                        "decoder": model.decoder.state_dict().copy(),
-                    }
-
-                    if verbose:
-                        print(
-                            f"Loss val melhorou de {past_loss:.6f} para {best_val_loss:.6f} [MELHOR]"
-                        )
-                else:
-                    patience_counter += 1
-                    if verbose:
-                        print(
-                            f"Loss val não melhorou de {best_val_loss:.6f} - Paciência: {patience_counter}/{EARLY_STOPPING_PATIENCE}"
-                        )
-
-                if patience_counter >= EARLY_STOPPING_PATIENCE:
-                    early_stop = True
-                    if verbose:
-                        print("Early stopping acionado")
-                    break
-            else:
-                if verbose:
-                    print(f"Train Loss: {avg_train_loss:.6f}")
-
-            epoch_time = time.time() - epoch_start
-            metrics["epoch_times"].append({"epoch": epoch, "time_seconds": epoch_time})
-
-            epoch_memory = get_memory_usage()
-            metrics["memory_usage"].append({"epoch": epoch, **epoch_memory})
+            pbar.set_postfix({"loss": f"{loss.item():.4f}"})
 
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()
 
-            if verbose:
-                print()
+        phase_time = time.time() - phase_start
+        avg_train_loss = epoch_train_loss / train_samples if train_samples > 0 else 0.0
+        history["train_loss"].append(avg_train_loss)
 
-        if best_model_state is not None:
-            model.encoder.load_state_dict(best_model_state["encoder"])
-            model.decoder.load_state_dict(best_model_state["decoder"])
-            if verbose:
-                print(f"\nMelhor modelo carregado (val_loss: {best_val_loss:.6f})")
-        elif os.path.exists(best_model_params_path):
-            model.load_weights(best_model_params_path)
-            if verbose:
-                print(
-                    f"\nMelhor modelo carregado do disco (val_loss: {best_val_loss:.6f})"
-                )
+        avg_batch_time = (
+            sum(train_batch_times) / len(train_batch_times) if train_batch_times else 0
+        )
+
+        metrics["batch_times"]["train"].append(
+            {
+                "epoch": epoch,
+                "avg_batch_time_seconds": avg_batch_time,
+                "total_batches": len(train_batch_times),
+                "total_time_seconds": phase_time,
+            }
+        )
+
+        metrics["throughput"]["train"].append(
+            {
+                "epoch": epoch,
+                "total_samples": train_samples,
+                "total_time_seconds": phase_time,
+            }
+        )
+
+        if verbose:
+            print(f"Train Loss: {avg_train_loss:.6f}")
+            print(f"Train Time: {phase_time:.2f}s")
+
+        epoch_time = time.time() - epoch_start
+        metrics["epoch_times"].append({"epoch": epoch, "time_seconds": epoch_time})
+
+        epoch_memory = get_memory_usage()
+        metrics["memory_usage"].append({"epoch": epoch, **epoch_memory})
+
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+
+        if verbose:
+            print()
 
     time_elapsed = time.time() - since
     metrics["total_time_seconds"] = time_elapsed
@@ -338,10 +197,6 @@ def train_autoencoder(
         print(
             f"Treinamento completo em {time_elapsed // 60:.0f}m {time_elapsed % 60:.0f}s"
         )
-        if source_val is not None and target_val is not None:
-            print(f"Melhor val_loss: {best_val_loss:.6f}")
-
-    model.save_weights(os.path.join(output_path, "autoencoder_weights.pt"))
 
     return model, history, metrics
 
@@ -570,7 +425,7 @@ def run(
 ):
     features_path = os.path.join(output_path, "features/")
     centroids_path = os.path.join(output_path, "centroids/")
-    autoencoder_path = os.path.join(output_path, source_name, "autoencoder/")
+    autoencoder_path = os.path.join(output_path, target_name, "autoencoder/")
 
     os.makedirs(autoencoder_path, exist_ok=True)
 
@@ -585,13 +440,6 @@ def run(
     )
     target_train_labels = np.load(
         os.path.join(features_path, f"{target_name}_train_labels.npy")
-    )
-
-    target_val_features = np.load(
-        os.path.join(features_path, f"{target_name}_val_features.npy")
-    )
-    target_val_labels = np.load(
-        os.path.join(features_path, f"{target_name}_val_labels.npy")
     )
 
     target_test_features = np.load(
@@ -619,29 +467,15 @@ def run(
         target_train_features, target_train_labels, source_centroids
     )
 
-    mapped_target_val_features = map_features_to_centroids(
-        target_val_features, target_val_labels, source_centroids
-    )
-
     source_train_dataloader = DataLoader(
         FeatureDataset(target_train_features, target_train_labels),
         batch_size=batch_size,
         shuffle=True,
     )
-    source_val_dataloader = DataLoader(
-        FeatureDataset(target_val_features, target_val_labels),
-        batch_size=batch_size,
-        shuffle=False,
-    )
     target_train_dataloader = DataLoader(
         FeatureDataset(mapped_target_train_features, target_train_labels),
         batch_size=batch_size,
         shuffle=True,
-    )
-    target_val_dataloader = DataLoader(
-        FeatureDataset(mapped_target_val_features, target_val_labels),
-        batch_size=batch_size,
-        shuffle=False,
     )
 
     model = AutoEncoder()
@@ -649,12 +483,11 @@ def run(
         model,
         source_train_dataloader,
         target_train_dataloader,
-        source_val_dataloader,
-        target_val_dataloader,
         epochs=epochs,
-        output_path=autoencoder_path,
         verbose=verbose,
     )
+
+    model.save_weights(autoencoder_path)
 
     history_path = os.path.join(
         output_path, f"{source_name}_autoencoder_{target_name}_training_history.json"
@@ -763,7 +596,6 @@ def run(
             "pretrained_model": pretrained_model,
             "epochs": epochs,
             "batch_size": batch_size,
-            "early_stopping_patience": EARLY_STOPPING_PATIENCE,
             "device": str(device),
         },
     }
