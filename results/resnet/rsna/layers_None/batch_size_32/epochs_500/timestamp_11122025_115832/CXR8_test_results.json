@@ -1,0 +1,51 @@
+{
+  "confusion_matrix": [
+    [
+      9729,
+      2344
+    ],
+    [
+      131,
+      155
+    ]
+  ],
+  "total_samples": 12359,
+  "correct_predictions": 9884,
+  "accuracy": 0.799741079375354,
+  "loss": 0.4350572843172421,
+  "classification_report": {
+    "NORMAL": {
+      "precision": 0.9867139959432049,
+      "recall": 0.8058477594632651,
+      "f1_score": 0.887155844852501,
+      "specificity": 0.541958041958042,
+      "TP": 9729,
+      "TN": 155,
+      "FP": 131,
+      "FN": 2344
+    },
+    "PNEUMONIA": {
+      "precision": 0.06202480992396959,
+      "recall": 0.541958041958042,
+      "f1_score": 0.11131040816561749,
+      "specificity": 0.8058477594632651,
+      "TP": 155,
+      "TN": 9729,
+      "FP": 2344,
+      "FN": 131
+    },
+    "macro_avg": {
+      "precision": 0.5243694029335872,
+      "recall": 0.6739029007106536,
+      "f1_score": 0.49923312650905927
+    },
+    "accuracy": 0.799741079375354
+  },
+  "test_config": {
+    "model_path": "results/resnet/rsna/layers_None/batch_size_32/epochs_500/timestamp_11122025_115832/",
+    "cross_dataset_path": "../../datasets/CXR8",
+    "pretrained_model": "resnet",
+    "batch_size": 32,
+    "device": "cuda"
+  }
+}

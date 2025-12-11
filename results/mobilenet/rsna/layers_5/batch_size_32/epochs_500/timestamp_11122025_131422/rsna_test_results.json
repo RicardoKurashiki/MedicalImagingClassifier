@@ -1,0 +1,51 @@
+{
+  "confusion_matrix": [
+    [
+      3188,
+      947
+    ],
+    [
+      354,
+      1421
+    ]
+  ],
+  "total_samples": 5910,
+  "correct_predictions": 4609,
+  "accuracy": 0.7798646362098138,
+  "loss": 0.45334404138139056,
+  "classification_report": {
+    "NORMAL": {
+      "precision": 0.9000564652738566,
+      "recall": 0.7709794437726724,
+      "f1_score": 0.830532263176377,
+      "specificity": 0.8005633802816902,
+      "TP": 3188,
+      "TN": 1421,
+      "FP": 354,
+      "FN": 947
+    },
+    "PNEUMONIA": {
+      "precision": 0.6000844594594594,
+      "recall": 0.8005633802816902,
+      "f1_score": 0.6859758558871305,
+      "specificity": 0.7709794437726724,
+      "TP": 1421,
+      "TN": 3188,
+      "FP": 947,
+      "FN": 354
+    },
+    "macro_avg": {
+      "precision": 0.7500704623666581,
+      "recall": 0.7857714120271813,
+      "f1_score": 0.7582540595317537
+    },
+    "accuracy": 0.7798646362098138
+  },
+  "test_config": {
+    "model_path": "results/mobilenet/rsna/layers_5/batch_size_32/epochs_500/timestamp_11122025_131422/",
+    "cross_dataset_path": "../../datasets/rsna",
+    "pretrained_model": "mobilenet",
+    "batch_size": 32,
+    "device": "cuda"
+  }
+}
