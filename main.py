@@ -143,6 +143,15 @@ def main():
 
         cluster_pipeline(output_path, cross_dataset, k=args.k)
 
+        ae_training_pipeline(
+            output_path,
+            source_name=args.dataset,
+            target_name=cross_dataset,
+            pretrained_model=args.model,
+            epochs=100,
+            batch_size=args.batch_size,
+        )
+
 
 if __name__ == "__main__":
     main()

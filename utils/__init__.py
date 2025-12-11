@@ -6,3 +6,4 @@ from .custom_dataset import CustomDataset
 from .train_model import train_model
 from .save_aug_plot import run as check_augmentation
 from .plot_charts import run as plot_charts
+from .plot_pca import plot_pca

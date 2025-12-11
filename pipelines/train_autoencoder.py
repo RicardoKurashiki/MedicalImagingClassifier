@@ -12,7 +12,10 @@ from torch.utils.data import DataLoader, Dataset
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
 
+import pickle as pk
+
 from models import AutoEncoder, ClassificationModel
+from utils import plot_pca
 
 device = (
     torch.accelerator.current_accelerator().type
@@ -31,44 +34,6 @@ class AEDataset(Dataset):
 
     def __getitem__(self, idx):
         return self.features[idx], self.labels[idx]
-
-
-def plot_pca(features, labels, output_path, file_name, title, centroids=None):
-    plt.figure(figsize=(10, 5))
-    pca = PCA(n_components=2)
-    features_2d = pca.fit_transform(features)
-    plt.scatter(
-        features_2d[:, 0], features_2d[:, 1], c=labels, cmap="viridis", alpha=0.6, s=20
-    )
-
-    if centroids is not None:
-        all_centroids = []
-        centroid_labels = []
-        for label in centroids:
-            centroids_array = centroids[label]
-            all_centroids.append(centroids_array)
-            centroid_labels.extend([label] * len(centroids_array))
-
-        if len(all_centroids) > 0:
-            all_centroids = np.concatenate(all_centroids, axis=0)
-            centroids_2d = pca.transform(all_centroids)
-            plt.scatter(
-                centroids_2d[:, 0],
-                centroids_2d[:, 1],
-                c="red",
-                marker="X",
-                s=200,
-                edgecolors="black",
-                linewidths=1.5,
-                label="Centroids",
-                zorder=10,
-            )
-            plt.legend()
-
-    plt.colorbar()
-    plt.title(title)
-    plt.savefig(os.path.join(output_path, f"{file_name}.png"))
-    plt.close()
 
 
 def train_autoencoder(model, source: DataLoader, target: DataLoader, epochs=100):
@@ -125,19 +90,18 @@ def get_separated_labels(features, labels):
     return result
 
 
-def get_centroids(features, labels, k=1):
+def load_centroids(centroids_path, dataset_name, phase):
     result = {}
-    features_by_labels = get_separated_labels(features, labels)
-    for label in features_by_labels:
-        if len(features_by_labels[label]) >= k:
-            kmeans = KMeans(n_clusters=k, random_state=42, n_init="auto").fit(
-                features_by_labels[label]
-            )
-            result[label] = kmeans.cluster_centers_
+    for file in os.listdir(centroids_path):
+        if file.startswith(f"{dataset_name}_{phase}_centroids_"):
+            label = file.split("_")[-1]
+            result[int(label)] = np.load(os.path.join(centroids_path, file))
     return result
 
 
 def extract_features(model, dataloader):
+    model.eval()
+
     all_features = []
     all_labels = []
 
@@ -311,80 +275,92 @@ def classification_report(results, class_names=None):
     return report
 
 
-def run(output_path, k=1, epochs=50, pretrained_model="densenet"):
+def run(
+    output_path,
+    source_name,
+    target_name,
+    pretrained_model="densenet",
+    epochs=100,
+    batch_size=32,
+):
     features_path = os.path.join(output_path, "features/")
     centroids_path = os.path.join(output_path, "centroids/")
-    os.makedirs(centroids_path, exist_ok=True)
 
-    source_features = np.load(
-        os.path.join(features_path, "same_domain_train_features.npy")
-    )
-    source_labels = np.load(os.path.join(features_path, "same_domain_train_labels.npy"))
+    source_centroids = load_centroids(centroids_path, source_name, "train")
 
-    target_features = np.load(
-        os.path.join(features_path, "cross_domain_train_features.npy")
+    target_train_features = np.load(
+        os.path.join(features_path, f"{target_name}_train_features.npy")
     )
-    target_labels = np.load(
-        os.path.join(features_path, "cross_domain_train_labels.npy")
+    target_train_labels = np.load(
+        os.path.join(features_path, f"{target_name}_train_labels.npy")
     )
 
-    source_centroids = get_centroids(source_features, source_labels, k)
-    for label in source_centroids:
-        np.save(
-            os.path.join(centroids_path, f"source_centroids_{label}.npy"),
-            source_centroids[label],
-        )
+    target_test_features = np.load(
+        os.path.join(features_path, f"{target_name}_test_features.npy")
+    )
+    target_test_labels = np.load(
+        os.path.join(features_path, f"{target_name}_test_labels.npy")
+    )
 
-    mapped_target_features = map_features_to_centroids(
-        target_features, target_labels, source_centroids
+    pca_path = os.path.join(output_path, "pca", f"{source_name}_train_pca.pkl")
+    pca = pk.load(open(pca_path, "rb"))
+
+    plot_pca(
+        target_test_features,
+        target_test_labels,
+        output_path=os.path.join(
+            output_path, "plots", f"{target_name}_with_{source_name}_centroids.png"
+        ),
+        centroids=source_centroids,
+        pca=pca,
+        title=f"{target_name} with {source_name} Centroids",
+    )
+
+    mapped_target_train_features = map_features_to_centroids(
+        target_train_features, target_train_labels, source_centroids
     )
 
     source_dataloader = DataLoader(
-        AEDataset(target_features, target_labels),
-        batch_size=32,
+        AEDataset(target_train_features, target_train_labels),
+        batch_size=batch_size,
     )
     target_dataloader = DataLoader(
-        AEDataset(mapped_target_features, target_labels),
-        batch_size=32,
+        AEDataset(mapped_target_train_features, target_train_labels),
+        batch_size=batch_size,
     )
 
     model = AutoEncoder()
     model = train_autoencoder(model, source_dataloader, target_dataloader, epochs)
 
-    features, labels = extract_features(model, source_dataloader)
-    plot_pca(
-        features,
-        labels,
-        output_path,
-        "source_features",
-        "Mapped Target Train Features",
-        centroids=source_centroids,
-    )
-
-    target_features = np.load(
-        os.path.join(features_path, "cross_domain_test_features.npy")
-    )
-    target_labels = np.load(os.path.join(features_path, "cross_domain_test_labels.npy"))
-
-    source_dataloader = DataLoader(
-        AEDataset(target_features, target_labels),
-        batch_size=32,
-    )
-
-    features, labels = extract_features(model, source_dataloader)
+    train_x_recon, train_labels = extract_features(model, source_dataloader)
 
     plot_pca(
-        features,
-        labels,
-        output_path,
-        "target_features",
-        "Mapped Target Test Features",
+        train_x_recon,
+        train_labels,
+        output_path=os.path.join(
+            output_path, "plots", f"{target_name}_train_reconstructed.png"
+        ),
         centroids=source_centroids,
+        pca=pca,
+        title=f"{target_name} Train Reconstructed",
     )
 
-    mapped_dataloader = DataLoader(
-        AEDataset(features, labels),
-        batch_size=32,
+    test_dataloader = DataLoader(
+        AEDataset(target_test_features, target_test_labels),
+        batch_size=batch_size,
+    )
+
+    test_x_recon, test_labels = extract_features(model, test_dataloader)
+
+    plot_pca(
+        test_x_recon,
+        test_labels,
+        output_path=os.path.join(
+            output_path, "plots", f"{target_name}_test_reconstructed.png"
+        ),
+        centroids=source_centroids,
+        pca=pca,
+        title=f"{target_name} Test Reconstructed",
     )
 
     cm = ClassificationModel(num_classes=2, backbone=pretrained_model)
@@ -392,15 +368,14 @@ def run(output_path, k=1, epochs=50, pretrained_model="densenet"):
     classification_module = cm.model.classifier
     classification_module.to(device)
 
-    results = evaluate_model(classification_module, mapped_dataloader, num_classes=2)
-
+    results = evaluate_model(classification_module, test_dataloader, num_classes=2)
     report = classification_report(results, class_names=["NORMAL", "PNEUMONIA"])
 
     confusion_matrix = results["confusion_matrix"]
     for row in confusion_matrix:
         print(" ".join([str(cell) for cell in row]))
 
-    json_filename = "train_autoencoder_results.json"
+    json_filename = f"{source_name}_autoencoder_{target_name}_test_mapped_results.json"
     json_path = os.path.join(output_path, json_filename)
 
     all_results = {

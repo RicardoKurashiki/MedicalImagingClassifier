@@ -8,6 +8,7 @@ import seaborn as sns
 import pickle as pk
 
 from sklearn.decomposition import PCA
+from utils import plot_pca
 
 
 def plot_training_history(training_history, training_config, output_path):
@@ -88,17 +89,6 @@ def plot_confusion_matrix(confusion_matrix, title, output_path):
     plt.close()
 
 
-def plot_pca(features, labels, output_path):
-    plt.figure(figsize=(10, 5))
-    pca = PCA(n_components=2)
-    features_2d = pca.fit_transform(features)
-    plt.scatter(features_2d[:, 0], features_2d[:, 1], c=labels, cmap="viridis")
-    plt.colorbar()
-    plt.savefig(output_path)
-    plt.close()
-    return pca
-
-
 def run(results_path, dataset_name):
     output_path = os.path.join(results_path, "plots/")
     os.makedirs(output_path, exist_ok=True)
@@ -146,7 +136,8 @@ def run(results_path, dataset_name):
         pca = plot_pca(
             features,
             labels,
-            os.path.join(output_path, f"{dataset_name}_{phase}_pca.png"),
+            output_path=os.path.join(output_path, f"{dataset_name}_{phase}_pca.png"),
+            title=f"{dataset_name} - {phase} Features",
         )
 
         pca_path = os.path.join(results_path, "pca/")

@@ -5,6 +5,7 @@ import pickle as pk
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
+from utils import plot_pca
 
 
 def get_separated_labels(features, labels):
@@ -25,26 +26,6 @@ def get_centroids(features, labels, k=1):
             )
             result[label] = kmeans.cluster_centers_
     return result
-
-
-def plot_pca(pca, features, labels, centroids, output_path):
-    plt.figure(figsize=(10, 5))
-    features_2d = pca.transform(features)
-    plt.scatter(features_2d[:, 0], features_2d[:, 1], c=labels, cmap="viridis")
-    if centroids is not None:
-        for label in centroids:
-            centroids_2d = pca.transform(centroids[label])
-            plt.scatter(
-                centroids_2d[:, 0],
-                centroids_2d[:, 1],
-                c="red",
-                marker="X",
-                s=200,
-                label=f"Centroid {label}",
-            )
-    plt.legend()
-    plt.savefig(output_path)
-    plt.close()
 
 
 def run(model_path, dataset_name, k=1):
@@ -80,4 +61,11 @@ def run(model_path, dataset_name, k=1):
             model_path, "plots", f"{dataset_name}_{phase}_centroids.png"
         )
         pca = pk.load(open(pca_path, "rb"))
-        plot_pca(pca, features, labels, centroids, plot_path)
+        plot_pca(
+            features,
+            labels,
+            output_path=plot_path,
+            centroids=centroids,
+            pca=pca,
+            title=f"{dataset_name} - {phase} Centroids",
+        )
