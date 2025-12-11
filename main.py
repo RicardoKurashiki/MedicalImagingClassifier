@@ -91,11 +91,8 @@ def main():
     dataset_path = os.path.join("../../datasets", args.dataset)
     current_time = datetime.now().strftime("%d%m%Y_%H%M%S")
 
-    cross_datasets = [
-        "chest_xray",
-        "rsna",
-        "CXR8",
-    ]
+    all_datasets = ["chest_xray", "rsna", "CXR8"]
+    cross_datasets = [args.dataset] + [d for d in all_datasets if d != args.dataset]
 
     output_path = os.path.join(
         "results",
