@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 
 
-def plot_pca(
+def run(
     features, labels, output_path="./results/", centroids=None, pca=None, title="PCA"
 ):
     plt.figure(figsize=(10, 5))
