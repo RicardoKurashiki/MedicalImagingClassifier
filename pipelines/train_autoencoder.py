@@ -363,12 +363,17 @@ def run(
         title=f"{target_name} Test Reconstructed",
     )
 
+    mapped_dataloader = DataLoader(
+        AEDataset(test_x_recon, test_labels),
+        batch_size=batch_size,
+    )
+
     cm = ClassificationModel(num_classes=2, backbone=pretrained_model)
     cm.load_weights(output_path)
     classification_module = cm.model.classifier
     classification_module.to(device)
 
-    results = evaluate_model(classification_module, test_dataloader, num_classes=2)
+    results = evaluate_model(classification_module, mapped_dataloader, num_classes=2)
     report = classification_report(results, class_names=["NORMAL", "PNEUMONIA"])
 
     confusion_matrix = results["confusion_matrix"]
