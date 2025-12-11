@@ -1,0 +1,51 @@
+{
+  "confusion_matrix": [
+    [
+      2931,
+      1204
+    ],
+    [
+      347,
+      1428
+    ]
+  ],
+  "total_samples": 5910,
+  "correct_predictions": 4359,
+  "accuracy": 0.7375634517766497,
+  "loss": 0.5140601411487044,
+  "classification_report": {
+    "NORMAL": {
+      "precision": 0.8941427699816962,
+      "recall": 0.7088270858524789,
+      "f1_score": 0.7907724730932401,
+      "specificity": 0.8045070422535211,
+      "TP": 2931,
+      "TN": 1428,
+      "FP": 347,
+      "FN": 1204
+    },
+    "PNEUMONIA": {
+      "precision": 0.5425531914893617,
+      "recall": 0.8045070422535211,
+      "f1_score": 0.6480594236054279,
+      "specificity": 0.7088270858524789,
+      "TP": 1428,
+      "TN": 2931,
+      "FP": 1204,
+      "FN": 347
+    },
+    "macro_avg": {
+      "precision": 0.7183479807355289,
+      "recall": 0.756667064053,
+      "f1_score": 0.719415948349334
+    },
+    "accuracy": 0.7375634517766497
+  },
+  "test_config": {
+    "model_path": "results/resnet/rsna/layers_None/batch_size_32/epochs_5/timestamp_11122025_094931/",
+    "cross_dataset_path": "../../datasets/rsna",
+    "pretrained_model": "resnet",
+    "batch_size": 32,
+    "device": "cuda"
+  }
+}
