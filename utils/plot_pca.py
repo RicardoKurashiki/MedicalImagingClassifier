@@ -4,7 +4,12 @@ from sklearn.decomposition import PCA
 
 
 def run(
-    features, labels, output_path="./results/", centroids=None, pca=None, title="PCA"
+    features,
+    labels,
+    output_path="./results/",
+    centroids=None,
+    pca=None,
+    title="PCA",
 ):
     plt.figure(figsize=(10, 5))
     if pca is None:

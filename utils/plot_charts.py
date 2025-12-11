@@ -8,7 +8,7 @@ import seaborn as sns
 import pickle as pk
 
 from sklearn.decomposition import PCA
-from utils import plot_pca
+from .plot_pca import run as plot_pca
 
 
 def plot_training_history(training_history, training_config, output_path):
@@ -137,6 +137,8 @@ def run(results_path, dataset_name):
             features,
             labels,
             output_path=os.path.join(output_path, f"{dataset_name}_{phase}_pca.png"),
+            centroids=None,
+            pca=None,
             title=f"{dataset_name} - {phase} Features",
         )
 
