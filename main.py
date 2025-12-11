@@ -147,7 +147,6 @@ def main():
             pretrained_model=args.model,
             epochs=500,
             batch_size=args.batch_size,
-            early_stopping_patience=25,
             verbose=args.verbose,
         )
 

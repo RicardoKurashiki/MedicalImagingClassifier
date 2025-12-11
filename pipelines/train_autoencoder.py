@@ -24,6 +24,8 @@ device = (
     else "cpu"
 )
 
+EARLY_STOPPING_PATIENCE = 100
+
 
 def get_memory_usage():
     metrics = {}
@@ -113,7 +115,6 @@ def train_autoencoder(
     target_train: DataLoader,
     source_val: DataLoader = None,
     target_val: DataLoader = None,
-    early_stopping_patience=25,
     epochs=500,
     output_path="./results/",
     verbose=True,
@@ -288,10 +289,10 @@ def train_autoencoder(
                     patience_counter += 1
                     if verbose:
                         print(
-                            f"Loss val não melhorou de {best_val_loss:.6f} - Paciência: {patience_counter}/{early_stopping_patience}"
+                            f"Loss val não melhorou de {best_val_loss:.6f} - Paciência: {patience_counter}/{EARLY_STOPPING_PATIENCE}"
                         )
 
-                if patience_counter >= early_stopping_patience:
+                if patience_counter >= EARLY_STOPPING_PATIENCE:
                     early_stop = True
                     if verbose:
                         print("Early stopping acionado")
@@ -565,7 +566,6 @@ def run(
     pretrained_model="densenet",
     epochs=500,
     batch_size=32,
-    early_stopping_patience=25,
     verbose=True,
 ):
     features_path = os.path.join(output_path, "features/")
@@ -651,7 +651,6 @@ def run(
         target_train_dataloader,
         source_val_dataloader,
         target_val_dataloader,
-        early_stopping_patience=early_stopping_patience,
         epochs=epochs,
         output_path=autoencoder_path,
         verbose=verbose,
@@ -764,7 +763,7 @@ def run(
             "pretrained_model": pretrained_model,
             "epochs": epochs,
             "batch_size": batch_size,
-            "early_stopping_patience": early_stopping_patience,
+            "early_stopping_patience": EARLY_STOPPING_PATIENCE,
             "device": str(device),
         },
     }

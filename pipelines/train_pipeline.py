@@ -18,7 +18,7 @@ device = (
     else "cpu"
 )
 
-EARLY_STOPPING_PATIENCE = 30
+EARLY_STOPPING_PATIENCE = 50
 
 
 def run(
