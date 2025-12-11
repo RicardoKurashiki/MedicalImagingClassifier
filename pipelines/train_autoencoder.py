@@ -94,7 +94,7 @@ def load_centroids(centroids_path, dataset_name, phase):
     result = {}
     for file in os.listdir(centroids_path):
         if file.startswith(f"{dataset_name}_{phase}_centroids_"):
-            label = file.split("_")[-1]
+            label = file.split("_")[-1].replace(".npy", "")
             result[int(label)] = np.load(os.path.join(centroids_path, file))
     return result
 

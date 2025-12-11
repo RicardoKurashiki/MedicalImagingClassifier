@@ -28,7 +28,7 @@ def run(
                 s=200,
                 label=f"Centroid {label}",
             )
-    plt.legend()
+        plt.legend()
     plt.colorbar()
     plt.title(title)
     plt.savefig(output_path)
