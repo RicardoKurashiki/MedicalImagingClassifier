@@ -1,0 +1,51 @@
+{
+  "confusion_matrix": [
+    [
+      6901,
+      5172
+    ],
+    [
+      75,
+      211
+    ]
+  ],
+  "total_samples": 12359,
+  "correct_predictions": 7112,
+  "accuracy": 0.5754510882757504,
+  "loss": 0.686659020029695,
+  "classification_report": {
+    "NORMAL": {
+      "precision": 0.9892488532110092,
+      "recall": 0.5716060631160441,
+      "f1_score": 0.7245520057439085,
+      "specificity": 0.7377622377622378,
+      "TP": 6901,
+      "TN": 211,
+      "FP": 75,
+      "FN": 5172
+    },
+    "PNEUMONIA": {
+      "precision": 0.03919747352777262,
+      "recall": 0.7377622377622378,
+      "f1_score": 0.07443984068759801,
+      "specificity": 0.5716060631160441,
+      "TP": 211,
+      "TN": 6901,
+      "FP": 5172,
+      "FN": 75
+    },
+    "macro_avg": {
+      "precision": 0.5142231633693909,
+      "recall": 0.654684150439141,
+      "f1_score": 0.3994959232157533
+    },
+    "accuracy": 0.5754510882757504
+  },
+  "test_config": {
+    "model_path": "results/efficientnet/CXR8/layers_5/batch_size_32/epochs_1/timestamp_11122025_074808/",
+    "cross_dataset_path": "../../datasets/CXR8",
+    "pretrained_model": "efficientnet",
+    "batch_size": 32,
+    "device": "cuda"
+  }
+}
