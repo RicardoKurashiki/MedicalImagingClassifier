@@ -1,0 +1,51 @@
+{
+  "confusion_matrix": [
+    [
+      2313,
+      1822
+    ],
+    [
+      259,
+      1516
+    ]
+  ],
+  "total_samples": 5910,
+  "correct_predictions": 3829,
+  "accuracy": 0.6478849407783418,
+  "loss": 0.6306637718592804,
+  "classification_report": {
+    "NORMAL": {
+      "precision": 0.8993001555209953,
+      "recall": 0.5593712212817412,
+      "f1_score": 0.689726677892205,
+      "specificity": 0.8540845070422535,
+      "TP": 2313,
+      "TN": 1516,
+      "FP": 259,
+      "FN": 1822
+    },
+    "PNEUMONIA": {
+      "precision": 0.4541641701617735,
+      "recall": 0.8540845070422535,
+      "f1_score": 0.5929977865049054,
+      "specificity": 0.5593712212817412,
+      "TP": 1516,
+      "TN": 2313,
+      "FP": 1822,
+      "FN": 259
+    },
+    "macro_avg": {
+      "precision": 0.6767321628413844,
+      "recall": 0.7067278641619974,
+      "f1_score": 0.6413622321985553
+    },
+    "accuracy": 0.6478849407783418
+  },
+  "test_config": {
+    "model_path": "results/efficientnet/CXR8/layers_None/batch_size_32/epochs_500/timestamp_11122025_143035/",
+    "cross_dataset_path": "../../datasets/rsna",
+    "pretrained_model": "efficientnet",
+    "batch_size": 32,
+    "device": "cuda"
+  }
+}
