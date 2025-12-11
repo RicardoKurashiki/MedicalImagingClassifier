@@ -21,7 +21,7 @@ device = (
 EARLY_STOPPING_PATIENCE = 30
 
 
-def train_pipeline(
+def run(
     dataset_path,
     backbone,
     layers,
@@ -166,26 +166,5 @@ def train_pipeline(
 
         if verbose:
             print(f"Métricas salvas em {metrics_file}")
-
-
-def run(
-    dataset_path,
-    pretrained_model,
-    trainable_layers,
-    batch_size,
-    dataset,
-    epochs,
-    verbose,
-    output_path,
-):
-    train_pipeline(
-        dataset_path,
-        pretrained_model,
-        trainable_layers,
-        batch_size,
-        epochs,
-        output_path,
-        verbose,
-    )
 
     return output_path

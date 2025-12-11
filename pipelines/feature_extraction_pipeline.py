@@ -121,11 +121,11 @@ def run(
         all_labels = np.concatenate(all_labels, axis=0)
 
         np.save(
-            os.path.join(output_path, f"{prefix}{phase}_features.npy"),
+            os.path.join(output_path, f"{prefix}_{phase}_features.npy"),
             all_features,
         )
         np.save(
-            os.path.join(output_path, f"{prefix}{phase}_labels.npy"),
+            os.path.join(output_path, f"{prefix}_{phase}_labels.npy"),
             all_labels,
         )
 

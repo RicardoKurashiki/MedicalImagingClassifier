@@ -243,8 +243,12 @@ def run(
             class_names = [f"Class {i}" for i in range(n_classes)]
 
     criterion = nn.CrossEntropyLoss()
+
     results = evaluate_model(
-        model, test_loader, criterion=criterion, num_classes=n_classes
+        model,
+        test_loader,
+        criterion=criterion,
+        num_classes=n_classes,
     )
 
     report = classification_report(results, class_names=class_names)
@@ -253,8 +257,7 @@ def run(
     for row in confusion_matrix:
         print(" ".join([str(cell) for cell in row]))
 
-    cross_dataset_name = os.path.basename(os.path.normpath(cross_dataset_path))
-    json_filename = f"{prefix}test_{cross_dataset_name}_results.json"
+    json_filename = f"{prefix}_test_results.json"
     json_path = os.path.join(model_path, json_filename)
 
     all_results = {

@@ -3,20 +3,23 @@
 import os
 import argparse
 
+
 from pipelines import (
     train_pipeline,
     test_pipeline,
     feature_extraction_pipeline,
     ae_training_pipeline,
+    cluster_pipeline,
 )
 
 from utils import plot_charts
+from datetime import datetime
 
 parser = argparse.ArgumentParser(prog="Medical Imaging Analysis Classifier")
 
 parser.add_argument(
     "--model",
-    choices=("resnet", "mobilenet", "densenet", "efficientnet", "vit"),
+    choices=("resnet", "mobilenet", "densenet", "efficientnet"),
     help="Pretrained Model",
     default="densenet",
 )
@@ -38,14 +41,7 @@ parser.add_argument(
 
 parser.add_argument(
     "--dataset",
-    choices=("chest_xray", "CXR8"),
-    help="Training Dataset",
-    default="CXR8",
-)
-
-parser.add_argument(
-    "--cross",
-    choices=("chest_xray", "CXR8"),
+    choices=("chest_xray", "rsna", "CXR8"),
     help="Training Dataset",
     default="chest_xray",
 )
@@ -53,7 +49,7 @@ parser.add_argument(
 parser.add_argument(
     "--epochs",
     type=int,
-    default=100,
+    default=500,
     help="Training Epochs",
 )
 
@@ -91,53 +87,16 @@ parser.add_argument(
 args = parser.parse_args()
 
 
-def test(
-    output_path, dataset_path, cross_dataset_path, pretrained_model, batch_size, verbose
-):
-    test_pipeline(
-        output_path,
-        dataset_path,
-        pretrained_model,
-        batch_size,
-        "same_domain_",
-        verbose,
-    )
-    test_pipeline(
-        output_path,
-        cross_dataset_path,
-        pretrained_model,
-        batch_size,
-        "cross_domain_",
-        verbose,
-    )
-
-
-def plot(output_path, dataset, cross):
-    plot_charts(output_path, dataset, cross)
-
-
-def extract(
-    output_path, dataset_path, cross_dataset_path, pretrained_model, batch_size
-):
-    feature_extraction_pipeline(
-        output_path,
-        dataset_path,
-        pretrained_model,
-        batch_size,
-        "same_domain_",
-    )
-    feature_extraction_pipeline(
-        output_path,
-        cross_dataset_path,
-        pretrained_model,
-        batch_size,
-        "cross_domain_",
-    )
-
-
 def main():
     dataset_path = os.path.join("../../datasets", args.dataset)
-    cross_dataset_path = os.path.join("../../datasets", args.cross)
+    current_time = datetime.now().strftime("%d%m%Y_%H%M%S")
+
+    cross_datasets = [
+        "chest_xray",
+        "rsna",
+        "CXR8",
+    ]
+
     output_path = os.path.join(
         "results",
         args.model,
@@ -145,56 +104,44 @@ def main():
         f"layers_{args.layers}",
         f"batch_size_{args.batch_size}",
         f"epochs_{args.epochs}/",
+        f"timestamp_{current_time}/",
     )
 
-    if args.plot:
-        plot(output_path, args.dataset, args.cross)
-        return 0
-
-    if args.extract:
-        extract(
-            output_path,
-            dataset_path,
-            cross_dataset_path,
-            args.model,
-            args.batch_size,
-        )
-        return 0
-
-    if args.align:
-        ae_training_pipeline(output_path, k=args.k)
-        return 0
+    os.makedirs(output_path, exist_ok=True)
 
     train_pipeline(
         dataset_path,
         args.model,
         args.layers,
         args.batch_size,
-        args.dataset,
         args.epochs,
-        args.verbose,
         output_path,
-    )
-
-    test(
-        output_path,
-        dataset_path,
-        cross_dataset_path,
-        args.model,
-        args.batch_size,
         args.verbose,
     )
 
-    extract(
-        output_path,
-        dataset_path,
-        cross_dataset_path,
-        args.model,
-        args.batch_size,
-    )
+    for cross_dataset in cross_datasets:
+        cross_dataset_path = os.path.join("../../datasets", cross_dataset)
 
-    plot(output_path, args.dataset, args.cross)
-    ae_training_pipeline(output_path, k=args.k)
+        test_pipeline(
+            output_path,
+            cross_dataset_path,
+            args.model,
+            args.batch_size,
+            prefix=cross_dataset,
+            verbose=args.verbose,
+        )
+
+        feature_extraction_pipeline(
+            output_path,
+            cross_dataset_path,
+            args.model,
+            args.batch_size,
+            prefix=cross_dataset,
+        )
+
+        plot_charts(output_path, cross_dataset)
+
+        cluster_pipeline(output_path, cross_dataset, k=args.k)
 
 
 if __name__ == "__main__":

@@ -95,10 +95,10 @@ def plot_pca(features, labels, output_path):
     plt.colorbar()
     plt.savefig(output_path)
     plt.close()
+    return pca
 
 
-def run(results_path, dataset_name, cross_dataset_name):
-    print(f"Plotting results for {dataset_name}")
+def run(results_path, dataset_name):
     output_path = os.path.join(results_path, "plots/")
     os.makedirs(output_path, exist_ok=True)
 
@@ -119,45 +119,38 @@ def run(results_path, dataset_name, cross_dataset_name):
         output_path,
     )
 
-    same_domain_results_path = os.path.join(
+    dataset_results_path = os.path.join(
         results_path,
-        f"same_domain_test_{dataset_name}_results.json",
+        f"{dataset_name}_test_results.json",
     )
-    with open(same_domain_results_path, "r") as f:
-        same_domain_results = json.load(f)
+    with open(dataset_results_path, "r") as f:
+        dataset_results = json.load(f)
 
     plot_confusion_matrix(
-        same_domain_results["confusion_matrix"],
-        title="Same Domain Results",
-        output_path=os.path.join(output_path, "same_domain_results.png"),
-    )
-
-    cross_domain_results_path = os.path.join(
-        results_path,
-        f"cross_domain_test_{cross_dataset_name}_results.json",
-    )
-
-    with open(cross_domain_results_path, "r") as f:
-        cross_domain_results = json.load(f)
-
-    plot_confusion_matrix(
-        cross_domain_results["confusion_matrix"],
-        title="Cross Domain Results",
-        output_path=os.path.join(output_path, "cross_domain_results.png"),
+        dataset_results["confusion_matrix"],
+        title=f"{dataset_name} Test Results",
+        output_path=os.path.join(output_path, f"{dataset_name}_test_results.png"),
     )
 
     for phase in ["train", "val", "test"]:
-        for domain in ["same_domain", "cross_domain"]:
-            features_path = os.path.join(
-                results_path, "features", f"{domain}_{phase}_features.npy"
-            )
-            labels_path = os.path.join(
-                results_path, "features", f"{domain}_{phase}_labels.npy"
-            )
-            features = np.load(features_path)
-            labels = np.load(labels_path)
-            plot_pca(
-                features,
-                labels,
-                os.path.join(output_path, f"{domain}_{phase}_pca.png"),
-            )
+        features_path = os.path.join(
+            results_path, "features", f"{dataset_name}_{phase}_features.npy"
+        )
+        labels_path = os.path.join(
+            results_path, "features", f"{dataset_name}_{phase}_labels.npy"
+        )
+        features = np.load(features_path)
+        labels = np.load(labels_path)
+
+        pca = plot_pca(
+            features,
+            labels,
+            os.path.join(output_path, f"{dataset_name}_{phase}_pca.png"),
+        )
+
+        pca_path = os.path.join(results_path, "pca/")
+        os.makedirs(pca_path, exist_ok=True)
+        np.save(
+            os.path.join(pca_path, f"{dataset_name}_{phase}_pca.npy"),
+            pca.components_,
+        )

@@ -28,45 +28,44 @@ def run_command(cmd):
 
 def main():
     n_parallel = 6
-    models = ["resnet", "densenet"]
+    models = ["resnet", "densenet", "mobilenet", "efficientnet"]
     layers = [None, 2, 5]
     batch_sizes = [32]
     datasets = [
+        "rsna",
         "chest_xray",
         "CXR8",
-    ]
-    cross_datasets = [
-        "CXR8",
-        "chest_xray",
     ]
     epochs = 500
 
     configs = []
 
     for dataset in datasets:
-        for cross in cross_datasets:
-            for layer in layers:
-                for batch_size in batch_sizes:
-                    if cross == dataset:
-                        continue
-                    for model in models:
-                        config = "python3 main.py"
-                        if model is not None:
-                            config += f" --model {model}"
-                        if layer is not None:
-                            config += f" --layers {layer}"
-                        if batch_size is not None:
-                            config += f" --batch-size {batch_size}"
-                        if epochs is not None:
-                            config += f" --epochs {epochs}"
-                        config += f" --dataset {dataset} --cross {cross}"
-                        if args.plot:
-                            config += " --plot"
-                        configs.append(config)
+        for layer in layers:
+            for batch_size in batch_sizes:
+                for model in models:
+                    config = "python3 main.py"
+                    if model is not None:
+                        config += f" --model {model}"
+                    if layer is not None:
+                        config += f" --layers {layer}"
+                    if batch_size is not None:
+                        config += f" --batch-size {batch_size}"
+                    if epochs is not None:
+                        config += f" --epochs {epochs}"
+                    config += f" --dataset {dataset}"
+                    if args.plot:
+                        config += " --plot"
+                    configs.append(config)
 
     print(
         f"Total de configurações: {len(configs)} | Paralelas: {n_parallel} instâncias"
     )
+
+    for config in configs:
+        print(config)
+
+    return
 
     with Pool(processes=n_parallel) as pool:
         results = list(
