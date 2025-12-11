@@ -1,0 +1,51 @@
+{
+  "confusion_matrix": [
+    [
+      545,
+      3590
+    ],
+    [
+      40,
+      1735
+    ]
+  ],
+  "total_samples": 5910,
+  "correct_predictions": 2280,
+  "accuracy": 0.38578680203045684,
+  "loss": 2.877185784802219,
+  "classification_report": {
+    "NORMAL": {
+      "precision": 0.9316239316239316,
+      "recall": 0.13180169286577992,
+      "f1_score": 0.23093198623126207,
+      "specificity": 0.9774647887323944,
+      "TP": 545,
+      "TN": 1735,
+      "FP": 40,
+      "FN": 3590
+    },
+    "PNEUMONIA": {
+      "precision": 0.32582159624413143,
+      "recall": 0.9774647887323944,
+      "f1_score": 0.4887320193664849,
+      "specificity": 0.13180169286577992,
+      "TP": 1735,
+      "TN": 545,
+      "FP": 3590,
+      "FN": 40
+    },
+    "macro_avg": {
+      "precision": 0.6287227639340316,
+      "recall": 0.5546332407990872,
+      "f1_score": 0.3598320027988735
+    },
+    "accuracy": 0.38578680203045684
+  },
+  "test_config": {
+    "model_path": "results/efficientnet/chest_xray/layers_5/batch_size_32/epochs_500/timestamp_11122025_025020/",
+    "cross_dataset_path": "../../datasets/rsna",
+    "pretrained_model": "efficientnet",
+    "batch_size": 32,
+    "device": "cuda"
+  }
+}

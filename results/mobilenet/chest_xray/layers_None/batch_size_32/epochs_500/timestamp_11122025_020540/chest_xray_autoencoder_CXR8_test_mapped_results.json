@@ -1,0 +1,44 @@
+{
+  "confusion_matrix": [
+    [
+      12059,
+      14
+    ],
+    [
+      286,
+      0
+    ]
+  ],
+  "total_samples": 12359,
+  "correct_predictions": 12059,
+  "accuracy": 0.9757261914394368,
+  "loss": 0.11950223633797345,
+  "classification_report": {
+    "NORMAL": {
+      "precision": 0.976832725799919,
+      "recall": 0.9988403876418455,
+      "f1_score": 0.9877134815513609,
+      "specificity": 0.0,
+      "TP": 12059,
+      "TN": 0,
+      "FP": 286,
+      "FN": 14
+    },
+    "PNEUMONIA": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "specificity": 0.9988403876418455,
+      "TP": 0,
+      "TN": 12059,
+      "FP": 14,
+      "FN": 286
+    },
+    "macro_avg": {
+      "precision": 0.4884163628999595,
+      "recall": 0.49942019382092273,
+      "f1_score": 0.4938567407756804
+    },
+    "accuracy": 0.9757261914394368
+  }
+}
