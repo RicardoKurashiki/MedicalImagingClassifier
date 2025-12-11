@@ -62,11 +62,6 @@ def main():
         f"Total de configurações: {len(configs)} | Paralelas: {n_parallel} instâncias"
     )
 
-    for config in configs:
-        print(config)
-
-    return
-
     with Pool(processes=n_parallel) as pool:
         results = list(
             tqdm(
