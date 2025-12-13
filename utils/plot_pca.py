@@ -28,8 +28,8 @@ def run(
                 s=200,
                 label=f"Centroid {label}",
             )
-    plt.xlim(-20, 20)
-    plt.ylim(-20, 20)
+    plt.xlim(-12, 12)
+    plt.ylim(-12, 12)
     plt.title(title)
     plt.savefig(output_path)
     plt.close()
