@@ -601,7 +601,7 @@ def run(
         os.path.join(features_path, f"{target_name}_test_labels.npy")
     )
 
-    pca_path = os.path.join(output_path, "pca", f"{source_name}_train_pca.pkl")
+    pca_path = os.path.join(output_path, "pca", "pca_components.pkl")
     pca = pk.load(open(pca_path, "rb"))
 
     plot_pca(

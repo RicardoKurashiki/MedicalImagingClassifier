@@ -56,7 +56,7 @@ def run(model_path, dataset_name, k=1):
                 ),
                 centroids[label],
             )
-        pca_path = os.path.join(model_path, "pca", f"{dataset_name}_{phase}_pca.pkl")
+        pca_path = os.path.join(model_path, "pca", "pca_components.pkl")
         plot_path = os.path.join(
             model_path, "plots", f"{dataset_name}_{phase}_centroids.png"
         )

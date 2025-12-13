@@ -3,6 +3,9 @@
 import os
 import argparse
 
+import torch
+import numpy as np
+import random
 
 from pipelines import (
     train_pipeline,
@@ -14,6 +17,15 @@ from pipelines import (
 
 from utils import plot_charts
 from datetime import datetime
+
+SEED = 42
+
+torch.manual_seed(SEED)
+torch.cuda.manual_seed(SEED)
+np.random.seed(SEED)
+random.seed(SEED)
+torch.backends.cudnn.enabled = False
+torch.backends.cudnn.deterministic = True
 
 parser = argparse.ArgumentParser(prog="Medical Imaging Analysis Classifier")
 
@@ -54,6 +66,13 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "--ae-epochs",
+    type=int,
+    default=500,
+    help="Autoencoder Training Epochs",
+)
+
+parser.add_argument(
     "--k",
     type=int,
     default=1,
@@ -67,21 +86,9 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    "--plot",
+    "--no-data-aug",
     action="store_true",
-    help="Plot Results",
-)
-
-parser.add_argument(
-    "--extract",
-    action="store_true",
-    help="Extract Features",
-)
-
-parser.add_argument(
-    "--align",
-    action="store_true",
-    help="Align Features",
+    help="Disable Data Augmentation",
 )
 
 args = parser.parse_args()
@@ -101,8 +108,12 @@ def main():
         f"layers_{args.layers}",
         f"batch_size_{args.batch_size}",
         f"epochs_{args.epochs}/",
+        f"data_aug_{not args.no_data_aug}/",
+        f"seed_{SEED}/",
         f"timestamp_{current_time}/",
     )
+
+    print(f"Output path: {output_path}")
 
     os.makedirs(output_path, exist_ok=True)
 
@@ -113,6 +124,7 @@ def main():
         args.batch_size,
         args.epochs,
         output_path,
+        not args.no_data_aug,
         args.verbose,
     )
 
@@ -136,7 +148,11 @@ def main():
             prefix=cross_dataset,
         )
 
-        plot_charts(output_path, cross_dataset)
+        plot_charts(
+            output_path,
+            cross_dataset,
+            generate_pca=(args.dataset == cross_dataset),
+        )
 
         cluster_pipeline(output_path, cross_dataset, k=args.k)
 
@@ -145,7 +161,7 @@ def main():
             source_name=args.dataset,
             target_name=cross_dataset,
             pretrained_model=args.model,
-            epochs=500,
+            epochs=args.ae_epochs,
             batch_size=args.batch_size,
             verbose=args.verbose,
         )

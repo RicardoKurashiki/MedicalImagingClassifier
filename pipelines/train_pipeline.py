@@ -28,25 +28,38 @@ def run(
     batch_size,
     epochs,
     output_path="./results/",
+    data_augmentation=True,
     verbose=False,
 ):
-    transform = transforms.Compose(
-        [
-            transforms.Resize((224, 224)),
-            transforms.RandomHorizontalFlip(),
-            transforms.RandomAffine(
-                degrees=(-10, 10),
-                translate=(0.02, 0.02),
-                scale=(0.98, 1.02),
-                shear=2,
-            ),
-            transforms.ToTensor(),
-            transforms.Normalize(
-                mean=[0.485, 0.456, 0.406],
-                std=[0.229, 0.224, 0.225],
-            ),
-        ]
-    )
+    if data_augmentation:
+        transform = transforms.Compose(
+            [
+                transforms.Resize((224, 224)),
+                transforms.RandomHorizontalFlip(),
+                transforms.RandomAffine(
+                    degrees=(-10, 10),
+                    translate=(0.02, 0.02),
+                    scale=(0.98, 1.02),
+                    shear=2,
+                ),
+                transforms.ToTensor(),
+                transforms.Normalize(
+                    mean=[0.485, 0.456, 0.406],
+                    std=[0.229, 0.224, 0.225],
+                ),
+            ]
+        )
+    else:
+        transform = transforms.Compose(
+            [
+                transforms.Resize((224, 224)),
+                transforms.ToTensor(),
+                transforms.Normalize(
+                    mean=[0.485, 0.456, 0.406],
+                    std=[0.229, 0.224, 0.225],
+                ),
+            ]
+        )
     val_transform = transforms.Compose(
         [
             transforms.Resize((224, 224)),

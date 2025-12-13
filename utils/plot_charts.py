@@ -89,7 +89,7 @@ def plot_confusion_matrix(confusion_matrix, title, output_path):
     plt.close()
 
 
-def run(results_path, dataset_name):
+def run(results_path, dataset_name, generate_pca=False):
     output_path = os.path.join(results_path, "plots/")
     os.makedirs(output_path, exist_ok=True)
 
@@ -133,21 +133,37 @@ def run(results_path, dataset_name):
         features = np.load(features_path)
         labels = np.load(labels_path)
 
-        pca = plot_pca(
-            features,
-            labels,
-            output_path=os.path.join(output_path, f"{dataset_name}_{phase}_pca.png"),
-            centroids=None,
-            pca=None,
-            title=f"{dataset_name} - {phase} Features",
-        )
+        if generate_pca:
+            pca = plot_pca(
+                features,
+                labels,
+                output_path=os.path.join(
+                    output_path, f"{dataset_name}_{phase}_pca.png"
+                ),
+                centroids=None,
+                pca=None,
+                title=f"{dataset_name} - {phase} Features",
+            )
 
-        pca_path = os.path.join(results_path, "pca/")
-        os.makedirs(pca_path, exist_ok=True)
-        pk.dump(
-            pca,
-            open(
-                os.path.join(pca_path, f"{dataset_name}_{phase}_pca.pkl"),
-                "wb",
-            ),
-        )
+            pca_path = os.path.join(results_path, "pca/")
+            os.makedirs(pca_path, exist_ok=True)
+            pk.dump(
+                pca,
+                open(
+                    os.path.join(pca_path, "pca_components.pkl"),
+                    "wb",
+                ),
+            )
+        else:
+            pca_path = os.path.join(results_path, "pca", "pca_components.pkl")
+            pca = pk.load(open(pca_path, "rb"))
+            plot_pca(
+                features,
+                labels,
+                output_path=os.path.join(
+                    output_path, f"{dataset_name}_{phase}_pca.png"
+                ),
+                centroids=None,
+                pca=pca,
+                title=f"{dataset_name} - {phase} Features",
+            )
