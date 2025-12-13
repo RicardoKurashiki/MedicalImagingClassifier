@@ -21,28 +21,32 @@ def main():
     batch_sizes = [32]
     datasets = ["rsna", "chest_xray"]
     data_augs = [True, False]
+    mini_batches = [True, False]
     epochs = 500
 
     configs = []
 
     for dataset in datasets:
         for data_aug in data_augs:
-            for layer in layers:
-                for batch_size in batch_sizes:
-                    for model in models:
-                        config = "python3 main.py"
-                        if model is not None:
-                            config += f" --model {model}"
-                        if layer is not None:
-                            config += f" --layers {layer}"
-                        if batch_size is not None:
-                            config += f" --batch-size {batch_size}"
-                        if epochs is not None:
-                            config += f" --epochs {epochs}"
-                        config += f" --dataset {dataset}"
-                        if data_aug is False:
-                            config += " --no-data-aug"
-                        configs.append(config)
+            for mini_batch in mini_batches:
+                for layer in layers:
+                    for batch_size in batch_sizes:
+                        for model in models:
+                            config = "python3 main.py"
+                            if model is not None:
+                                config += f" --model {model}"
+                            if layer is not None:
+                                config += f" --layers {layer}"
+                            if batch_size is not None:
+                                config += f" --batch-size {batch_size}"
+                            if epochs is not None:
+                                config += f" --epochs {epochs}"
+                            config += f" --dataset {dataset}"
+                            if data_aug is False:
+                                config += " --no-data-aug"
+                            if mini_batch is False:
+                                config += " --no-mini-batch"
+                            configs.append(config)
 
     print(
         f"Total de configurações: {len(configs)} | Paralelas: {n_parallel} instâncias"
