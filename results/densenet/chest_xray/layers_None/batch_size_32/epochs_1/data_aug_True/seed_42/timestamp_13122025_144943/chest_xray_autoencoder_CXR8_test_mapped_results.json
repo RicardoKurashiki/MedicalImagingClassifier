@@ -1,0 +1,133 @@
+{
+  "confusion_matrix": [
+    [
+      12073,
+      0
+    ],
+    [
+      286,
+      0
+    ]
+  ],
+  "total_samples": 12359,
+  "correct_predictions": 12073,
+  "accuracy": 0.9768589691722631,
+  "loss": 0.1320736006767978,
+  "classification_report": {
+    "NORMAL": {
+      "precision": 0.9768589691722631,
+      "recall": 1.0,
+      "f1_score": 0.9882935406712562,
+      "specificity": 0.0,
+      "TP": 12073,
+      "TN": 0,
+      "FP": 286,
+      "FN": 0
+    },
+    "PNEUMONIA": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "specificity": 1.0,
+      "TP": 0,
+      "TN": 12073,
+      "FP": 0,
+      "FN": 286
+    },
+    "macro_avg": {
+      "precision": 0.48842948458613156,
+      "recall": 0.5,
+      "f1_score": 0.4941467703356281
+    },
+    "accuracy": 0.9768589691722631
+  },
+  "training_history": {
+    "train_loss": [
+      0.014015495821104538
+    ],
+    "val_loss": [
+      0.004260081406077163
+    ]
+  },
+  "computational_metrics": {
+    "total_time_seconds": 1.1572999954223633,
+    "epoch_times": [
+      {
+        "epoch": 0,
+        "time_seconds": 1.1559431552886963
+      }
+    ],
+    "batch_times": {
+      "train": [
+        {
+          "epoch": 0,
+          "avg_batch_time_seconds": 0.0006081816833767691,
+          "total_batches": 1236,
+          "total_time_seconds": 1.0468497276306152
+        }
+      ],
+      "val": [
+        {
+          "epoch": 0,
+          "avg_batch_time_seconds": 0.00013451668822649614,
+          "total_batches": 309,
+          "total_time_seconds": 0.10728573799133301
+        }
+      ]
+    },
+    "throughput": {
+      "train": [
+        {
+          "epoch": 0,
+          "total_samples": 39546,
+          "total_time_seconds": 1.0468497276306152
+        }
+      ],
+      "val": [
+        {
+          "epoch": 0,
+          "total_samples": 9887,
+          "total_time_seconds": 0.10728573799133301
+        }
+      ]
+    },
+    "memory_usage": [
+      {
+        "epoch": 0,
+        "cpu_memory_mb": 1854.20703125,
+        "gpu_memory_allocated_mb": 116.83642578125,
+        "gpu_memory_reserved_mb": 186.0,
+        "gpu_memory_max_allocated_mb": 373.17041015625,
+        "gpu_utilization": 24
+      }
+    ],
+    "model_info": {
+      "total_params": 83008,
+      "trainable_params": 83008,
+      "model_size_mb": 0.3186187744140625
+    },
+    "initial_memory": {
+      "cpu_memory_mb": 1854.20703125,
+      "gpu_memory_allocated_mb": 115.71435546875,
+      "gpu_memory_reserved_mb": 652.0,
+      "gpu_memory_max_allocated_mb": 373.17041015625,
+      "gpu_utilization": 0
+    },
+    "final_memory": {
+      "cpu_memory_mb": 1854.20703125,
+      "gpu_memory_allocated_mb": 116.83642578125,
+      "gpu_memory_reserved_mb": 186.0,
+      "gpu_memory_max_allocated_mb": 373.17041015625,
+      "gpu_utilization": 24
+    }
+  },
+  "training_config": {
+    "source_name": "chest_xray",
+    "target_name": "CXR8",
+    "pretrained_model": "densenet",
+    "epochs": 1,
+    "batch_size": 32,
+    "early_stopping_patience": 100,
+    "device": "cuda"
+  }
+}
