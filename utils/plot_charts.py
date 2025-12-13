@@ -133,7 +133,8 @@ def run(results_path, dataset_name, generate_pca=False):
         features = np.load(features_path)
         labels = np.load(labels_path)
 
-        if generate_pca:
+        if generate_pca and phase == "train":
+            print(f"Generating PCA for {dataset_name} features")
             pca = plot_pca(
                 features,
                 labels,
