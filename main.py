@@ -91,6 +91,12 @@ parser.add_argument(
     help="Disable Data Augmentation",
 )
 
+parser.add_argument(
+    "--no-mini-batch",
+    action="store_true",
+    help="Disable Mini-Batch",
+)
+
 args = parser.parse_args()
 
 
@@ -109,7 +115,7 @@ def main():
         f"batch_size_{args.batch_size}",
         f"epochs_{args.epochs}/",
         f"data_aug_{not args.no_data_aug}/",
-        f"seed_{SEED}/",
+        f"mini_batch_{not args.no_mini_batch}/",
         f"timestamp_{current_time}/",
     )
 
@@ -125,6 +131,7 @@ def main():
         args.epochs,
         output_path,
         not args.no_data_aug,
+        not args.no_mini_batch,
         args.verbose,
     )
 

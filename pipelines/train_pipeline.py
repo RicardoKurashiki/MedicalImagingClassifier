@@ -29,6 +29,7 @@ def run(
     epochs,
     output_path="./results/",
     data_augmentation=True,
+    mini_batch=True,
     verbose=False,
 ):
     if data_augmentation:
@@ -114,16 +115,25 @@ def run(
         )
         break
 
-    train_sampler = BatchSampler(train_dataset, batch_size)
-
-    train_loader = DataLoader(
-        train_dataset,
-        batch_sampler=train_sampler,
-        pin_memory=True,
-        num_workers=4,
-        persistent_workers=True,
-        prefetch_factor=2,
-    )
+    if mini_batch:
+        train_sampler = BatchSampler(train_dataset, batch_size)
+        train_loader = DataLoader(
+            train_dataset,
+            batch_sampler=train_sampler,
+            pin_memory=True,
+            num_workers=4,
+            persistent_workers=True,
+            prefetch_factor=2,
+        )
+    else:
+        train_loader = DataLoader(
+            train_dataset,
+            batch_size=batch_size,
+            pin_memory=True,
+            num_workers=4,
+            persistent_workers=True,
+            prefetch_factor=2,
+        )
 
     val_loader = DataLoader(
         val_dataset,
