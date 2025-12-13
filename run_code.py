@@ -21,7 +21,6 @@ def main():
     batch_sizes = [32]
     datasets = [
         "rsna",
-        "CXR8",
         "chest_xray",
     ]
     epochs = 500

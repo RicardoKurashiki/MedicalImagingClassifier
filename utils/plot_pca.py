@@ -18,30 +18,18 @@ def run(
     features_2d = pca.transform(features)
     plt.scatter(features_2d[:, 0], features_2d[:, 1], c=labels, cmap="viridis")
     if centroids is not None:
-        colors = [
-            "red",
-            "blue",
-            "green",
-            "yellow",
-            "purple",
-            "orange",
-            "brown",
-            "pink",
-            "gray",
-            "black",
-        ]
         for i, label in enumerate(centroids):
             centroids_2d = pca.transform(centroids[label])
             plt.scatter(
                 centroids_2d[:, 0],
                 centroids_2d[:, 1],
-                c=colors[i],
+                c="red",
                 marker="X",
                 s=200,
                 label=f"Centroid {label}",
             )
-        plt.legend()
-    plt.colorbar()
+    plt.xlim(-20, 20)
+    plt.ylim(-20, 20)
     plt.title(title)
     plt.savefig(output_path)
     plt.close()
