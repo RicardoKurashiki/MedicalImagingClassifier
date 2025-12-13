@@ -53,7 +53,7 @@ parser.add_argument(
 
 parser.add_argument(
     "--dataset",
-    choices=("chest_xray", "rsna", "CXR8"),
+    choices=("chest_xray", "rsna"),
     help="Training Dataset",
     default="chest_xray",
 )
@@ -98,7 +98,7 @@ def main():
     dataset_path = os.path.join("../../datasets", args.dataset)
     current_time = datetime.now().strftime("%d%m%Y_%H%M%S")
 
-    all_datasets = ["chest_xray", "rsna", "CXR8"]
+    all_datasets = ["chest_xray", "rsna"]
     cross_datasets = [args.dataset] + [d for d in all_datasets if d != args.dataset]
 
     output_path = os.path.join(
